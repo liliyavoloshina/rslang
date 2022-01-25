@@ -1,10 +1,13 @@
 import React from 'react'
+import { Container, Typography } from '@mui/material'
 
 function Textbook() {
 	return (
-		<div className="textbook">
-			<h1>Textbook page</h1>
-		</div>
+		<Container maxWidth="lg">
+			<Typography variant="h2" sx={{ mt: 3, mb: 3 }}>
+				RS Lang
+			</Typography>
+		</Container>
 	)
 }
 

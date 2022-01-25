@@ -1,11 +1,6 @@
 import * as React from 'react'
-import Card from '@mui/material/Card'
-import CardContent from '@mui/material/CardContent'
-import Typography from '@mui/material/Typography'
-import SportsEsportsIcon from '@mui/icons-material/SportsEsports'
-import MenuBookIcon from '@mui/icons-material/MenuBook'
-import SchoolIcon from '@mui/icons-material/School'
-import AutoGraphIcon from '@mui/icons-material/AutoGraph'
+import { CardContent, Typography, Card } from '@mui/material'
+import { SportsEsports, MenuBook, School, AutoGraph } from '@mui/icons-material'
 
 interface AdvantageCardProps {
 	title: string
@@ -18,13 +13,13 @@ export default function AdvantageCard(advantage: AdvantageCardProps) {
 	let advantageIcon
 
 	if (icon === 'game') {
-		advantageIcon = <SportsEsportsIcon sx={{ fontSize: 60 }} />
+		advantageIcon = <SportsEsports sx={{ fontSize: 60 }} />
 	} else if (icon === 'book') {
-		advantageIcon = <MenuBookIcon sx={{ fontSize: 60 }} />
+		advantageIcon = <MenuBook sx={{ fontSize: 60 }} />
 	} else if (icon === 'school') {
-		advantageIcon = <SchoolIcon sx={{ fontSize: 60 }} />
+		advantageIcon = <School sx={{ fontSize: 60 }} />
 	} else if (icon === 'progress') {
-		advantageIcon = <AutoGraphIcon sx={{ fontSize: 60 }} />
+		advantageIcon = <AutoGraph sx={{ fontSize: 60 }} />
 	}
 
 	return (
