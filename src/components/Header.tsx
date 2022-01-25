@@ -24,6 +24,18 @@ const pages = [
 		name: 'Textbook',
 		path: 'textbook',
 	},
+	{
+		name: 'Sprint',
+		path: 'sprint',
+	},
+	{
+		name: 'Audiocall',
+		path: 'audiocall',
+	},
+	{
+		name: 'Statistic',
+		path: 'statistic',
+	},
 ]
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout']
 
@@ -90,11 +102,9 @@ function Header() {
 					</Typography>
 					<Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
 						{pages.map((page, idx) => (
-							<Link underline="none" key={idx} component={RouterLink} to={page.path}>
-								<Button onClick={handleCloseNavMenu} sx={{ my: 2, color: 'white', display: 'block' }}>
-									{page.name}
-								</Button>
-							</Link>
+							<Button component={RouterLink} to={page.path} key={idx} onClick={handleCloseNavMenu} sx={{ my: 2, color: 'white', display: 'block' }}>
+								{page.name}
+							</Button>
 						))}
 					</Box>
 

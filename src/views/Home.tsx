@@ -1,10 +1,13 @@
+import { Container, Typography } from '@mui/material'
 import React from 'react'
 
 function Home() {
 	return (
-		<div className="home">
-			<h1>Home page</h1>
-		</div>
+		<Container maxWidth="md">
+			<Typography variant="h4" component="h1" textAlign="start">
+				Home page
+			</Typography>
+		</Container>
 	)
 }
 
