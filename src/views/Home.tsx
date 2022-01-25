@@ -1,6 +1,6 @@
 import React from 'react'
 import { Container, Grid, Typography, CardMedia, CardContent, Card } from '@mui/material'
-import AdvantageCard from '../components/AdvantageCard'
+import AdvantageCard from '../components/home/AdvantageCard'
 
 const advantages = [
 	{ title: 'Mini-games', desc: 'Games make learning fun', icon: 'game' },
