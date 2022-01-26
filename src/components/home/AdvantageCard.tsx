@@ -23,7 +23,7 @@ export default function AdvantageCard(advantage: AdvantageCardProps) {
 	}
 
 	return (
-		<Card sx={{ maxWidth: 345 }}>
+		<Card sx={{ maxWidth: 345, textAlign: 'center' }}>
 			{advantageIcon}
 			<CardContent>
 				<Typography gutterBottom variant="h5" component="div">

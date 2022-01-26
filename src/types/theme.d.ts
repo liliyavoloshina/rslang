@@ -1,26 +1,17 @@
-import { Theme, ThemeOptions } from '@mui/material/styles'
+import { Theme as MUITheme, ThemeOptions as MUIThemeOptions } from '@mui/material/styles'
 
 declare module '@mui/material/styles' {
-	interface CustomTheme extends Theme {
-		palette: {
-			primary: {
-				main: string
-			}
-			secondary: {
-				main: string
-			}
+	interface Theme extends MUITheme {
+		text: {
+			secondary: string
 		}
 	}
 	// allow configuration using `createTheme`
-	interface CustomThemeOptions extends ThemeOptions {
-		palette: {
-			primary: {
-				main: string
-			}
-			secondary: {
-				main: string
-			}
+	interface ThemeOptions extends MUIThemeOptions {
+		text?: {
+			secondary?: string
 		}
 	}
-	export default function createTheme(options?: CustomThemeOptions): CustomTheme
+	// eslint-disable-next-line import/prefer-default-export
+	export function createTheme(options?: ThemeOptions): Theme
 }

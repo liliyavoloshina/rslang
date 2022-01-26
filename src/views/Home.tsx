@@ -14,10 +14,10 @@ const advantages = [
 export default function Home() {
 	return (
 		<Container maxWidth="lg">
-			<Typography variant="h2" sx={{ mt: 3, mb: 3 }}>
+			<Typography variant="h2" sx={{ mt: 3, mb: 3, textAlign: 'center' }}>
 				RS Lang
 			</Typography>
-			<Typography variant="body1" gutterBottom sx={{ mb: 5 }}>
+			<Typography variant="body1" gutterBottom sx={{ mb: 5, textAlign: 'center' }}>
 				body1. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos blanditiis tenetur unde suscipit, quam beatae rerum inventore consectetur, neque doloribus, cupiditate
 				numquam dignissimos laborum fugiat deleniti? Eum quasi quidem quibusdam.
 			</Typography>
@@ -30,7 +30,7 @@ export default function Home() {
 					)
 				})}
 			</Grid>
-			<Typography variant="h4" sx={{ mt: 3, mb: 3 }}>
+			<Typography variant="h4" sx={{ mt: 3, mb: 3, textAlign: 'center' }}>
 				Developer
 			</Typography>
 			<Card sx={{ maxWidth: 345 }}>

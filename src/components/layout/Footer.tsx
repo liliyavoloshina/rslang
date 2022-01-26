@@ -1,18 +1,18 @@
 import React from 'react'
-import { Container, Box } from '@mui/material'
+import { Container, Box, Typography } from '@mui/material'
 
 export default function Footer() {
 	return (
-		<footer style={{ marginTop: '50px' }}>
+		<footer className="footer" style={{ marginTop: '50px' }}>
 			<Box px={{ xs: 3, sm: 3 }} py={{ xs: 3, sm: 3 }} bgcolor={theme => theme.palette.primary.main} color="white">
 				<Container maxWidth="lg">
 					<Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-						<div>aaaa</div>
-						<div>aaaa</div>
-						<div>aaaa</div>
+						<Typography>Textbook</Typography>
+						<Typography>Textbook</Typography>
+						<Typography>Textbook</Typography>
 					</Box>
 					<Box textAlign="center" pt={{ xs: 5, sm: 5 }} pb={{ xs: 5, sm: 0 }}>
-						RS Lang &reg; 2022
+						<Typography>RS Lang &reg; 2022</Typography>
 					</Box>
 				</Container>
 			</Box>
