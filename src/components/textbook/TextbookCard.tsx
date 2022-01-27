@@ -9,10 +9,11 @@ export default function TextbookCard() {
 	return (
 		<Card sx={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
 			<CardMedia
-				sx={{ flex: { xs: '1 1 250px', md: '1 1 150px' }, height: { xs: '200px', md: '200px' } }}
-				component="img"
+				sx={{ flex: { xs: '1 1 250px', md: '1 1 150px' }, minHeight: '300px' }}
+				// sx={{ flex: { xs: '1 1 250px', md: '1 1 150px' }, height: { xs: '200px', md: '200px' } }}
+				// component="img"
 				image="https://picsum.photos/seed/picsum/500/500"
-				alt="Live from space album cover"
+				// alt="Live from space album cover"
 			/>
 			<CardContent>
 				<Box sx={{ flex: { xs: '1 1 60%' }, display: 'flex', flexDirection: 'column' }}>
@@ -46,9 +47,12 @@ export default function TextbookCard() {
 						</Typography>
 					</Box>
 
-					<Box sx={{ display: 'flex', flexDirection: 'column', marginTop: '10px' }}>
+					<Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px' }}>
 						<Button size="small" variant="contained">
 							To difficult
+						</Button>
+						<Button size="small" variant="contained">
+							To learned
 						</Button>
 					</Box>
 				</Box>
