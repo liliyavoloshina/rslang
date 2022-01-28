@@ -1,6 +1,6 @@
 import React from 'react'
 import { Box, Card, CardMedia, Typography, IconButton, Button, CardContent } from '@mui/material'
-import MusicNoteIcon from '@mui/icons-material/MusicNote'
+import VolumeUpIcon from '@mui/icons-material/VolumeUp'
 
 export default function TextbookCard() {
 	return (
@@ -15,7 +15,7 @@ export default function TextbookCard() {
 						</Typography>
 					</Box>
 					<IconButton aria-label="delete" color="primary">
-						<MusicNoteIcon />
+						<VolumeUpIcon />
 					</IconButton>
 				</Box>
 
