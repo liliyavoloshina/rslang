@@ -11,11 +11,11 @@ function Textbook() {
 				Textbook
 			</Typography>
 
-			<Box sx={{ display: 'flex', marginBottom: '20px' }}>
+			<Box sx={{ display: 'flex', marginBottom: '50px' }}>
 				<SectionDropdown />
 			</Box>
 
-			<Grid container spacing={2} sx={{ flex: '1 0 auto' }}>
+			<Grid container spacing={2} sx={{ flex: '1 0 auto', marginBottom: '50px' }}>
 				<Grid item xs={12} md={6}>
 					<TextbookCard />
 				</Grid>

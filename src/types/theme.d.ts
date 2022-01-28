@@ -4,12 +4,16 @@ declare module '@mui/material/styles' {
 	interface Theme extends MUITheme {
 		text: {
 			secondary: string
+			success: string
+			danger: string
 		}
 	}
 	// allow configuration using `createTheme`
 	interface ThemeOptions extends MUIThemeOptions {
 		text?: {
 			secondary?: string
+			success?: string
+			danger?: string
 		}
 	}
 	// eslint-disable-next-line import/prefer-default-export
