@@ -1,39 +1,59 @@
 import React from 'react'
 import { Box, Card, CardMedia, Typography, IconButton, Button, CardContent } from '@mui/material'
 import VolumeUpIcon from '@mui/icons-material/VolumeUp'
+import { Word } from '../../types/word'
+import styles from './Textbook.module.css'
 
-export default function TextbookCard() {
+const DOMAIN_URL = process.env.REACT_APP_DOMAIN as string
+
+export default function TextbookCard(prop: Word) {
+	const { image, word, transcription, wordTranslate, textMeaning, textMeaningTranslate, textExample, textExampleTranslate, audio } = prop
+	const imageUrl = `${DOMAIN_URL}/${image}`
+
+	const mainAudio = new Audio(`${DOMAIN_URL}/${audio}`)
+
+	const toggleMainAudio = () => {
+		mainAudio.play()
+	}
+
 	return (
 		<Card sx={{ display: 'flex', flexWrap: 'wrap', gap: '10px', minHeight: '300px' }}>
-			<CardMedia sx={{ flex: { xs: '1 1 250px', md: '1 1 150px' }, minHeight: '300px' }} image="https://picsum.photos/seed/picsum/500/500" />
+			<CardMedia sx={{ flex: { xs: '1 1 250px', md: '1 1 150px' }, minHeight: '300px' }} image={imageUrl} />
 			<CardContent sx={{ flex: '1', display: 'flex', flexDirection: 'column' }}>
 				<Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', minWidth: '300px' }}>
 					<Box>
-						<Typography variant="h6">arrive - [əráiv]</Typography>
+						<Typography variant="h6">
+							{word} - [{transcription}]
+						</Typography>
 						<Typography variant="h6" color={theme => theme.text.secondary}>
-							прибыть
+							{wordTranslate}
 						</Typography>
 					</Box>
-					<IconButton aria-label="delete" color="primary">
+					<IconButton aria-label="delete" color="primary" onClick={toggleMainAudio}>
 						<VolumeUpIcon />
 					</IconButton>
 				</Box>
 
 				<Box sx={{ display: 'flex', flexDirection: 'column', marginTop: '10px' }}>
+					<Typography
+						className={styles.textbookCardMarkdown}
+						sx={{ fontStyle: 'italic' }}
+						variant="subtitle2"
+						color={theme => theme.text.secondary}
+						dangerouslySetInnerHTML={{ __html: textMeaning }}
+					/>
 					<Typography sx={{ fontStyle: 'italic' }} variant="subtitle2" color={theme => theme.text.secondary}>
-						To arrive is to get somewhere.
-					</Typography>
-					<Typography sx={{ fontStyle: 'italic' }} variant="subtitle2" color={theme => theme.text.secondary}>
-						Приехать значит попасть куда-то
+						{textMeaningTranslate}
 					</Typography>
 				</Box>
 
 				<Box sx={{ display: 'flex', flexDirection: 'column', marginTop: '10px' }}>
+					{/* <Typography variant="subtitle2" color={theme => theme.text.secondary}>
+						{textExample}
+					</Typography> */}
+					<Typography className={styles.textbookCardMarkdown} variant="subtitle2" color={theme => theme.text.secondary} dangerouslySetInnerHTML={{ __html: textExample }} />
 					<Typography variant="subtitle2" color={theme => theme.text.secondary}>
-						They arrived at school at 7 a.m.
-					</Typography>
-					<Typography variant="subtitle2" color={theme => theme.text.secondary}>
-						Они прибыли в школу в 7 часов утра
+						{textExampleTranslate}
 					</Typography>
 				</Box>
 
