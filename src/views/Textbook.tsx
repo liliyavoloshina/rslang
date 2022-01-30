@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { Container, Typography, Box, Grid } from '@mui/material'
-import SectionDropdown from '../components/textbook/SectionDropdown'
+import TextbookGroupDropdown from '../components/textbook/TextbookGroupDropdown'
 import TextbookCard from '../components/textbook/TextbookCard'
 import TextbookPagination from '../components/textbook/TextbookPagination'
 import { fetchTextbookWords, selectTextbookWords } from '../features/textbook/textbookSlice'
@@ -21,7 +21,7 @@ function Textbook() {
 			</Typography>
 
 			<Box sx={{ display: 'flex', marginBottom: '50px' }}>
-				<SectionDropdown />
+				<TextbookGroupDropdown />
 			</Box>
 
 			<Grid container spacing={2} sx={{ flex: '1 0 auto', marginBottom: '50px' }}>

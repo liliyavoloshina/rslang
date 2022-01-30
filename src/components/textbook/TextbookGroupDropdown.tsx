@@ -25,6 +25,9 @@ export default function SectionDropdown() {
 				<MenuItem value={0}>Group 1</MenuItem>
 				<MenuItem value={1}>Group 2</MenuItem>
 				<MenuItem value={2}>Group 3</MenuItem>
+				<MenuItem value={3}>Group 4</MenuItem>
+				<MenuItem value={4}>Group 5</MenuItem>
+				<MenuItem value={5}>Group 6</MenuItem>
 			</Select>
 		</FormControl>
 	)
