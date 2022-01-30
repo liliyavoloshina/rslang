@@ -21,14 +21,21 @@ const initialState: TextbookState = {
 export const fetchTextbookWords = createAsyncThunk('textbook/fetchWords', async (arg, { getState }) => {
 	const state = getState() as RootState
 	const { page, group } = state.textbook
-	const response = await apiClient.getWords(page, group)
+	const response = await apiClient.getWords(group, page)
 	return response
 })
 
 export const textbookSlice = createSlice({
 	name: 'textbook',
 	initialState,
-	reducers: {},
+	reducers: {
+		changePage: (state, action) => {
+			state.page = action.payload
+		},
+		changeGroup: (state, action) => {
+			state.group = action.payload
+		},
+	},
 	extraReducers: builder => {
 		builder
 			.addCase(fetchTextbookWords.pending, state => {
@@ -41,7 +48,8 @@ export const textbookSlice = createSlice({
 	},
 })
 
-// export const { nextWord } = audiocallSlice.actions
+export const { changePage, changeGroup } = textbookSlice.actions
 export const selectTextbookWords = (state: RootState) => state.textbook.words
 export const selectTextbookStatus = (state: RootState) => state.textbook.status
+export const selectTextbookGroup = (state: RootState) => state.textbook.group
 export default textbookSlice.reducer

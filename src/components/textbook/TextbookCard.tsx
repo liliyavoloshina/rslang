@@ -7,13 +7,23 @@ import styles from './Textbook.module.css'
 const DOMAIN_URL = process.env.REACT_APP_DOMAIN as string
 
 export default function TextbookCard(prop: Word) {
-	const { image, word, transcription, wordTranslate, textMeaning, textMeaningTranslate, textExample, textExampleTranslate, audio } = prop
+	const { image, word, transcription, wordTranslate, textMeaning, textMeaningTranslate, textExample, textExampleTranslate, audio, audioExample, audioMeaning } = prop
 	const imageUrl = `${DOMAIN_URL}/${image}`
 
-	const mainAudio = new Audio(`${DOMAIN_URL}/${audio}`)
+	const audioUrls = [`${DOMAIN_URL}/${audio}`, `${DOMAIN_URL}/${audioMeaning}`, `${DOMAIN_URL}/${audioExample}`]
 
-	const toggleMainAudio = () => {
-		mainAudio.play()
+	const toggleAudio = () => {
+		let curUrl = 0
+		const audioToPlay = new Audio()
+		audioToPlay.src = audioUrls[curUrl]
+		audioToPlay.play()
+		audioToPlay.onended = () => {
+			if (curUrl < 2) {
+				curUrl += 1
+				audioToPlay.src = audioUrls[curUrl]
+				audioToPlay.play()
+			}
+		}
 	}
 
 	return (
@@ -29,7 +39,7 @@ export default function TextbookCard(prop: Word) {
 							{wordTranslate}
 						</Typography>
 					</Box>
-					<IconButton aria-label="delete" color="primary" onClick={toggleMainAudio}>
+					<IconButton aria-label="delete" color="primary" onClick={toggleAudio}>
 						<VolumeUpIcon />
 					</IconButton>
 				</Box>

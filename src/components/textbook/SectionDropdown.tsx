@@ -1,20 +1,30 @@
 import React from 'react'
-import { FormControl, InputLabel, Select, MenuItem, SelectChangeEvent } from '@mui/material'
+import FormControl from '@mui/material/FormControl'
+import InputLabel from '@mui/material/InputLabel'
+import Select from '@mui/material/Select'
+import MenuItem from '@mui/material/MenuItem'
+import { SelectChangeEvent } from '@mui/material'
+import { changeGroup, selectTextbookGroup, fetchTextbookWords } from '../../features/textbook/textbookSlice'
+
+import { useAppDispatch, useAppSelector } from '../../app/hooks'
 
 export default function SectionDropdown() {
-	const [section, setSection] = React.useState(0)
+	const dispatch = useAppDispatch()
+	const group = useAppSelector(selectTextbookGroup)
 
 	const handleChange = (event: SelectChangeEvent) => {
-		setSection(+event.target.value)
+		const newGroup = +event.target.value
+		dispatch(changeGroup(newGroup))
+		dispatch(fetchTextbookWords())
 	}
 
 	return (
 		<FormControl>
-			<InputLabel id="demo-simple-select-label">Section</InputLabel>
-			<Select labelId="demo-simple-select-label" id="demo-simple-select" value={`${section}`} label="Section" onChange={handleChange}>
-				<MenuItem value={0}>Section 1</MenuItem>
-				<MenuItem value={1}>Section 2</MenuItem>
-				<MenuItem value={2}>Section 3</MenuItem>
+			<InputLabel id="demo-simple-select-label">Word group</InputLabel>
+			<Select labelId="demo-simple-select-label" id="demo-simple-select" value={`${group}`} label="Word group" onChange={handleChange}>
+				<MenuItem value={0}>Group 1</MenuItem>
+				<MenuItem value={1}>Group 2</MenuItem>
+				<MenuItem value={2}>Group 3</MenuItem>
 			</Select>
 		</FormControl>
 	)

@@ -1,25 +1,18 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { Container, Typography, Box, Grid } from '@mui/material'
 import SectionDropdown from '../components/textbook/SectionDropdown'
 import TextbookCard from '../components/textbook/TextbookCard'
 import TextbookPagination from '../components/textbook/TextbookPagination'
-import { Word } from '../types/word'
-import apiClient from '../utils/api'
-import { fetchTextbookWords, selectTextbookWords, selectTextbookStatus } from '../features/textbook/textbookSlice'
+import { fetchTextbookWords, selectTextbookWords } from '../features/textbook/textbookSlice'
 import { useAppDispatch, useAppSelector } from '../app/hooks'
 
 function Textbook() {
 	const dispatch = useAppDispatch()
 	const words = useAppSelector(selectTextbookWords)
-	const status = useAppSelector(selectTextbookStatus)
 
 	useEffect(() => {
 		dispatch(fetchTextbookWords())
 	}, [])
-
-	if (status === 'loading') {
-		return <div>Loading...</div>
-	}
 
 	return (
 		<Container maxWidth="lg" sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
