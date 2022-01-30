@@ -34,7 +34,7 @@ function Textbook() {
 			<Grid container spacing={2} sx={{ flex: '1 0 auto', marginBottom: '50px' }}>
 				{words.map(word => {
 					return (
-						<Grid key={word.id} item xs={12} md={6}>
+						<Grid key={word.id} item xs={12}>
 							<TextbookCard {...word} />
 						</Grid>
 					)

@@ -18,9 +18,9 @@ export default function TextbookCard(prop: Word) {
 
 	return (
 		<Card sx={{ display: 'flex', flexWrap: 'wrap', gap: '10px', minHeight: '300px' }}>
-			<CardMedia sx={{ flex: { xs: '1 1 250px', md: '1 1 150px' }, minHeight: '300px' }} image={imageUrl} />
-			<CardContent sx={{ flex: '1', display: 'flex', flexDirection: 'column' }}>
-				<Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', minWidth: '300px' }}>
+			<CardMedia sx={{ flex: '1 1 150px', minHeight: '300px' }} image={imageUrl} />
+			<CardContent sx={{ flex: '1 1 500px', display: 'flex', flexDirection: 'column' }}>
+				<Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
 					<Box>
 						<Typography variant="h6">
 							{word} - [{transcription}]
