@@ -4,9 +4,32 @@ import InputLabel from '@mui/material/InputLabel'
 import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
 import { SelectChangeEvent } from '@mui/material'
+// import { createStyles } from '@mui/material/styles'
 import { changeGroup, selectTextbookGroup, fetchTextbookWords } from '../../features/textbook/textbookSlice'
 
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
+
+// interface StyleProps {
+// 	color: string
+// }
+
+// const useStyles = ({ color }: StyleProps) =>
+// 	createStyles({
+// 		select: {
+// 			'&:before': {
+// 				borderColor: color,
+// 			},
+// 			'&:after': {
+// 				borderColor: color,
+// 			},
+// 			'&:not(.Mui-disabled):hover::before': {
+// 				borderColor: color,
+// 			},
+// 		},
+// 		// root: {
+// 		// 	color,
+// 		// },
+// 	})
 
 export default function SectionDropdown() {
 	const dispatch = useAppDispatch()

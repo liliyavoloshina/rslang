@@ -1,14 +1,18 @@
 import React, { useEffect } from 'react'
 import { Container, Typography, Box, Grid } from '@mui/material'
+import { pink, orange, lightGreen, lightBlue, cyan, deepPurple } from '@mui/material/colors'
 import TextbookGroupDropdown from '../components/textbook/TextbookGroupDropdown'
 import TextbookCard from '../components/textbook/TextbookCard'
 import TextbookPagination from '../components/textbook/TextbookPagination'
-import { fetchTextbookWords, selectTextbookWords } from '../features/textbook/textbookSlice'
+import { fetchTextbookWords, selectTextbookWords, selectTextbookGroup } from '../features/textbook/textbookSlice'
 import { useAppDispatch, useAppSelector } from '../app/hooks'
 
 function Textbook() {
 	const dispatch = useAppDispatch()
+	const groupColors = [pink[500], orange[500], lightGreen[500], lightBlue[500], cyan[500], deepPurple[500]]
 	const words = useAppSelector(selectTextbookWords)
+	const group = useAppSelector(selectTextbookGroup)
+	const activeColor = groupColors[group]
 
 	useEffect(() => {
 		dispatch(fetchTextbookWords())
@@ -28,7 +32,7 @@ function Textbook() {
 				{words.map(word => {
 					return (
 						<Grid key={word.id} item xs={12}>
-							<TextbookCard {...word} />
+							<TextbookCard activeColor={activeColor} passedWord={word} />
 						</Grid>
 					)
 				})}

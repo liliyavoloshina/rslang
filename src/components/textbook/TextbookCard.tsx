@@ -1,13 +1,39 @@
 import React from 'react'
-import { Box, Card, CardMedia, Typography, IconButton, Button, CardContent } from '@mui/material'
+import Box from '@mui/material/Box'
+import Card from '@mui/material/Card'
+import CardMedia from '@mui/material/CardMedia'
+import Typography from '@mui/material/Typography'
+import IconButton from '@mui/material/IconButton'
+import CardContent from '@mui/material/CardContent'
+import Stack from '@mui/material/Stack'
+import { styled } from '@mui/material/styles'
+import Button, { ButtonProps } from '@mui/material/Button'
 import VolumeUpIcon from '@mui/icons-material/VolumeUp'
 import { Word } from '../../types/word'
 import styles from './Textbook.module.css'
 
 const DOMAIN_URL = process.env.REACT_APP_DOMAIN as string
 
-export default function TextbookCard(prop: Word) {
-	const { image, word, transcription, wordTranslate, textMeaning, textMeaningTranslate, textExample, textExampleTranslate, audio, audioExample, audioMeaning } = prop
+interface TextbookCardProps {
+	activeColor: string
+	passedWord: Word
+}
+
+interface CustomButtonProps extends ButtonProps {
+	activeColor: string
+}
+
+const ColorButton = styled(Button)<CustomButtonProps>(({ activeColor }) => ({
+	color: 'white',
+	backgroundColor: activeColor,
+	'&:hover': {
+		backgroundColor: activeColor,
+		opacity: '0.7',
+	},
+}))
+
+export default function TextbookCard({ activeColor, passedWord }: TextbookCardProps) {
+	const { image, word, transcription, wordTranslate, textMeaning, textMeaningTranslate, textExample, textExampleTranslate, audio, audioExample, audioMeaning } = passedWord
 	const imageUrl = `${DOMAIN_URL}/${image}`
 
 	const audioUrls = [`${DOMAIN_URL}/${audio}`, `${DOMAIN_URL}/${audioMeaning}`, `${DOMAIN_URL}/${audioExample}`]
@@ -39,7 +65,7 @@ export default function TextbookCard(prop: Word) {
 							{wordTranslate}
 						</Typography>
 					</Box>
-					<IconButton aria-label="delete" color="primary" onClick={toggleAudio}>
+					<IconButton aria-label="delete" sx={{ color: activeColor }} onClick={toggleAudio}>
 						<VolumeUpIcon />
 					</IconButton>
 				</Box>
@@ -58,9 +84,6 @@ export default function TextbookCard(prop: Word) {
 				</Box>
 
 				<Box sx={{ display: 'flex', flexDirection: 'column', marginTop: '10px' }}>
-					{/* <Typography variant="subtitle2" color={theme => theme.text.secondary}>
-						{textExample}
-					</Typography> */}
 					<Typography className={styles.textbookCardMarkdown} variant="subtitle2" color={theme => theme.text.secondary} dangerouslySetInnerHTML={{ __html: textExample }} />
 					<Typography variant="subtitle2" color={theme => theme.text.secondary}>
 						{textExampleTranslate}
@@ -76,14 +99,23 @@ export default function TextbookCard(prop: Word) {
 					</Typography>
 				</Box>
 
-				<Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: 'auto' }}>
-					<Button size="small" variant="contained">
+				<Stack spacing={2} direction="row" justifyContent="space-between">
+					<ColorButton variant="contained" size="small" activeColor={activeColor}>
+						To difficult
+					</ColorButton>
+					<ColorButton variant="contained" size="small" activeColor={activeColor}>
+						To difficult
+					</ColorButton>
+				</Stack>
+
+				{/* <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: 'auto' }}>
+					<Button size="small" variant="outlined" sx={{ backgroundColor: activeColor }}>
 						To difficult
 					</Button>
-					<Button size="small" variant="contained">
+					<Button size="small" variant="outlined" sx={{ backgroundColor: activeColor }}>
 						To learned
 					</Button>
-				</Box>
+				</Box>  */}
 			</CardContent>
 		</Card>
 	)
