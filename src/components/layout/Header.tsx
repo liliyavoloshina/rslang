@@ -142,7 +142,7 @@ function Header() {
 						>
 							{games.map((game, idx) => (
 								<MenuItem key={game.name} onClick={handleCloseNavMenu}>
-									<Link underline="none" key={idx} component={RouterLink} to={game.path}>
+									<Link underline="none" key={idx} component={RouterLink} to={game.path} state={{ fromTextbook: false }}>
 										<Typography textAlign="center">{game.name}</Typography>
 									</Link>
 								</MenuItem>

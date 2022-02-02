@@ -23,7 +23,7 @@ interface CustomButtonProps extends ButtonProps {
 	activeColor: string
 }
 
-const ColorButton = styled(Button)<CustomButtonProps>(({ activeColor }) => ({
+const ColorButton = styled(Button, { shouldForwardProp: prop => prop !== 'activeColor' })<CustomButtonProps>(({ activeColor }) => ({
 	color: 'white',
 	backgroundColor: activeColor,
 	'&:hover': {
@@ -107,15 +107,6 @@ export default function TextbookCard({ activeColor, passedWord }: TextbookCardPr
 						To difficult
 					</ColorButton>
 				</Stack>
-
-				{/* <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: 'auto' }}>
-					<Button size="small" variant="outlined" sx={{ backgroundColor: activeColor }}>
-						To difficult
-					</Button>
-					<Button size="small" variant="outlined" sx={{ backgroundColor: activeColor }}>
-						To learned
-					</Button>
-				</Box>  */}
 			</CardContent>
 		</Card>
 	)

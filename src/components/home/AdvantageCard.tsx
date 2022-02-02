@@ -1,6 +1,9 @@
 import * as React from 'react'
 import { CardContent, Typography, Card } from '@mui/material'
-import { SportsEsports, MenuBook, School, AutoGraph } from '@mui/icons-material'
+import AutoGraph from '@mui/icons-material/AutoGraph'
+import SportsEsports from '@mui/icons-material/SportsEsports'
+import MenuBook from '@mui/icons-material/MenuBook'
+import School from '@mui/icons-material/School'
 
 interface AdvantageCardProps {
 	title: string

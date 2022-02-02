@@ -43,8 +43,8 @@ export default function SectionDropdown() {
 
 	return (
 		<FormControl>
-			<InputLabel id="demo-simple-select-label">Word group</InputLabel>
-			<Select labelId="demo-simple-select-label" id="demo-simple-select" value={`${group}`} label="Word group" onChange={handleChange}>
+			<InputLabel>Word group</InputLabel>
+			<Select value={`${group}`} label="Word group" onChange={handleChange}>
 				<MenuItem value={0}>Group 1</MenuItem>
 				<MenuItem value={1}>Group 2</MenuItem>
 				<MenuItem value={2}>Group 3</MenuItem>

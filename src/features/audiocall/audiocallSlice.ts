@@ -13,6 +13,7 @@ export interface AudiocallState {
 	answers: string[]
 	currentIdx: number
 	currentWord: null | Word
+	isLevelSelection: boolean
 	isFinished: boolean
 	status: 'idle' | 'loading' | 'failed' | 'success'
 }
@@ -22,12 +23,13 @@ const initialState: AudiocallState = {
 	answers: [],
 	currentIdx: 0,
 	currentWord: null,
+	isLevelSelection: false,
 	isFinished: false,
 	status: 'idle',
 }
 
-export const fetchAudiocallWords = createAsyncThunk('audiocall/fetchWords', async ({ page, group }: { page: number; group: number }) => {
-	const response = await apiClient.getWords(page, group)
+export const fetchAudiocallWords = createAsyncThunk('audiocall/fetchWords', async ({ group, page }: { group: number; page: number }) => {
+	const response = await apiClient.getWords(group, page)
 	return response
 })
 
@@ -66,6 +68,15 @@ export const audiocallSlice = createSlice({
 			const newAudio = new Audio(`${DOMAIN_URL}/${state.currentWord!.audio}`)
 			newAudio.play()
 		},
+		toggleLevelSelection: (state, action) => {
+			state.isLevelSelection = action.payload
+		},
+		toggleAudiocallAudio: state => {
+			console.log(state.currentWord, 'state.currentWord')
+
+			const newAudio = new Audio(`${DOMAIN_URL}/${state.currentWord!.audio}`)
+			newAudio.play()
+		},
 	},
 	extraReducers: builder => {
 		builder
@@ -87,11 +98,12 @@ export const audiocallSlice = createSlice({
 	},
 })
 
-export const { nextWord } = audiocallSlice.actions
+export const { nextWord, toggleAudiocallAudio, toggleLevelSelection } = audiocallSlice.actions
 export const selectAudiocallWords = (state: RootState) => state.audiocall.words
 export const selectAudiocallAnswers = (state: RootState) => state.audiocall.answers
 export const selectAudiocallCurrentIdx = (state: RootState) => state.audiocall.currentIdx
 export const selectAudiocallCurrentWord = (state: RootState) => state.audiocall.currentWord
 export const selectAudiocallStatus = (state: RootState) => state.audiocall.status
+export const selectAudiocallIsLevelSelection = (state: RootState) => state.audiocall.isLevelSelection
 export const selectAudiocallIsFinished = (state: RootState) => state.audiocall.isFinished
 export default audiocallSlice.reducer

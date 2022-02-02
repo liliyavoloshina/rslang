@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react'
-import { Container, Typography, Box, Button, Grid, IconButton } from '@mui/material'
+import Container from '@mui/material/Container'
+import IconButton from '@mui/material/IconButton'
+import Grid from '@mui/material/Grid'
+import Button from '@mui/material/Button'
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
 import { VolumeUp } from '@mui/icons-material'
+import { useLocation } from 'react-router-dom'
 import { Word } from '../types/word'
-import apiClient from '../utils/api'
-import { MAX_AUDIOCALL_ANSWERS_AMOUNT } from '../utils/constants'
-import { shuffleArray } from '../utils/helpers'
 import { useAppDispatch, useAppSelector } from '../app/hooks'
 import {
 	fetchAudiocallWords,
@@ -15,29 +18,50 @@ import {
 	selectAudiocallCurrentWord,
 	selectAudiocallIsFinished,
 	nextWord,
+	selectAudiocallIsLevelSelection,
+	toggleLevelSelection,
+	toggleAudiocallAudio,
 } from '../features/audiocall/audiocallSlice'
 import Popup from '../components/layout/Popup'
+import { selectTextbookGroup, selectTextbookPage } from '../features/textbook/textbookSlice'
+import LevelSelection from '../components/game/LevelSelection'
+import { GameName } from '../types/game'
 
 const DOMAIN_URL = process.env.REACT_APP_DOMAIN as string
 
+interface LocationState {
+	fromTextbook: boolean
+}
+
 function Audiocall() {
+	const location = useLocation()
 	const dispatch = useAppDispatch()
 	const status = useAppSelector(selectAudiocallStatus)
 	const words = useAppSelector(selectAudiocallWords)
-	const currentIdx = useAppSelector(selectAudiocallCurrentIdx)
+	const currentPage = useAppSelector(selectTextbookPage)
+	const currentGroup = useAppSelector(selectTextbookGroup)
 	const currentWord = useAppSelector(selectAudiocallCurrentWord)
 	const answers = useAppSelector(selectAudiocallAnswers)
 	const isFinished = useAppSelector(selectAudiocallIsFinished)
-
-	const isFromMainPage = false
+	const isLevelSelection = useAppSelector(selectAudiocallIsLevelSelection)
 
 	const [answeredWord, setAnsweredWord] = useState<null | string>(null)
 	const [incorrectWords, setIncorrectWords] = useState<Word[]>([])
 	const [correctWords, setCorrectWords] = useState<Word[]>([])
 
+	const isFromTextbook = !!(location.state as LocationState)?.fromTextbook
+
 	useEffect(() => {
-		dispatch(fetchAudiocallWords({ page: 1, group: 2 }))
+		if (isFromTextbook) {
+			dispatch(fetchAudiocallWords({ group: currentGroup, page: currentPage }))
+		} else {
+			dispatch(toggleLevelSelection(true))
+		}
 	}, [])
+
+	if (isLevelSelection) {
+		return <LevelSelection gameName={GameName.Audiocall} />
+	}
 
 	if (status !== 'success') {
 		return <div>loading...</div>
@@ -63,8 +87,6 @@ function Audiocall() {
 
 	const showNextWord = () => {
 		dispatch(nextWord())
-
-		// toggleAudio()
 
 		if (!answeredWord) {
 			checkAnswer('skipped')
