@@ -1,8 +1,21 @@
 import * as React from 'react'
 import { Link as RouterLink } from 'react-router-dom'
 import { Menu as MenuIcon } from '@mui/icons-material'
-import { Link, MenuItem, Tooltip, Button, Container, Menu, Typography, IconButton, Toolbar, Box, AppBar } from '@mui/material'
+import Link from '@mui/material/Link'
+import Stack from '@mui/material/Stack'
+import AppBar from '@mui/material/AppBar'
+import Box from '@mui/material/Box'
+import Toolbar from '@mui/material/Toolbar'
+import IconButton from '@mui/material/IconButton'
+import Typography from '@mui/material/Typography'
+import Menu from '@mui/material/Menu'
+import Container from '@mui/material/Container'
+import Button from '@mui/material/Button'
+import Tooltip from '@mui/material/Tooltip'
+import MenuItem from '@mui/material/MenuItem'
 import PersonIcon from '@mui/icons-material/Person'
+import { useAppDispatch, useAppSelector } from '../../app/hooks'
+import { selectAuthUserInfo, logOut } from '../../features/auth/authSlice'
 
 const pages = [
 	{
@@ -30,9 +43,20 @@ const games = [
 	},
 ]
 
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout']
+const settings = [
+	{
+		name: 'Sign Up',
+		path: 'signup',
+	},
+	{
+		name: 'Login',
+		path: 'login',
+	},
+]
 
 function Header() {
+	const dispatch = useAppDispatch()
+	const userInfo = useAppSelector(selectAuthUserInfo)
 	const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null)
 	const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null)
 	const [anchorElGames, setAnchorElGames] = React.useState<null | HTMLElement>(null)
@@ -59,6 +83,11 @@ function Header() {
 
 	const handleCloseGamesMenu = () => {
 		setAnchorElGames(null)
+	}
+
+	const handleLogOut = () => {
+		dispatch(logOut())
+		handleCloseUserMenu()
 	}
 
 	return (
@@ -109,9 +138,6 @@ function Header() {
 					</Box>
 
 					{/* desktop  */}
-					<Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
-						LOGO
-					</Typography>
 					<Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
 						{pages.map((page, idx) => (
 							<Button component={RouterLink} to={page.path} key={idx} onClick={handleCloseNavMenu} sx={{ my: 2, color: 'white', display: 'block' }}>
@@ -150,7 +176,8 @@ function Header() {
 						</Menu>
 					</Box>
 
-					<Box sx={{ flexGrow: 0 }}>
+					<Stack flexDirection="row" alignItems="center" sx={{ flexGrow: 0 }}>
+						{userInfo.token && <Typography variant="h6">Hello, {userInfo.name}!</Typography>}
 						<Tooltip title="Open Account">
 							<IconButton onClick={handleOpenUserMenu} sx={{ color: 'white' }}>
 								<PersonIcon />
@@ -172,13 +199,19 @@ function Header() {
 							open={Boolean(anchorElUser)}
 							onClose={handleCloseUserMenu}
 						>
-							{settings.map(setting => (
-								<MenuItem key={setting} onClick={handleCloseUserMenu}>
-									<Typography textAlign="center">{setting}</Typography>
-								</MenuItem>
-							))}
+							{userInfo.token ? (
+								<Button onClick={handleLogOut}>Sign Out</Button>
+							) : (
+								settings.map((setting, idx) => (
+									<MenuItem key={setting.name} onClick={handleCloseUserMenu}>
+										<Link underline="none" key={idx} component={RouterLink} to={setting.path}>
+											<Typography textAlign="center">{setting.name}</Typography>
+										</Link>
+									</MenuItem>
+								))
+							)}
 						</Menu>
-					</Box>
+					</Stack>
 				</Toolbar>
 			</Container>
 		</AppBar>

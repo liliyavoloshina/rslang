@@ -6,8 +6,14 @@ enum ApiMethod {
 	Patch = 'PATCH',
 }
 
+interface ApiHeaders {
+	[key: string]: string
+	'Content-Type': string
+	Authorization: string
+}
+
 interface ApiConfig {
-	headers: { 'Content-Type': string }
+	headers: ApiHeaders
 	method: ApiMethod
 	body?: string
 }
@@ -15,4 +21,4 @@ interface ApiConfig {
 type ApiBody = any
 
 export { ApiMethod }
-export type { ApiConfig, ApiBody }
+export type { ApiConfig, ApiBody, ApiHeaders }

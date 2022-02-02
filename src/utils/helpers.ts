@@ -5,5 +5,16 @@ const shuffleArray = <T>(array: T[]) => {
 	}
 }
 
-// eslint-disable-next-line import/prefer-default-export
-export { shuffleArray }
+const setToken = (val: string) => {
+	localStorage.setItem('token', val)
+}
+
+const getToken = () => {
+	return localStorage.getItem('token')
+}
+
+const removeToken = () => {
+	localStorage.removeItem('token')
+}
+
+export { shuffleArray, getToken, removeToken, setToken }
