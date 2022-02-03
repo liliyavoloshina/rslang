@@ -29,7 +29,7 @@ const initialState: AudiocallState = {
 }
 
 export const fetchAudiocallWords = createAsyncThunk('audiocall/fetchWords', async ({ group, page }: { group: number; page: number }) => {
-	const response = await apiClient.getWords(group, page)
+	const response = await apiClient.getAllWords(group, page)
 	return response
 })
 

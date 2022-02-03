@@ -1,3 +1,5 @@
+import { Word } from './word'
+
 enum ApiMethod {
 	Get = 'GET',
 	Post = 'POST',
@@ -18,7 +20,16 @@ interface ApiConfig {
 	body?: string
 }
 
+interface GetUserWordsResponse {
+	paginatedResults: Word[]
+	totalCount: [
+		{
+			count: number
+		}
+	]
+}
+
 type ApiBody = any
 
 export { ApiMethod }
-export type { ApiConfig, ApiBody, ApiHeaders }
+export type { ApiConfig, ApiBody, ApiHeaders, GetUserWordsResponse }

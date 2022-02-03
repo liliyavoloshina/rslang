@@ -24,6 +24,8 @@
 		"no-param-reassign": "off",
 		"no-return-assign": "off",
 		// for mui conditional button's color
-		"no-nested-ternary": "off"
+		"no-nested-ternary": "off",
+		// when change response from aggregatted words
+		"no-underscore-dangle": "off"
 	}
 }

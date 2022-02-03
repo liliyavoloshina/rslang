@@ -4,41 +4,25 @@ import InputLabel from '@mui/material/InputLabel'
 import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
 import { SelectChangeEvent } from '@mui/material'
-// import { createStyles } from '@mui/material/styles'
-import { changeGroup, selectTextbookGroup, fetchTextbookWords } from '../../features/textbook/textbookSlice'
-
+import { changeGroup, selectTextbookGroup, fetchTextbookWords, fetchDifficultWords } from '../../features/textbook/textbookSlice'
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
-
-// interface StyleProps {
-// 	color: string
-// }
-
-// const useStyles = ({ color }: StyleProps) =>
-// 	createStyles({
-// 		select: {
-// 			'&:before': {
-// 				borderColor: color,
-// 			},
-// 			'&:after': {
-// 				borderColor: color,
-// 			},
-// 			'&:not(.Mui-disabled):hover::before': {
-// 				borderColor: color,
-// 			},
-// 		},
-// 		// root: {
-// 		// 	color,
-// 		// },
-// 	})
+import { selectAuthIsLoggedIn } from '../../features/auth/authSlice'
 
 export default function SectionDropdown() {
 	const dispatch = useAppDispatch()
 	const group = useAppSelector(selectTextbookGroup)
+	const isLoggedIn = useAppSelector(selectAuthIsLoggedIn)
 
 	const handleChange = (event: SelectChangeEvent) => {
-		const newGroup = +event.target.value
-		dispatch(changeGroup(newGroup))
-		dispatch(fetchTextbookWords())
+		const selectedGroup = +event.target.value
+
+		if (selectedGroup === 6) {
+			dispatch(changeGroup(selectedGroup))
+			dispatch(fetchDifficultWords())
+		} else {
+			dispatch(changeGroup(selectedGroup))
+			dispatch(fetchTextbookWords())
+		}
 	}
 
 	return (
@@ -51,6 +35,7 @@ export default function SectionDropdown() {
 				<MenuItem value={3}>Group 4</MenuItem>
 				<MenuItem value={4}>Group 5</MenuItem>
 				<MenuItem value={5}>Group 6</MenuItem>
+				{isLoggedIn && <MenuItem value={6}>Difficult</MenuItem>}
 			</Select>
 		</FormControl>
 	)

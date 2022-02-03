@@ -2,19 +2,24 @@ import React, { useEffect } from 'react'
 import { Container, Typography, Box, Grid } from '@mui/material'
 import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
+import CircularProgress from '@mui/material/CircularProgress'
+import Skeleton from '@mui/material/Skeleton'
 import { pink, orange, lightGreen, lightBlue, cyan, deepPurple } from '@mui/material/colors'
 import { Link as RouterLink } from 'react-router-dom'
 import TextbookGroupDropdown from '../components/textbook/TextbookGroupDropdown'
 import TextbookCard from '../components/textbook/TextbookCard'
 import TextbookPagination from '../components/textbook/TextbookPagination'
-import { fetchTextbookWords, selectTextbookWords, selectTextbookGroup } from '../features/textbook/textbookSlice'
+import { fetchTextbookWords, selectTextbookWords, selectTextbookGroup, selectTextbookStatus } from '../features/textbook/textbookSlice'
 import { useAppDispatch, useAppSelector } from '../app/hooks'
+import { selectAuthIsLoggedIn } from '../features/auth/authSlice'
 
 function Textbook() {
 	const dispatch = useAppDispatch()
-	const groupColors = [pink[500], orange[500], lightGreen[500], lightBlue[500], cyan[500], deepPurple[500]]
 	const words = useAppSelector(selectTextbookWords)
 	const group = useAppSelector(selectTextbookGroup)
+	const isLoggedIn = useAppSelector(selectAuthIsLoggedIn)
+	const status = useAppSelector(selectTextbookStatus)
+	const groupColors = [pink[500], orange[500], lightGreen[500], lightBlue[500], cyan[500], deepPurple[500]]
 	const activeColor = groupColors[group]
 
 	useEffect(() => {
@@ -41,13 +46,21 @@ function Textbook() {
 			</Stack>
 
 			<Grid container spacing={2} sx={{ flex: '1 0 auto', marginBottom: '50px' }}>
-				{words.map(word => {
-					return (
-						<Grid key={word.id} item xs={12}>
-							<TextbookCard activeColor={activeColor} passedWord={word} />
-						</Grid>
-					)
-				})}
+				{status === 'loading'
+					? [...Array(20)].map((word, idx) => {
+							return (
+								<Grid key={idx} item xs={12}>
+									<Skeleton variant="rectangular" height={300} />
+								</Grid>
+							)
+					  })
+					: words.map(word => {
+							return (
+								<Grid key={word.id} item xs={12}>
+									<TextbookCard activeColor={activeColor} passedWord={word} isLoggedIn={isLoggedIn} />
+								</Grid>
+							)
+					  })}
 			</Grid>
 
 			<Box sx={{ flex: '0 0 auto' }}>

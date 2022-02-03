@@ -21,8 +21,37 @@ const initialState: TextbookState = {
 export const fetchTextbookWords = createAsyncThunk('textbook/fetchWords', async (arg, { getState }) => {
 	const state = getState() as RootState
 	const { page, group } = state.textbook
-	const response = await apiClient.getWords(group, page)
-	return response
+	const { isLoggedIn, userInfo } = state.auth
+
+	let words
+
+	if (isLoggedIn) {
+		const response = await apiClient.getUserWords(userInfo.userId as string, group, page)
+
+		words = response[0].paginatedResults.map(word => {
+			// eslint-disable-next-line no-underscore-dangle
+			const wordId = word._id!
+			word.id = wordId
+			return word
+		})
+	} else {
+		words = await apiClient.getAllWords(group, page)
+	}
+
+	return words
+})
+
+export const fetchDifficultWords = createAsyncThunk('textbook/fetchDifficultWords', async (arg, { getState }) => {
+	const state = getState() as RootState
+	// const { page, group } = state.textbook
+	const { userInfo } = state.auth
+	const response = await apiClient.getDifficultWords(userInfo.userId as string)
+	return response[0].paginatedResults.map(word => {
+		// eslint-disable-next-line no-underscore-dangle
+		const wordId = word._id!
+		word.id = wordId
+		return word
+	})
 })
 
 export const textbookSlice = createSlice({
@@ -42,6 +71,13 @@ export const textbookSlice = createSlice({
 				state.status = 'loading'
 			})
 			.addCase(fetchTextbookWords.fulfilled, (state, action) => {
+				state.status = 'success'
+				state.words = action.payload
+			})
+			.addCase(fetchDifficultWords.pending, state => {
+				state.status = 'loading'
+			})
+			.addCase(fetchDifficultWords.fulfilled, (state, action) => {
 				state.status = 'success'
 				state.words = action.payload
 			})

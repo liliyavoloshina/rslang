@@ -1,6 +1,6 @@
-import { ApiMethod, ApiBody, ApiConfig, ApiHeaders } from '../types/api'
+import { ApiMethod, ApiBody, ApiConfig, ApiHeaders, GetUserWordsResponse } from '../types/api'
 import { SignInData, SignInResponse } from '../types/auth'
-import { Word } from '../types/word'
+import { UserWord, Word } from '../types/word'
 import { localStorageGetUser } from './localStorage'
 
 const DOMAIN_URL = process.env.REACT_APP_DOMAIN as string
@@ -31,9 +31,21 @@ const apiClient = async <T>(endpoint: string, method: ApiMethod, body?: ApiBody)
 	return data
 }
 
-apiClient.getWords = (group: number, page: number) => {
+apiClient.getAllWords = (group: number, page: number) => {
 	return apiClient<Word[]>(`${DOMAIN_URL}/words?group=${group}&page=${page}`, ApiMethod.Get)
 }
+
+apiClient.getUserWords = (id: string, group: number, page: number) => {
+	return apiClient<GetUserWordsResponse[]>(`${DOMAIN_URL}/users/${id}/aggregatedWords?group=${group}&page=${page}&wordsPerPage=20`, ApiMethod.Get)
+}
+
+apiClient.getDifficultWords = (id: string) => {
+	return apiClient<GetUserWordsResponse[]>(`${DOMAIN_URL}/users/${id}/aggregatedWords?filter={"$and":[{"userWord.difficulty":"difficult"}]}`, ApiMethod.Get)
+}
+
+// apiClient.addWordToDifficult = (id: string) => {
+// 	return apiClient<Word[]>(`${DOMAIN_URL}/users/${id}/words`, ApiMethod.Get)
+// }
 
 apiClient.signIn = (signinData: SignInData) => {
 	return apiClient<SignInResponse>(`${DOMAIN_URL}/signin`, ApiMethod.Post, signinData)

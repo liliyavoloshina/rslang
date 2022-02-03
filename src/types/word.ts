@@ -1,5 +1,6 @@
 interface Word {
 	id: string
+	_id?: string
 	group: number
 	page: number
 	word: string
@@ -13,7 +14,23 @@ interface Word {
 	textExampleTranslate: string
 	textMeaningTranslate: string
 	wordTranslate: string
+	userWord?: UserWord
 }
 
-// eslint-disable-next-line import/prefer-default-export
-export type { Word }
+interface UserWordOptional {
+	correctAnswers: number
+	incorrectAnswers: number
+}
+
+interface UserWord {
+	wordId?: string
+	difficulty?: string
+	optional?: Record<string, unknown> | UserWordOptional
+}
+
+enum WordDifficulty {
+	Difficult = 'difficult',
+}
+
+export type { Word, UserWord }
+export { WordDifficulty }

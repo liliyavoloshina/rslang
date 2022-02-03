@@ -9,14 +9,17 @@ import Stack from '@mui/material/Stack'
 import { styled } from '@mui/material/styles'
 import Button, { ButtonProps } from '@mui/material/Button'
 import VolumeUpIcon from '@mui/icons-material/VolumeUp'
-import { Word } from '../../types/word'
+import { Word, WordDifficulty } from '../../types/word'
 import styles from './Textbook.module.css'
+import { useAppSelector } from '../../app/hooks'
+import { selectTextbookGroup } from '../../features/textbook/textbookSlice'
 
 const DOMAIN_URL = process.env.REACT_APP_DOMAIN as string
 
 interface TextbookCardProps {
 	activeColor: string
 	passedWord: Word
+	isLoggedIn: boolean
 }
 
 interface CustomButtonProps extends ButtonProps {
@@ -32,8 +35,10 @@ const ColorButton = styled(Button, { shouldForwardProp: prop => prop !== 'active
 	},
 }))
 
-export default function TextbookCard({ activeColor, passedWord }: TextbookCardProps) {
-	const { image, word, transcription, wordTranslate, textMeaning, textMeaningTranslate, textExample, textExampleTranslate, audio, audioExample, audioMeaning } = passedWord
+export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: TextbookCardProps) {
+	const group = useAppSelector(selectTextbookGroup)
+	const { image, word, transcription, wordTranslate, textMeaning, textMeaningTranslate, textExample, textExampleTranslate, audio, audioExample, audioMeaning, userWord } =
+		passedWord
 	const imageUrl = `${DOMAIN_URL}/${image}`
 
 	const audioUrls = [`${DOMAIN_URL}/${audio}`, `${DOMAIN_URL}/${audioMeaning}`, `${DOMAIN_URL}/${audioExample}`]
@@ -50,6 +55,14 @@ export default function TextbookCard({ activeColor, passedWord }: TextbookCardPr
 				audioToPlay.play()
 			}
 		}
+	}
+
+	const handleAddToDifficult = () => {
+		console.log('add diff')
+	}
+
+	const handleRemoveFromDifficult = () => {
+		console.log('removing diff')
 	}
 
 	return (
@@ -70,7 +83,7 @@ export default function TextbookCard({ activeColor, passedWord }: TextbookCardPr
 					</IconButton>
 				</Box>
 
-				<Box sx={{ display: 'flex', flexDirection: 'column', marginTop: '10px' }}>
+				<Stack sx={{ marginTop: '10px' }}>
 					<Typography
 						className={styles.textbookCardMarkdown}
 						sx={{ fontStyle: 'italic' }}
@@ -81,7 +94,7 @@ export default function TextbookCard({ activeColor, passedWord }: TextbookCardPr
 					<Typography sx={{ fontStyle: 'italic' }} variant="subtitle2" color={theme => theme.text.secondary}>
 						{textMeaningTranslate}
 					</Typography>
-				</Box>
+				</Stack>
 
 				<Box sx={{ display: 'flex', flexDirection: 'column', marginTop: '10px' }}>
 					<Typography className={styles.textbookCardMarkdown} variant="subtitle2" color={theme => theme.text.secondary} dangerouslySetInnerHTML={{ __html: textExample }} />
@@ -90,21 +103,30 @@ export default function TextbookCard({ activeColor, passedWord }: TextbookCardPr
 					</Typography>
 				</Box>
 
-				<Box sx={{ margin: '10px 0' }}>
+				<Box sx={{ margin: '10px 0', display: isLoggedIn ? 'block' : 'none' }}>
 					<Typography variant="subtitle2" color={theme => theme.text.success}>
-						Правильных ответов: 12
+						Правильных ответов: {userWord?.optional?.correctAnswers ? userWord?.optional?.correctAnswers : 0}
 					</Typography>
 					<Typography variant="subtitle2" color={theme => theme.text.danger}>
-						Неправильных ответов: 12
+						Неправильных ответов: {userWord?.optional?.incorrectAnswers ? userWord?.optional?.incorrectAnswers : 0}
 					</Typography>
 				</Box>
 
-				<Stack spacing={2} direction="row" justifyContent="space-between">
-					<ColorButton variant="contained" size="small" activeColor={activeColor}>
+				<Stack direction="row" justifyContent="space-between" sx={{ display: isLoggedIn ? 'flex' : 'none' }}>
+					<ColorButton
+						onClick={handleAddToDifficult}
+						variant="contained"
+						size="small"
+						activeColor={activeColor}
+						sx={{ display: userWord?.difficulty === WordDifficulty.Difficult ? 'none' : 'block' }}
+					>
 						To difficult
 					</ColorButton>
+					<ColorButton onClick={handleRemoveFromDifficult} variant="contained" size="small" activeColor={activeColor} sx={{ display: group === 6 ? 'block' : 'none' }}>
+						Remove from difficult
+					</ColorButton>
 					<ColorButton variant="contained" size="small" activeColor={activeColor}>
-						To difficult
+						To learned
 					</ColorButton>
 				</Stack>
 			</CardContent>
