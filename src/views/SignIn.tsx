@@ -27,21 +27,13 @@ function SignIn() {
 	useEffect(() => {
 		if (!emailData) return
 
-		if (validateEmail(emailData)) {
-			setEmailError('')
-		} else {
-			setEmailError('Invalid E-mail!')
-		}
+		setEmailError(validateEmail(emailData) ? '' : 'Invalid E-mail!')
 	}, [emailData])
 
 	useEffect(() => {
 		if (!passwordData) return
 
-		if (passwordData.length >= 6) {
-			setPasswordError('')
-		} else {
-			setPasswordError('Password is too short!')
-		}
+		setPasswordError(passwordData.length < 7 ? 'Password is too short!' : '')
 	}, [passwordData])
 
 	useEffect(() => {

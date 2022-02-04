@@ -30,31 +30,19 @@ function SignUp() {
 	useEffect(() => {
 		if (!nameData) return
 
-		if (nameData.length >= 2) {
-			setNameError('')
-		} else {
-			setNameError('Name is too short!')
-		}
+		setNameError(nameData.length < 2 ? 'Name is too short!' : '')
 	}, [nameData])
 
 	useEffect(() => {
 		if (!emailData) return
 
-		if (validateEmail(emailData)) {
-			setEmailError('')
-		} else {
-			setEmailError('Invalid E-mail!')
-		}
+		setEmailError(validateEmail(emailData) ? '' : 'Invalid E-mail!')
 	}, [emailData])
 
 	useEffect(() => {
 		if (!passwordData) return
 
-		if (passwordData.length >= 6) {
-			setPasswordError('')
-		} else {
-			setPasswordError('Password is too short!')
-		}
+		setPasswordError(passwordData.length < 7 ? 'Password is too short!' : '')
 	}, [passwordData])
 
 	useEffect(() => {
