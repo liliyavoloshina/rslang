@@ -18,10 +18,10 @@ function SignIn() {
 	const isLoggedIn = useAppSelector(selectAuthIsLoggedIn)
 	const signInError = useAppSelector(selectAuthSignInError)
 
-	const [emailData, setEmailData] = useState<string>('')
-	const [emailError, setEmailError] = useState<string>('')
-	const [passwordData, setPasswordData] = useState<string>('')
-	const [passwordError, setPasswordError] = useState<string>('')
+	const [emailData, setEmailData] = useState('')
+	const [emailError, setEmailError] = useState('')
+	const [passwordData, setPasswordData] = useState('')
+	const [passwordError, setPasswordError] = useState('')
 
 	const validateEmail = (email: string) => {
 		return String(email)
