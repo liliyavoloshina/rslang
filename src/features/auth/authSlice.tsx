@@ -1,30 +1,43 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 // eslint-disable-next-line import/no-cycle
 import { RootState } from '../../app/store'
-import { SignInData, UserInfo } from '../../types/auth'
+import { SignInData, SignUpData, UserInfo } from '../../types/auth'
 import apiClient from '../../utils/api'
+import { handleError } from '../../utils/helpers'
 import { localStorageRemoveUser, localStorageSetUser } from '../../utils/localStorage'
-
-// export const login = createAsyncThunk('auth/login', async (arg, { getState }) => {
-// 	console.log(login)
-// })
 
 export const signIn = createAsyncThunk('auth/signin', async (arg: SignInData) => {
 	const response = await apiClient.signIn(arg)
 	return response
 })
 
+export const signUp = createAsyncThunk('auth/signup', async (arg: SignUpData, { rejectWithValue }) => {
+	try {
+		await apiClient.signUp(arg)
+		return { email: arg.email, password: arg.password }
+	} catch (e) {
+		const errorToShow = handleError(e)
+		return rejectWithValue(errorToShow)
+	}
+})
+
 interface AuthState {
 	userInfo: UserInfo | Record<string, unknown>
+	signInInfo: SignInData | Record<string, unknown>
 	isLoggedIn: boolean
+	signUpError: string
 	isSignInFailed: boolean
+	isSignUpFailed: boolean
 	loading: boolean
 }
 
 const initialState: AuthState = {
 	userInfo: {},
+	signInInfo: {},
 	isLoggedIn: false,
+	signUpError: '',
 	isSignInFailed: false,
+	isSignUpFailed: false,
 	loading: false,
 }
 
@@ -39,7 +52,7 @@ export const authSlice = createSlice({
 			state.isLoggedIn = true
 			state.userInfo = action.payload
 		},
-		logOut: state => {
+		signOut: state => {
 			state.userInfo = {}
 			state.isLoggedIn = false
 			localStorageRemoveUser()
@@ -69,24 +82,23 @@ export const authSlice = createSlice({
 				state.isSignInFailed = true
 				state.loading = false
 			})
-		// .addCase(login.pending, state => {
-		// 	state.loading = true
-		// })
-		// .addCase(login.fulfilled, (state, action) => {
-		// 	const { accessToken } = action.payload
-		// 	state.token = accessToken
-		// 	state.userData = user
-		// 	state.loading = false
-		// })
-		// .addCase(login.rejected, (state, action) => {
-		// 	state.loading = false
-		// })
+			.addCase(signUp.pending, state => {
+				state.loading = true
+			})
+			.addCase(signUp.fulfilled, (state, action) => {
+				state.signInInfo = action.payload
+			})
+			.addCase(signUp.rejected, (state, action) => {
+				state.signUpError = action.payload as string
+				state.loading = false
+			})
 	},
 })
 
-export const { clearError, setUser, logOut } = authSlice.actions
+export const { clearError, setUser, signOut } = authSlice.actions
 export const selectAuthLoading = (state: RootState) => state.auth.loading
 export const selectAuthIsLoggedIn = (state: RootState) => state.auth.isLoggedIn
 export const selectAuthIsSignInFailed = (state: RootState) => state.auth.isSignInFailed
 export const selectAuthUserInfo = (state: RootState) => state.auth.userInfo
+export const selectAuthSignUpError = (state: RootState) => state.auth.signUpError
 export default authSlice.reducer

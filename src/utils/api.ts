@@ -1,5 +1,5 @@
 import { ApiMethod, ApiBody, ApiConfig, ApiHeaders, GetUserWordsResponse } from '../types/api'
-import { SignInData, SignInResponse } from '../types/auth'
+import { SignInData, SignInResponse, SignUpData, SignUpResponse } from '../types/auth'
 import { UserWord, Word } from '../types/word'
 import { localStorageGetUser } from './localStorage'
 
@@ -24,7 +24,8 @@ const apiClient = async <T>(endpoint: string, method: ApiMethod, body?: ApiBody)
 	const response = await fetch(endpoint, config)
 
 	if (!response.ok) {
-		throw new Error(response.statusText)
+		const error = await response.text()
+		throw new Error(error)
 	}
 
 	const data = await response.json()
@@ -49,6 +50,10 @@ apiClient.getDifficultWords = (id: string) => {
 
 apiClient.signIn = (signinData: SignInData) => {
 	return apiClient<SignInResponse>(`${DOMAIN_URL}/signin`, ApiMethod.Post, signinData)
+}
+
+apiClient.signUp = (signupData: SignUpData) => {
+	return apiClient<SignUpResponse>(`${DOMAIN_URL}/users`, ApiMethod.Post, signupData)
 }
 
 export default apiClient

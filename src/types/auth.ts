@@ -6,7 +6,19 @@ interface SignInResponse {
 	name: string
 }
 
+interface SignUpResponse {
+	id: string
+	name: string
+	email: string
+}
+
 interface SignInData {
+	email: string
+	password: string
+}
+
+interface SignUpData {
+	name: string
 	email: string
 	password: string
 }
@@ -18,4 +30,4 @@ interface UserInfo {
 	name: string
 }
 
-export type { SignInResponse, SignInData, UserInfo }
+export type { SignInResponse, SignInData, UserInfo, SignUpData, SignUpResponse }

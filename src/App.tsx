@@ -7,7 +7,8 @@ import Textbook from './views/Textbook'
 import AudioCall from './views/Audiocall'
 import Sprint from './views/Sprint'
 import Statistic from './views/Statistic'
-import Login from './views/Login'
+import SignIn from './views/SignIn'
+import SignUp from './views/SignUp'
 import Footer from './components/layout/Footer'
 import theme from './utils/theme'
 import { localStorageGetUser } from './utils/localStorage'
@@ -36,7 +37,8 @@ function App() {
 					<Route path="audiocall" element={<AudioCall />} />
 					<Route path="sprint" element={<Sprint />} />
 					<Route path="statistic" element={<Statistic />} />
-					<Route path="login" element={<Login />} />
+					<Route path="signin" element={<SignIn />} />
+					<Route path="signup" element={<SignUp />} />
 				</Routes>
 			</main>
 			{isFooter && <Footer />}

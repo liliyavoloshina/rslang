@@ -8,15 +8,18 @@ import Alert from '@mui/lab/Alert'
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../app/hooks'
-import { signIn, selectAuthLoading, selectAuthIsLoggedIn, selectAuthIsSignInFailed, clearError } from '../features/auth/authSlice'
+import { signUp, selectAuthLoading, selectAuthIsLoggedIn, selectAuthIsSignInFailed, clearError, selectAuthSignUpError } from '../features/auth/authSlice'
 
-function Login() {
+function SignUp() {
 	const navigate = useNavigate()
 	const dispatch = useAppDispatch()
 	const loading = useAppSelector(selectAuthLoading)
 	const isLoggedIn = useAppSelector(selectAuthIsLoggedIn)
 	const isSignInFailed = useAppSelector(selectAuthIsSignInFailed)
+	const signUpError = useAppSelector(selectAuthSignUpError)
 
+	const [nameData, setNameData] = useState<string>('')
+	const [nameError, setNameError] = useState<string>('')
 	const [emailData, setEmailData] = useState<string>('')
 	const [emailError, setEmailError] = useState<string>('')
 	const [passwordData, setPasswordData] = useState<string>('')
@@ -27,6 +30,16 @@ function Login() {
 			.toLowerCase()
 			.match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)
 	}
+
+	useEffect(() => {
+		if (!nameData) return
+
+		if (nameData.length >= 2) {
+			setNameError('')
+		} else {
+			setNameError('Name is too short!')
+		}
+	}, [nameData])
 
 	useEffect(() => {
 		if (!emailData) return
@@ -50,17 +63,18 @@ function Login() {
 
 	useEffect(() => {
 		dispatch(clearError())
-	}, [emailData, passwordData])
+	}, [nameData, emailData, passwordData])
 
 	const handleSubmit = (e: React.SyntheticEvent) => {
 		e.preventDefault()
 
-		if (!passwordData || !emailData) {
+		if (!nameData || !passwordData || !emailData) {
+			setNameError('Name is too short!')
 			setEmailError('Invalid E-mail!')
 			setPasswordError('Password is too short!')
 		}
 
-		dispatch(signIn({ email: emailData, password: passwordData }))
+		dispatch(signUp({ name: nameData, email: emailData, password: passwordData }))
 	}
 
 	// eslint-disable-next-line consistent-return
@@ -74,13 +88,16 @@ function Login() {
 		<Stack alignItems="center" justifyContent="center" sx={{ height: '100%' }}>
 			<Box component="form" onSubmit={handleSubmit}>
 				<Typography variant="h3" gutterBottom>
-					Login
+					Sign Up
 				</Typography>
-				{isSignInFailed && (
+				{signUpError && (
 					<Alert severity="error" sx={{ my: 2 }}>
-						Invalid password or e-mail!
+						{signUpError}
 					</Alert>
 				)}
+				<FormControl fullWidth sx={{ my: 1 }}>
+					<TextField value={nameData} onChange={e => setNameData(e.target.value)} label="Name" error={!!nameError} helperText={nameError} />
+				</FormControl>
 				<FormControl fullWidth sx={{ my: 1 }}>
 					<TextField value={emailData} onChange={e => setEmailData(e.target.value)} label="Email" error={!!emailError} helperText={emailError} />
 				</FormControl>
@@ -88,11 +105,11 @@ function Login() {
 					<TextField value={passwordData} onChange={e => setPasswordData(e.target.value)} label="Password" type="password" error={!!passwordError} helperText={passwordError} />
 				</FormControl>
 				<LoadingButton fullWidth type="submit" disabled={!!passwordError || !!emailError} loading={loading} loadingIndicator="Loading..." variant="outlined">
-					Login
+					Sign Up
 				</LoadingButton>
 			</Box>
 		</Stack>
 	)
 }
 
-export default Login
+export default SignUp

@@ -5,16 +5,10 @@ const shuffleArray = <T>(array: T[]) => {
 	}
 }
 
-const setToken = (val: string) => {
-	localStorage.setItem('token', val)
+const handleError = (err: unknown) => {
+	let message = 'Unknown Error'
+	if (err instanceof Error) message = err.message
+	return `Ooops! ${message}`
 }
 
-const getToken = () => {
-	return localStorage.getItem('token')
-}
-
-const removeToken = () => {
-	localStorage.removeItem('token')
-}
-
-export { shuffleArray, getToken, removeToken, setToken }
+export { shuffleArray, handleError }
