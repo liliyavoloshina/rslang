@@ -72,7 +72,7 @@ function Login() {
 
 	return (
 		<Stack alignItems="center" justifyContent="center" sx={{ height: '100%' }}>
-			<Box component="form" autoComplete="off" onSubmit={handleSubmit}>
+			<Box component="form" onSubmit={handleSubmit}>
 				<Typography variant="h3" gutterBottom>
 					Login
 				</Typography>

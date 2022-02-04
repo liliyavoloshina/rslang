@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Link as RouterLink } from 'react-router-dom'
+import { Link as RouterLink, useNavigate } from 'react-router-dom'
 import { Menu as MenuIcon } from '@mui/icons-material'
 import Link from '@mui/material/Link'
 import Stack from '@mui/material/Stack'
@@ -56,6 +56,7 @@ const settings = [
 
 function Header() {
 	const dispatch = useAppDispatch()
+	const navigate = useNavigate()
 	const userInfo = useAppSelector(selectAuthUserInfo)
 	const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null)
 	const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null)
@@ -88,6 +89,7 @@ function Header() {
 	const handleLogOut = () => {
 		dispatch(logOut())
 		handleCloseUserMenu()
+		navigate('/')
 	}
 
 	return (
