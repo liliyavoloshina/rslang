@@ -28,7 +28,6 @@ export const signUp = createAsyncThunk('auth/signup', async (arg: SignUpData, { 
 
 interface AuthState {
 	userInfo: UserInfo | Record<string, unknown>
-	signInInfo: SignInData | Record<string, unknown>
 	isLoggedIn: boolean
 	signUpError: string
 	signInError: string
@@ -37,7 +36,6 @@ interface AuthState {
 
 const initialState: AuthState = {
 	userInfo: {},
-	signInInfo: {},
 	isLoggedIn: false,
 	signUpError: '',
 	signInError: '',
@@ -89,8 +87,8 @@ export const authSlice = createSlice({
 			.addCase(signUp.pending, state => {
 				state.loading = true
 			})
-			.addCase(signUp.fulfilled, (state, action) => {
-				state.signInInfo = action.payload
+			.addCase(signUp.fulfilled, state => {
+				state.loading = false
 			})
 			.addCase(signUp.rejected, (state, action) => {
 				state.signUpError = action.payload as string

@@ -9,13 +9,12 @@ import Button from '@mui/material/Button'
 import { Link as RouterLink, useNavigate } from 'react-router-dom'
 import React, { useEffect, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '../app/hooks'
-import { signUp, selectAuthLoading, selectAuthIsLoggedIn, clearError, selectAuthSignUpError } from '../features/auth/authSlice'
+import { signUp, selectAuthLoading, clearError, selectAuthSignUpError, signIn } from '../features/auth/authSlice'
 
 function SignUp() {
 	const navigate = useNavigate()
 	const dispatch = useAppDispatch()
 	const loading = useAppSelector(selectAuthLoading)
-	const isLoggedIn = useAppSelector(selectAuthIsLoggedIn)
 	const signUpError = useAppSelector(selectAuthSignUpError)
 
 	const [nameData, setNameData] = useState<string>('')
@@ -65,7 +64,7 @@ function SignUp() {
 		dispatch(clearError())
 	}, [nameData, emailData, passwordData])
 
-	const handleSubmit = (e: React.SyntheticEvent) => {
+	const handleSubmit = async (e: React.SyntheticEvent) => {
 		e.preventDefault()
 
 		if (!nameData || !passwordData || !emailData) {
@@ -74,15 +73,10 @@ function SignUp() {
 			setPasswordError('Password is too short!')
 		}
 
-		dispatch(signUp({ name: nameData, email: emailData, password: passwordData }))
+		await dispatch(signUp({ name: nameData, email: emailData, password: passwordData }))
+		dispatch(signIn({ email: emailData, password: passwordData }))
+		navigate('/')
 	}
-
-	// eslint-disable-next-line consistent-return
-	useEffect(() => {
-		if (isLoggedIn) {
-			return navigate('/')
-		}
-	}, [isLoggedIn])
 
 	return (
 		<Stack alignItems="center" justifyContent="center" sx={{ height: '100%' }}>
