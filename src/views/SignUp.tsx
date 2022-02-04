@@ -5,8 +5,9 @@ import TextField from '@mui/material/TextField'
 import FormControl from '@mui/material/FormControl'
 import LoadingButton from '@mui/lab/LoadingButton'
 import Alert from '@mui/lab/Alert'
+import Button from '@mui/material/Button'
+import { Link as RouterLink, useNavigate } from 'react-router-dom'
 import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../app/hooks'
 import { signUp, selectAuthLoading, selectAuthIsLoggedIn, clearError, selectAuthSignUpError } from '../features/auth/authSlice'
 
@@ -103,9 +104,12 @@ function SignUp() {
 				<FormControl fullWidth sx={{ my: 1 }}>
 					<TextField value={passwordData} onChange={e => setPasswordData(e.target.value)} label="Password" type="password" error={!!passwordError} helperText={passwordError} />
 				</FormControl>
-				<LoadingButton fullWidth type="submit" disabled={!!passwordError || !!emailError} loading={loading} loadingIndicator="Loading..." variant="outlined">
+				<LoadingButton sx={{ my: 1 }} fullWidth type="submit" disabled={!!passwordError || !!emailError} loading={loading} loadingIndicator="Loading..." variant="outlined">
 					Sign Up
 				</LoadingButton>
+				<Button sx={{ my: 1 }} fullWidth variant="text" component={RouterLink} to="/signin">
+					Already have an account?
+				</Button>
 			</Box>
 		</Stack>
 	)

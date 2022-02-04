@@ -3,10 +3,11 @@ import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
 import FormControl from '@mui/material/FormControl'
+import Button from '@mui/material/Button'
 import LoadingButton from '@mui/lab/LoadingButton'
 import Alert from '@mui/lab/Alert'
 import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link as RouterLink, useNavigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../app/hooks'
 import { signIn, selectAuthLoading, selectAuthIsLoggedIn, selectAuthSignInError, clearError } from '../features/auth/authSlice'
 
@@ -90,6 +91,9 @@ function SignIn() {
 				<LoadingButton fullWidth type="submit" disabled={!!passwordError || !!emailError} loading={loading} loadingIndicator="Loading..." variant="outlined">
 					Sign In
 				</LoadingButton>
+				<Button sx={{ my: 1 }} fullWidth variant="text" component={RouterLink} to="/signup">
+					Don&#39;t have an account?
+				</Button>
 			</Box>
 		</Stack>
 	)
