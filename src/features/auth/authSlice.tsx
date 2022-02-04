@@ -29,6 +29,7 @@ export const signUp = createAsyncThunk('auth/signup', async (arg: SignUpData, { 
 interface AuthState {
 	userInfo: UserInfo | Record<string, unknown>
 	isLoggedIn: boolean
+	isSignUpInProcess: boolean
 	signUpError: string
 	signInError: string
 	loading: boolean
@@ -37,6 +38,7 @@ interface AuthState {
 const initialState: AuthState = {
 	userInfo: {},
 	isLoggedIn: false,
+	isSignUpInProcess: false,
 	signUpError: '',
 	signInError: '',
 	loading: false,
@@ -71,6 +73,8 @@ export const authSlice = createSlice({
 				state.loading = false
 				state.isLoggedIn = true
 				state.signInError = ''
+				state.signUpError = ''
+				state.isSignUpInProcess = false
 
 				const infoToStore = {
 					token,
@@ -88,10 +92,13 @@ export const authSlice = createSlice({
 				state.loading = true
 			})
 			.addCase(signUp.fulfilled, state => {
+				state.signUpError = ''
+				state.isSignUpInProcess = true
 				state.loading = false
 			})
 			.addCase(signUp.rejected, (state, action) => {
 				state.signUpError = action.payload as string
+				state.isSignUpInProcess = false
 				state.loading = false
 			})
 	},
@@ -102,5 +109,6 @@ export const selectAuthLoading = (state: RootState) => state.auth.loading
 export const selectAuthIsLoggedIn = (state: RootState) => state.auth.isLoggedIn
 export const selectAuthSignInError = (state: RootState) => state.auth.signInError
 export const selectAuthSignUpError = (state: RootState) => state.auth.signUpError
+export const selectAuthIsSignUpInProcess = (state: RootState) => state.auth.isSignUpInProcess
 export const selectAuthUserInfo = (state: RootState) => state.auth.userInfo
 export default authSlice.reducer

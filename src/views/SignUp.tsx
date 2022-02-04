@@ -4,18 +4,20 @@ import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
 import FormControl from '@mui/material/FormControl'
 import LoadingButton from '@mui/lab/LoadingButton'
-import Alert from '@mui/lab/Alert'
+import Alert from '@mui/material/Alert'
 import Button from '@mui/material/Button'
 import { Link as RouterLink, useNavigate } from 'react-router-dom'
 import React, { useEffect, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '../app/hooks'
-import { signUp, selectAuthLoading, clearError, selectAuthSignUpError, signIn } from '../features/auth/authSlice'
+import { signUp, selectAuthLoading, clearError, selectAuthSignUpError, selectAuthIsLoggedIn, selectAuthIsSignUpInProcess, signIn } from '../features/auth/authSlice'
 
 function SignUp() {
 	const navigate = useNavigate()
 	const dispatch = useAppDispatch()
 	const loading = useAppSelector(selectAuthLoading)
 	const signUpError = useAppSelector(selectAuthSignUpError)
+	const isLoggedIn = useAppSelector(selectAuthIsLoggedIn)
+	const isSignUpInProcess = useAppSelector(selectAuthIsSignUpInProcess)
 
 	const [nameData, setNameData] = useState<string>('')
 	const [nameError, setNameError] = useState<string>('')
@@ -74,9 +76,20 @@ function SignUp() {
 		}
 
 		await dispatch(signUp({ name: nameData, email: emailData, password: passwordData }))
-		dispatch(signIn({ email: emailData, password: passwordData }))
-		navigate('/')
 	}
+
+	useEffect(() => {
+		if (!signUpError) {
+			dispatch(signIn({ email: emailData, password: passwordData }))
+		}
+	}, [isSignUpInProcess])
+
+	// eslint-disable-next-line consistent-return
+	useEffect(() => {
+		if (isLoggedIn) {
+			return navigate('/')
+		}
+	}, [isLoggedIn])
 
 	return (
 		<Stack alignItems="center" justifyContent="center" sx={{ height: '100%' }}>
