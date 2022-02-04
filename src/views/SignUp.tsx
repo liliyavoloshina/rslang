@@ -10,6 +10,7 @@ import { Link as RouterLink, useNavigate } from 'react-router-dom'
 import React, { useEffect, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '../app/hooks'
 import { signUp, selectAuthLoading, clearError, selectAuthSignUpError, selectAuthIsLoggedIn, selectAuthIsSignUpInProcess, signIn } from '../features/auth/authSlice'
+import { validateEmail } from '../utils/helpers'
 
 function SignUp() {
 	const navigate = useNavigate()
@@ -25,12 +26,6 @@ function SignUp() {
 	const [emailError, setEmailError] = useState('')
 	const [passwordData, setPasswordData] = useState('')
 	const [passwordError, setPasswordError] = useState('')
-
-	const validateEmail = (email: string) => {
-		return String(email)
-			.toLowerCase()
-			.match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)
-	}
 
 	useEffect(() => {
 		if (!nameData) return
