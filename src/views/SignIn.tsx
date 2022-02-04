@@ -8,14 +8,14 @@ import Alert from '@mui/lab/Alert'
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../app/hooks'
-import { signIn, selectAuthLoading, selectAuthIsLoggedIn, selectAuthIsSignInFailed, clearError } from '../features/auth/authSlice'
+import { signIn, selectAuthLoading, selectAuthIsLoggedIn, selectAuthSignInError, clearError } from '../features/auth/authSlice'
 
 function SignIn() {
 	const navigate = useNavigate()
 	const dispatch = useAppDispatch()
 	const loading = useAppSelector(selectAuthLoading)
 	const isLoggedIn = useAppSelector(selectAuthIsLoggedIn)
-	const isSignInFailed = useAppSelector(selectAuthIsSignInFailed)
+	const signInError = useAppSelector(selectAuthSignInError)
 
 	const [emailData, setEmailData] = useState<string>('')
 	const [emailError, setEmailError] = useState<string>('')
@@ -76,9 +76,9 @@ function SignIn() {
 				<Typography variant="h3" gutterBottom>
 					Sign In
 				</Typography>
-				{isSignInFailed && (
+				{signInError && (
 					<Alert severity="error" sx={{ my: 2 }}>
-						Invalid password or e-mail!
+						{signInError}
 					</Alert>
 				)}
 				<FormControl fullWidth sx={{ my: 1 }}>

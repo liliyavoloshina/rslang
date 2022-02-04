@@ -6,9 +6,14 @@ import apiClient from '../../utils/api'
 import { handleError } from '../../utils/helpers'
 import { localStorageRemoveUser, localStorageSetUser } from '../../utils/localStorage'
 
-export const signIn = createAsyncThunk('auth/signin', async (arg: SignInData) => {
-	const response = await apiClient.signIn(arg)
-	return response
+export const signIn = createAsyncThunk('auth/signin', async (arg: SignInData, { rejectWithValue }) => {
+	try {
+		const response = await apiClient.signIn(arg)
+		return response
+	} catch (e) {
+		const errorToShow = handleError(e)
+		return rejectWithValue(errorToShow)
+	}
 })
 
 export const signUp = createAsyncThunk('auth/signup', async (arg: SignUpData, { rejectWithValue }) => {
@@ -26,8 +31,7 @@ interface AuthState {
 	signInInfo: SignInData | Record<string, unknown>
 	isLoggedIn: boolean
 	signUpError: string
-	isSignInFailed: boolean
-	isSignUpFailed: boolean
+	signInError: string
 	loading: boolean
 }
 
@@ -36,8 +40,7 @@ const initialState: AuthState = {
 	signInInfo: {},
 	isLoggedIn: false,
 	signUpError: '',
-	isSignInFailed: false,
-	isSignUpFailed: false,
+	signInError: '',
 	loading: false,
 }
 
@@ -46,7 +49,8 @@ export const authSlice = createSlice({
 	initialState,
 	reducers: {
 		clearError: state => {
-			state.isSignInFailed = false
+			state.signInError = ''
+			state.signUpError = ''
 		},
 		setUser: (state, action) => {
 			state.isLoggedIn = true
@@ -68,7 +72,7 @@ export const authSlice = createSlice({
 				state.userInfo = { token, userId, name, refreshToken }
 				state.loading = false
 				state.isLoggedIn = true
-				state.isSignInFailed = false
+				state.signInError = ''
 
 				const infoToStore = {
 					token,
@@ -78,8 +82,8 @@ export const authSlice = createSlice({
 				}
 				localStorageSetUser(infoToStore)
 			})
-			.addCase(signIn.rejected, state => {
-				state.isSignInFailed = true
+			.addCase(signIn.rejected, (state, action) => {
+				state.signInError = action.payload as string
 				state.loading = false
 			})
 			.addCase(signUp.pending, state => {
@@ -98,7 +102,7 @@ export const authSlice = createSlice({
 export const { clearError, setUser, signOut } = authSlice.actions
 export const selectAuthLoading = (state: RootState) => state.auth.loading
 export const selectAuthIsLoggedIn = (state: RootState) => state.auth.isLoggedIn
-export const selectAuthIsSignInFailed = (state: RootState) => state.auth.isSignInFailed
-export const selectAuthUserInfo = (state: RootState) => state.auth.userInfo
+export const selectAuthSignInError = (state: RootState) => state.auth.signInError
 export const selectAuthSignUpError = (state: RootState) => state.auth.signUpError
+export const selectAuthUserInfo = (state: RootState) => state.auth.userInfo
 export default authSlice.reducer

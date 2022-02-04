@@ -8,14 +8,13 @@ import Alert from '@mui/lab/Alert'
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../app/hooks'
-import { signUp, selectAuthLoading, selectAuthIsLoggedIn, selectAuthIsSignInFailed, clearError, selectAuthSignUpError } from '../features/auth/authSlice'
+import { signUp, selectAuthLoading, selectAuthIsLoggedIn, clearError, selectAuthSignUpError } from '../features/auth/authSlice'
 
 function SignUp() {
 	const navigate = useNavigate()
 	const dispatch = useAppDispatch()
 	const loading = useAppSelector(selectAuthLoading)
 	const isLoggedIn = useAppSelector(selectAuthIsLoggedIn)
-	const isSignInFailed = useAppSelector(selectAuthIsSignInFailed)
 	const signUpError = useAppSelector(selectAuthSignUpError)
 
 	const [nameData, setNameData] = useState<string>('')
