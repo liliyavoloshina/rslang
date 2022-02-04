@@ -5,10 +5,6 @@ const shuffleArray = <T>(array: T[]) => {
 	}
 }
 
-const handleError = (err: unknown) => {
-	let message = 'Unknown Error'
-	if (err instanceof Error) message = err.message
-	return `Ooops! ${message}`
-}
+const handleError = (err: unknown) => `Ooops! ${err instanceof Error ? err.message : 'Unknown Error'}`
 
 export { shuffleArray, handleError }
