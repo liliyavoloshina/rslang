@@ -6,9 +6,11 @@ import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
 import CardContent from '@mui/material/CardContent'
 import Stack from '@mui/material/Stack'
-import { styled } from '@mui/material/styles'
-import Button, { ButtonProps } from '@mui/material/Button'
+import Tooltip from '@mui/material/Tooltip'
 import VolumeUpIcon from '@mui/icons-material/VolumeUp'
+import BookmarkAddedIcon from '@mui/icons-material/BookmarkAdded'
+import DiamondIcon from '@mui/icons-material/Diamond'
+import { blue, lightGreen } from '@mui/material/colors'
 import { Word, WordDifficulty } from '../../types/word'
 import styles from './Textbook.module.css'
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
@@ -22,19 +24,6 @@ interface TextbookCardProps {
 	isLoggedIn: boolean
 }
 
-interface CustomButtonProps extends ButtonProps {
-	activeColor: string
-}
-
-const ColorButton = styled(Button, { shouldForwardProp: prop => prop !== 'activeColor' })<CustomButtonProps>(({ activeColor }) => ({
-	color: 'white',
-	backgroundColor: activeColor,
-	'&:hover': {
-		backgroundColor: activeColor,
-		opacity: '0.7',
-	},
-}))
-
 export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: TextbookCardProps) {
 	const dispatch = useAppDispatch()
 
@@ -43,6 +32,9 @@ export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: Te
 		passedWord
 
 	const isLearned = userWord?.optional?.isLearned as boolean
+	const isDifficultDisable = (userWord?.difficulty === WordDifficulty.Difficult && group !== 6) || isLearned
+	const toDifficultBtnColor = blue.A200
+	const toLearnedBtnColor = lightGreen[500]
 
 	const imageUrl = `${DOMAIN_URL}/${image}`
 	const audioUrls = [`${DOMAIN_URL}/${audio}`, `${DOMAIN_URL}/${audioMeaning}`, `${DOMAIN_URL}/${audioExample}`]
@@ -72,8 +64,8 @@ export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: Te
 	}
 
 	return (
-		<Card sx={{ display: 'flex', flexWrap: 'wrap', gap: '10px', minHeight: '300px' }}>
-			<CardMedia sx={{ flex: '1 1 150px', minHeight: '300px' }} image={imageUrl} />
+		<Card sx={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+			<CardMedia sx={{ flex: '1 1 150px', minHeight: '200px' }} image={imageUrl} />
 			<CardContent sx={{ flex: '1 1 500px', display: 'flex', flexDirection: 'column' }}>
 				<Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
 					<Box>
@@ -89,48 +81,50 @@ export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: Te
 					</IconButton>
 				</Box>
 
-				<Stack sx={{ marginTop: '10px' }}>
-					<Typography
-						className={styles.textbookCardMarkdown}
-						sx={{ fontStyle: 'italic' }}
-						variant="subtitle2"
-						color={theme => theme.text.secondary}
-						dangerouslySetInnerHTML={{ __html: textMeaning }}
-					/>
-					<Typography sx={{ fontStyle: 'italic' }} variant="subtitle2" color={theme => theme.text.secondary}>
-						{textMeaningTranslate}
-					</Typography>
-				</Stack>
+				<Stack flexDirection="row" justifyContent="space-between" alignItems="center">
+					<Stack rowGap="10px" paddingTop="15px">
+						<Stack>
+							<Typography
+								className={styles.textbookCardMarkdown}
+								sx={{ fontStyle: 'italic' }}
+								variant="subtitle2"
+								color={theme => theme.text.secondary}
+								dangerouslySetInnerHTML={{ __html: textMeaning }}
+							/>
+							<Typography sx={{ fontStyle: 'italic' }} variant="subtitle2" color={theme => theme.text.secondary}>
+								{textMeaningTranslate}
+							</Typography>
+						</Stack>
 
-				<Box sx={{ display: 'flex', flexDirection: 'column', marginTop: '10px' }}>
-					<Typography className={styles.textbookCardMarkdown} variant="subtitle2" color={theme => theme.text.secondary} dangerouslySetInnerHTML={{ __html: textExample }} />
-					<Typography variant="subtitle2" color={theme => theme.text.secondary}>
-						{textExampleTranslate}
-					</Typography>
-				</Box>
+						<Stack>
+							<Typography className={styles.textbookCardMarkdown} variant="subtitle2" color={theme => theme.text.secondary} dangerouslySetInnerHTML={{ __html: textExample }} />
+							<Typography variant="subtitle2" color={theme => theme.text.secondary}>
+								{textExampleTranslate}
+							</Typography>
+						</Stack>
 
-				<Box sx={{ margin: '10px 0', display: isLoggedIn ? 'block' : 'none' }}>
-					<Typography variant="subtitle2" color={theme => theme.text.success}>
-						Правильных ответов: {userWord?.optional?.correctAnswers ? userWord?.optional?.correctAnswers : 0}
-					</Typography>
-					<Typography variant="subtitle2" color={theme => theme.text.danger}>
-						Неправильных ответов: {userWord?.optional?.incorrectAnswers ? userWord?.optional?.incorrectAnswers : 0}
-					</Typography>
-				</Box>
+						<Box sx={{ display: isLoggedIn ? 'block' : 'none' }}>
+							<Typography variant="subtitle2" color={theme => theme.text.success}>
+								Правильных ответов: {userWord?.optional?.correctAnswers ? userWord?.optional?.correctAnswers : 0}
+							</Typography>
+							<Typography variant="subtitle2" color={theme => theme.text.danger}>
+								Неправильных ответов: {userWord?.optional?.incorrectAnswers ? userWord?.optional?.incorrectAnswers : 0}
+							</Typography>
+						</Box>
+					</Stack>
 
-				<Stack direction="row" justifyContent="space-between" sx={{ display: isLoggedIn ? 'flex' : 'none' }}>
-					<ColorButton
-						onClick={toggleWordDifficulty}
-						variant="contained"
-						size="small"
-						activeColor={activeColor}
-						disabled={(userWord?.difficulty === WordDifficulty.Difficult && group !== 6) || isLearned}
-					>
-						{userWord?.difficulty === WordDifficulty.Difficult ? 'Remove from difficult' : 'Add to difficult'}
-					</ColorButton>
-					<ColorButton variant="contained" size="small" activeColor={activeColor} onClick={addToLearned} disabled={isLearned}>
-						To learned
-					</ColorButton>
+					<Stack>
+						<Tooltip title={isLearned ? '' : 'Add to learned'} placement="top">
+							<IconButton sx={{ color: toLearnedBtnColor }} onClick={addToLearned} disabled={isLearned}>
+								<BookmarkAddedIcon />
+							</IconButton>
+						</Tooltip>
+						<Tooltip title={isDifficultDisable ? '' : 'Add to difficult'}>
+							<IconButton sx={{ color: toDifficultBtnColor }} onClick={toggleWordDifficulty} disabled={isDifficultDisable}>
+								<DiamondIcon />
+							</IconButton>
+						</Tooltip>
+					</Stack>
 				</Stack>
 			</CardContent>
 		</Card>
