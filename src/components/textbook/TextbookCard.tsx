@@ -12,7 +12,7 @@ import VolumeUpIcon from '@mui/icons-material/VolumeUp'
 import { Word, WordDifficulty } from '../../types/word'
 import styles from './Textbook.module.css'
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
-import { changeWordDifficulty, selectTextbookGroup } from '../../features/textbook/textbookSlice'
+import { changeWordDifficulty, changeWordLearnedStatus, selectTextbookGroup } from '../../features/textbook/textbookSlice'
 
 const DOMAIN_URL = process.env.REACT_APP_DOMAIN as string
 
@@ -41,8 +41,10 @@ export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: Te
 	const group = useAppSelector(selectTextbookGroup)
 	const { id, image, word, transcription, wordTranslate, textMeaning, textMeaningTranslate, textExample, textExampleTranslate, audio, audioExample, audioMeaning, userWord } =
 		passedWord
-	const imageUrl = `${DOMAIN_URL}/${image}`
 
+	const isLearned = userWord?.optional?.isLearned as boolean
+
+	const imageUrl = `${DOMAIN_URL}/${image}`
 	const audioUrls = [`${DOMAIN_URL}/${audio}`, `${DOMAIN_URL}/${audioMeaning}`, `${DOMAIN_URL}/${audioExample}`]
 
 	const toggleAudio = () => {
@@ -63,6 +65,10 @@ export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: Te
 		const difficulty = userWord?.difficulty === WordDifficulty.Difficult ? WordDifficulty.Normal : WordDifficulty.Difficult
 
 		dispatch(changeWordDifficulty({ wordId: id, difficulty }))
+	}
+
+	const addToLearned = () => {
+		dispatch(changeWordLearnedStatus({ wordId: id, wordLearnedStatus: true }))
 	}
 
 	return (
@@ -118,12 +124,11 @@ export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: Te
 						variant="contained"
 						size="small"
 						activeColor={activeColor}
-						disabled={userWord?.difficulty === WordDifficulty.Difficult && group !== 6}
-						// sx={{ display: userWord?.difficulty === WordDifficulty.Difficult ? 'none' : 'block' }}
+						disabled={(userWord?.difficulty === WordDifficulty.Difficult && group !== 6) || isLearned}
 					>
 						{userWord?.difficulty === WordDifficulty.Difficult ? 'Remove from difficult' : 'Add to difficult'}
 					</ColorButton>
-					<ColorButton variant="contained" size="small" activeColor={activeColor}>
+					<ColorButton variant="contained" size="small" activeColor={activeColor} onClick={addToLearned} disabled={isLearned}>
 						To learned
 					</ColorButton>
 				</Stack>

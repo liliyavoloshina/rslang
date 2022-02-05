@@ -40,6 +40,10 @@ apiClient.getUserWords = (id: string, group: number, page: number) => {
 	return apiClient<GetUserWordsResponse[]>(`users/${id}/aggregatedWords?group=${group}&page=${page}&wordsPerPage=20`, ApiMethod.Get)
 }
 
+apiClient.getUserWord = (userId: string, wordId: string) => {
+	return apiClient<Word>(`users/${userId}/words/${wordId}`, ApiMethod.Get)
+}
+
 apiClient.getDifficultWords = (id: string) => {
 	return apiClient<GetUserWordsResponse[]>(`users/${id}/aggregatedWords?filter={"$and":[{"userWord.difficulty":"difficult"}]}`, ApiMethod.Get)
 }
@@ -53,6 +57,14 @@ apiClient.addWordToDifficult = (userId: string, wordId: string, difficulty: stri
 apiClient.removeWordFromDifficult = (userId: string, wordId: string, difficulty: string) => {
 	return apiClient<UserWord>(`users/${userId}/words/${wordId}`, ApiMethod.Put, {
 		difficulty,
+	})
+}
+
+apiClient.addWordToLearned = async (userId: string, wordId: string, isLearned: boolean, method: ApiMethod) => {
+	return apiClient<UserWord>(`users/${userId}/words/${wordId}`, method, {
+		optional: {
+			isLearned,
+		},
 	})
 }
 

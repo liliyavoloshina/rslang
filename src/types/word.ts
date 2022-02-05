@@ -20,6 +20,7 @@ interface Word {
 interface UserWordOptional {
 	correctAnswers: number
 	incorrectAnswers: number
+	isLearned: boolean
 }
 
 interface UserWord {

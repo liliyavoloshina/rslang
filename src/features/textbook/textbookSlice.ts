@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 // eslint-disable-next-line import/no-cycle
 import { RootState } from '../../app/store'
+import { ApiMethod } from '../../types/api'
 import { Word, WordDifficulty } from '../../types/word'
 import apiClient from '../../utils/api'
 
@@ -42,7 +43,6 @@ export const fetchTextbookWords = createAsyncThunk('textbook/fetchWords', async 
 
 export const fetchDifficultWords = createAsyncThunk('textbook/fetchDifficultWords', async (arg, { getState }) => {
 	const state = getState() as RootState
-	// const { page, group } = state.textbook
 	const { userInfo } = state.auth
 	const response = await apiClient.getDifficultWords(userInfo.userId as string)
 	return response[0].paginatedResults.map(word => {
@@ -64,6 +64,24 @@ export const changeWordDifficulty = createAsyncThunk('textbook/changeWordDifficu
 	}
 
 	return { wordId, difficulty }
+})
+
+export const changeWordLearnedStatus = createAsyncThunk('textbook/changeWordLearnedStatus', async (arg: { wordId: string; wordLearnedStatus: boolean }, { getState }) => {
+	const state = getState() as RootState
+	const { userInfo } = state.auth
+	const { wordId, wordLearnedStatus } = arg
+
+	try {
+		await apiClient.addWordToLearned(userInfo.userId as string, wordId, wordLearnedStatus, ApiMethod.Put)
+	} catch (e) {
+		await apiClient.addWordToLearned(userInfo.userId as string, wordId, wordLearnedStatus, ApiMethod.Post)
+	}
+
+	if (wordLearnedStatus === true) {
+		await apiClient.removeWordFromDifficult(userInfo.userId as string, wordId, WordDifficulty.Normal)
+	}
+
+	return { wordId, wordLearnedStatus }
 })
 
 export const textbookSlice = createSlice({
@@ -117,6 +135,33 @@ export const textbookSlice = createSlice({
 				})
 
 				if (difficulty === WordDifficulty.Normal) {
+					state.words = state.words.filter(word => word.id !== wordId)
+				}
+			})
+			.addCase(changeWordLearnedStatus.fulfilled, (state, action) => {
+				const { wordId, wordLearnedStatus } = action.payload!
+
+				state.words = state.words.map(word => {
+					if (word.id === wordId) {
+						const updatedWord = word
+
+						if (updatedWord.userWord) {
+							updatedWord.userWord = {
+								...updatedWord.userWord,
+								optional: { ...updatedWord.userWord.optional, isLearned: wordLearnedStatus },
+							}
+						} else {
+							updatedWord.userWord = {
+								optional: { isLearned: wordLearnedStatus },
+							}
+						}
+						return updatedWord
+					}
+
+					return word
+				})
+
+				if (wordLearnedStatus === true && state.group === 6) {
 					state.words = state.words.filter(word => word.id !== wordId)
 				}
 			})
