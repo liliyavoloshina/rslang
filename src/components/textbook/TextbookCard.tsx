@@ -12,7 +12,7 @@ import VolumeUpIcon from '@mui/icons-material/VolumeUp'
 import { Word, WordDifficulty } from '../../types/word'
 import styles from './Textbook.module.css'
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
-import { addWordToDifficult, selectTextbookGroup } from '../../features/textbook/textbookSlice'
+import { changeWordDifficulty, selectTextbookGroup } from '../../features/textbook/textbookSlice'
 
 const DOMAIN_URL = process.env.REACT_APP_DOMAIN as string
 
@@ -59,14 +59,10 @@ export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: Te
 		}
 	}
 
-	const handleAddToDifficult = () => {
+	const toggleWordDifficulty = () => {
 		const difficulty = userWord?.difficulty === WordDifficulty.Difficult ? WordDifficulty.Normal : WordDifficulty.Difficult
 
-		dispatch(addWordToDifficult({ wordId: id, difficulty }))
-	}
-
-	const handleRemoveFromDifficult = () => {
-		console.log('removing diff')
+		dispatch(changeWordDifficulty({ wordId: id, difficulty }))
 	}
 
 	return (
@@ -118,16 +114,14 @@ export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: Te
 
 				<Stack direction="row" justifyContent="space-between" sx={{ display: isLoggedIn ? 'flex' : 'none' }}>
 					<ColorButton
-						onClick={handleAddToDifficult}
+						onClick={toggleWordDifficulty}
 						variant="contained"
 						size="small"
 						activeColor={activeColor}
-						sx={{ display: userWord?.difficulty === WordDifficulty.Difficult ? 'none' : 'block' }}
+						disabled={userWord?.difficulty === WordDifficulty.Difficult && group !== 6}
+						// sx={{ display: userWord?.difficulty === WordDifficulty.Difficult ? 'none' : 'block' }}
 					>
-						To difficult
-					</ColorButton>
-					<ColorButton onClick={handleRemoveFromDifficult} variant="contained" size="small" activeColor={activeColor} sx={{ display: group === 6 ? 'block' : 'none' }}>
-						Remove from difficult
+						{userWord?.difficulty === WordDifficulty.Difficult ? 'Remove from difficult' : 'Add to difficult'}
 					</ColorButton>
 					<ColorButton variant="contained" size="small" activeColor={activeColor}>
 						To learned

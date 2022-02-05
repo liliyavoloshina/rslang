@@ -23,14 +23,13 @@ interface UserWordOptional {
 }
 
 interface UserWord {
-	wordId?: string
 	difficulty?: string
 	optional?: Record<string, unknown> | UserWordOptional
 }
 
 enum WordDifficulty {
 	Difficult = 'difficult',
-	Normal = 'difficult',
+	Normal = 'normal',
 }
 
 export type { Word, UserWord }

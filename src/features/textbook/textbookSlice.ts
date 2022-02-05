@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 // eslint-disable-next-line import/no-cycle
 import { RootState } from '../../app/store'
-import { Word } from '../../types/word'
+import { Word, WordDifficulty } from '../../types/word'
 import apiClient from '../../utils/api'
 
 export interface TextbookState {
@@ -52,12 +52,17 @@ export const fetchDifficultWords = createAsyncThunk('textbook/fetchDifficultWord
 	})
 })
 
-export const addWordToDifficult = createAsyncThunk('textbook/addWordToDifficult', async (arg: { wordId: string; difficulty: string }, { getState }) => {
+export const changeWordDifficulty = createAsyncThunk('textbook/changeWordDifficulty', async (arg: { wordId: string; difficulty: string }, { getState }) => {
 	const state = getState() as RootState
 	const { userInfo } = state.auth
 	const { wordId, difficulty } = arg
 
-	const res = await apiClient.addWordToDifficult(userInfo.userId as string, wordId, difficulty)
+	if (difficulty === WordDifficulty.Normal) {
+		await apiClient.removeWordFromDifficult(userInfo.userId as string, wordId, difficulty)
+	} else {
+		await apiClient.addWordToDifficult(userInfo.userId as string, wordId, difficulty)
+	}
+
 	return { wordId, difficulty }
 })
 
@@ -88,8 +93,9 @@ export const textbookSlice = createSlice({
 				state.status = 'success'
 				state.words = action.payload
 			})
-			.addCase(addWordToDifficult.fulfilled, (state, action) => {
+			.addCase(changeWordDifficulty.fulfilled, (state, action) => {
 				const { wordId, difficulty } = action.payload!
+
 				state.words = state.words.map(word => {
 					if (word.id === wordId) {
 						const updatedWord = word
@@ -109,6 +115,10 @@ export const textbookSlice = createSlice({
 
 					return word
 				})
+
+				if (difficulty === WordDifficulty.Normal) {
+					state.words = state.words.filter(word => word.id !== wordId)
+				}
 			})
 	},
 })
