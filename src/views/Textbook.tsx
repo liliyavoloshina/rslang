@@ -63,7 +63,7 @@ function Textbook() {
 					  })}
 			</Grid>
 
-			<Box sx={{ flex: '0 0 auto' }}>
+			<Box sx={{ flex: '0 0 auto', display: group !== 6 ? 'block' : 'none' }}>
 				<TextbookPagination />
 			</Box>
 		</Container>

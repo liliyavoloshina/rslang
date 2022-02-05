@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Link as RouterLink } from 'react-router-dom'
+import { Link as RouterLink, useNavigate } from 'react-router-dom'
 import { Menu as MenuIcon } from '@mui/icons-material'
 import Link from '@mui/material/Link'
 import Stack from '@mui/material/Stack'
@@ -15,7 +15,7 @@ import Tooltip from '@mui/material/Tooltip'
 import MenuItem from '@mui/material/MenuItem'
 import PersonIcon from '@mui/icons-material/Person'
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
-import { selectAuthUserInfo, logOut } from '../../features/auth/authSlice'
+import { selectAuthUserInfo, signOut } from '../../features/auth/authSlice'
 
 const pages = [
 	{
@@ -49,13 +49,14 @@ const settings = [
 		path: 'signup',
 	},
 	{
-		name: 'Login',
-		path: 'login',
+		name: 'Sign In',
+		path: 'signin',
 	},
 ]
 
 function Header() {
 	const dispatch = useAppDispatch()
+	const navigate = useNavigate()
 	const userInfo = useAppSelector(selectAuthUserInfo)
 	const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null)
 	const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null)
@@ -85,9 +86,10 @@ function Header() {
 		setAnchorElGames(null)
 	}
 
-	const handleLogOut = () => {
-		dispatch(logOut())
+	const handleSignOut = () => {
+		dispatch(signOut())
 		handleCloseUserMenu()
+		navigate('/')
 	}
 
 	return (
@@ -200,7 +202,7 @@ function Header() {
 							onClose={handleCloseUserMenu}
 						>
 							{userInfo.token ? (
-								<Button onClick={handleLogOut}>Sign Out</Button>
+								<Button onClick={handleSignOut}>Sign Out</Button>
 							) : (
 								settings.map((setting, idx) => (
 									<MenuItem key={setting.name} onClick={handleCloseUserMenu}>

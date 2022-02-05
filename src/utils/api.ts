@@ -1,5 +1,5 @@
 import { ApiMethod, ApiBody, ApiConfig, ApiHeaders, GetUserWordsResponse } from '../types/api'
-import { SignInData, SignInResponse } from '../types/auth'
+import { SignInData, SignInResponse, SignUpData, SignUpResponse } from '../types/auth'
 import { UserWord, Word } from '../types/word'
 import { localStorageGetUser } from './localStorage'
 
@@ -21,10 +21,11 @@ const apiClient = async <T>(endpoint: string, method: ApiMethod, body?: ApiBody)
 		config.body = JSON.stringify(body)
 	}
 
-	const response = await fetch(endpoint, config)
+	const response = await fetch(`${DOMAIN_URL}/${endpoint}`, config)
 
 	if (!response.ok) {
-		throw new Error(response.statusText)
+		const error = await response.text()
+		throw new Error(error)
 	}
 
 	const data = await response.json()
@@ -32,23 +33,27 @@ const apiClient = async <T>(endpoint: string, method: ApiMethod, body?: ApiBody)
 }
 
 apiClient.getAllWords = (group: number, page: number) => {
-	return apiClient<Word[]>(`${DOMAIN_URL}/words?group=${group}&page=${page}`, ApiMethod.Get)
+	return apiClient<Word[]>(`words?group=${group}&page=${page}`, ApiMethod.Get)
 }
 
 apiClient.getUserWords = (id: string, group: number, page: number) => {
-	return apiClient<GetUserWordsResponse[]>(`${DOMAIN_URL}/users/${id}/aggregatedWords?group=${group}&page=${page}&wordsPerPage=20`, ApiMethod.Get)
+	return apiClient<GetUserWordsResponse[]>(`users/${id}/aggregatedWords?group=${group}&page=${page}&wordsPerPage=20`, ApiMethod.Get)
 }
 
 apiClient.getDifficultWords = (id: string) => {
-	return apiClient<GetUserWordsResponse[]>(`${DOMAIN_URL}/users/${id}/aggregatedWords?filter={"$and":[{"userWord.difficulty":"difficult"}]}`, ApiMethod.Get)
+	return apiClient<GetUserWordsResponse[]>(`users/${id}/aggregatedWords?filter={"$and":[{"userWord.difficulty":"difficult"}]}`, ApiMethod.Get)
 }
 
 // apiClient.addWordToDifficult = (id: string) => {
-// 	return apiClient<Word[]>(`${DOMAIN_URL}/users/${id}/words`, ApiMethod.Get)
+// 	return apiClient<Word[]>(`users/${id}/words`, ApiMethod.Get)
 // }
 
 apiClient.signIn = (signinData: SignInData) => {
-	return apiClient<SignInResponse>(`${DOMAIN_URL}/signin`, ApiMethod.Post, signinData)
+	return apiClient<SignInResponse>(`signin`, ApiMethod.Post, signinData)
+}
+
+apiClient.signUp = (signupData: SignUpData) => {
+	return apiClient<SignUpResponse>(`users`, ApiMethod.Post, signupData)
 }
 
 export default apiClient

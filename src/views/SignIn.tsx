@@ -3,49 +3,37 @@ import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
 import FormControl from '@mui/material/FormControl'
+import Button from '@mui/material/Button'
 import LoadingButton from '@mui/lab/LoadingButton'
 import Alert from '@mui/lab/Alert'
 import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link as RouterLink, useNavigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../app/hooks'
-import { signIn, selectAuthLoading, selectAuthIsLoggedIn, selectAuthIsSignInFailed, clearError } from '../features/auth/authSlice'
+import { signIn, selectAuthLoading, selectAuthIsLoggedIn, selectAuthSignInError, clearError } from '../features/auth/authSlice'
+import { validateEmail } from '../utils/helpers'
 
-function Login() {
+function SignIn() {
 	const navigate = useNavigate()
 	const dispatch = useAppDispatch()
 	const loading = useAppSelector(selectAuthLoading)
 	const isLoggedIn = useAppSelector(selectAuthIsLoggedIn)
-	const isSignInFailed = useAppSelector(selectAuthIsSignInFailed)
+	const signInError = useAppSelector(selectAuthSignInError)
 
-	const [emailData, setEmailData] = useState<string>('')
-	const [emailError, setEmailError] = useState<string>('')
-	const [passwordData, setPasswordData] = useState<string>('')
-	const [passwordError, setPasswordError] = useState<string>('')
-
-	const validateEmail = (email: string) => {
-		return String(email)
-			.toLowerCase()
-			.match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)
-	}
+	const [emailData, setEmailData] = useState('')
+	const [emailError, setEmailError] = useState('')
+	const [passwordData, setPasswordData] = useState('')
+	const [passwordError, setPasswordError] = useState('')
 
 	useEffect(() => {
 		if (!emailData) return
 
-		if (validateEmail(emailData)) {
-			setEmailError('')
-		} else {
-			setEmailError('Invalid E-mail!')
-		}
+		setEmailError(validateEmail(emailData) ? '' : 'Invalid E-mail!')
 	}, [emailData])
 
 	useEffect(() => {
 		if (!passwordData) return
 
-		if (passwordData.length >= 6) {
-			setPasswordError('')
-		} else {
-			setPasswordError('Password is too short!')
-		}
+		setPasswordError(passwordData.length < 7 ? 'Password is too short!' : '')
 	}, [passwordData])
 
 	useEffect(() => {
@@ -72,13 +60,13 @@ function Login() {
 
 	return (
 		<Stack alignItems="center" justifyContent="center" sx={{ height: '100%' }}>
-			<Box component="form" autoComplete="off" onSubmit={handleSubmit}>
+			<Box component="form" onSubmit={handleSubmit}>
 				<Typography variant="h3" gutterBottom>
-					Login
+					Sign In
 				</Typography>
-				{isSignInFailed && (
+				{signInError && (
 					<Alert severity="error" sx={{ my: 2 }}>
-						Invalid password or e-mail!
+						{signInError}
 					</Alert>
 				)}
 				<FormControl fullWidth sx={{ my: 1 }}>
@@ -88,11 +76,14 @@ function Login() {
 					<TextField value={passwordData} onChange={e => setPasswordData(e.target.value)} label="Password" type="password" error={!!passwordError} helperText={passwordError} />
 				</FormControl>
 				<LoadingButton fullWidth type="submit" disabled={!!passwordError || !!emailError} loading={loading} loadingIndicator="Loading..." variant="outlined">
-					Login
+					Sign In
 				</LoadingButton>
+				<Button sx={{ my: 1 }} fullWidth variant="text" component={RouterLink} to="/signup">
+					Don&#39;t have an account?
+				</Button>
 			</Box>
 		</Stack>
 	)
 }
 
-export default Login
+export default SignIn

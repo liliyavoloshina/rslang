@@ -5,16 +5,9 @@ const shuffleArray = <T>(array: T[]) => {
 	}
 }
 
-const setToken = (val: string) => {
-	localStorage.setItem('token', val)
-}
+const validateEmail = (email: string) =>
+	email.match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)
 
-const getToken = () => {
-	return localStorage.getItem('token')
-}
+const handleError = (err: unknown) => `Ooops! ${err instanceof Error ? err.message : 'Unknown Error'}`
 
-const removeToken = () => {
-	localStorage.removeItem('token')
-}
-
-export { shuffleArray, getToken, removeToken, setToken }
+export { shuffleArray, handleError, validateEmail }
