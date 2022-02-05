@@ -30,6 +30,7 @@ interface UserWord {
 
 enum WordDifficulty {
 	Difficult = 'difficult',
+	Normal = 'difficult',
 }
 
 export type { Word, UserWord }

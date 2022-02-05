@@ -11,8 +11,8 @@ import Button, { ButtonProps } from '@mui/material/Button'
 import VolumeUpIcon from '@mui/icons-material/VolumeUp'
 import { Word, WordDifficulty } from '../../types/word'
 import styles from './Textbook.module.css'
-import { useAppSelector } from '../../app/hooks'
-import { selectTextbookGroup } from '../../features/textbook/textbookSlice'
+import { useAppDispatch, useAppSelector } from '../../app/hooks'
+import { addWordToDifficult, selectTextbookGroup } from '../../features/textbook/textbookSlice'
 
 const DOMAIN_URL = process.env.REACT_APP_DOMAIN as string
 
@@ -36,8 +36,10 @@ const ColorButton = styled(Button, { shouldForwardProp: prop => prop !== 'active
 }))
 
 export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: TextbookCardProps) {
+	const dispatch = useAppDispatch()
+
 	const group = useAppSelector(selectTextbookGroup)
-	const { image, word, transcription, wordTranslate, textMeaning, textMeaningTranslate, textExample, textExampleTranslate, audio, audioExample, audioMeaning, userWord } =
+	const { id, image, word, transcription, wordTranslate, textMeaning, textMeaningTranslate, textExample, textExampleTranslate, audio, audioExample, audioMeaning, userWord } =
 		passedWord
 	const imageUrl = `${DOMAIN_URL}/${image}`
 
@@ -58,7 +60,9 @@ export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: Te
 	}
 
 	const handleAddToDifficult = () => {
-		console.log('add diff')
+		const difficulty = userWord?.difficulty === WordDifficulty.Difficult ? WordDifficulty.Normal : WordDifficulty.Difficult
+
+		dispatch(addWordToDifficult({ wordId: id, difficulty }))
 	}
 
 	const handleRemoveFromDifficult = () => {

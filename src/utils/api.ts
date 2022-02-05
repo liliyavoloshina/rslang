@@ -44,9 +44,15 @@ apiClient.getDifficultWords = (id: string) => {
 	return apiClient<GetUserWordsResponse[]>(`users/${id}/aggregatedWords?filter={"$and":[{"userWord.difficulty":"difficult"}]}`, ApiMethod.Get)
 }
 
-// apiClient.addWordToDifficult = (id: string) => {
-// 	return apiClient<Word[]>(`users/${id}/words`, ApiMethod.Get)
-// }
+apiClient.getUserWord = (userId: string, wordId: string) => {
+	return apiClient<Word[]>(`users/${userId}/words/${wordId}`, ApiMethod.Get)
+}
+
+apiClient.addWordToDifficult = (userId: string, wordId: string, difficulty: string) => {
+	return apiClient<Word[]>(`users/${userId}/words/${wordId}`, ApiMethod.Post, {
+		difficulty,
+	})
+}
 
 apiClient.signIn = (signinData: SignInData) => {
 	return apiClient<SignInResponse>(`signin`, ApiMethod.Post, signinData)
