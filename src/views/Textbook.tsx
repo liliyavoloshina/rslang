@@ -2,28 +2,42 @@ import React, { useEffect } from 'react'
 import { Container, Typography, Box, Grid } from '@mui/material'
 import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
-import CircularProgress from '@mui/material/CircularProgress'
 import Skeleton from '@mui/material/Skeleton'
 import { pink, orange, lightGreen, lightBlue, cyan, deepPurple } from '@mui/material/colors'
 import { Link as RouterLink } from 'react-router-dom'
 import TextbookGroupDropdown from '../components/textbook/TextbookGroupDropdown'
 import TextbookCard from '../components/textbook/TextbookCard'
 import TextbookPagination from '../components/textbook/TextbookPagination'
-import { fetchTextbookWords, selectTextbookWords, selectTextbookGroup, selectTextbookStatus } from '../features/textbook/textbookSlice'
+import {
+	fetchTextbookWords,
+	selectTextbookWords,
+	selectTextbookGroup,
+	selectTextbookStatus,
+	getCompletedPages,
+	selectTextbookCompletedPages,
+	selectTextbookPage,
+} from '../features/textbook/textbookSlice'
 import { useAppDispatch, useAppSelector } from '../app/hooks'
 import { selectAuthIsLoggedIn } from '../features/auth/authSlice'
+import { WordDifficulty } from '../types/word'
+import { WORD_PER_PAGE_AMOUNT } from '../utils/constants'
 
 function Textbook() {
 	const dispatch = useAppDispatch()
 	const words = useAppSelector(selectTextbookWords)
 	const group = useAppSelector(selectTextbookGroup)
+	const page = useAppSelector(selectTextbookPage)
 	const isLoggedIn = useAppSelector(selectAuthIsLoggedIn)
 	const status = useAppSelector(selectTextbookStatus)
 	const groupColors = [pink[500], orange[500], lightGreen[500], lightBlue[500], cyan[500], deepPurple[500]]
 	const activeColor = groupColors[group]
+	const completedPages = useAppSelector(selectTextbookCompletedPages)
+
+	const isPageCompleted = group in completedPages && completedPages[group][page]
 
 	useEffect(() => {
 		dispatch(fetchTextbookWords())
+		dispatch(getCompletedPages())
 	}, [])
 
 	return (
@@ -36,10 +50,10 @@ function Textbook() {
 				<TextbookGroupDropdown />
 
 				<Stack spacing={2} direction="row" justifyContent="space-between">
-					<Button component={RouterLink} to="/sprint" state={{ fromTextbook: true }}>
+					<Button component={RouterLink} to="/sprint" state={{ fromTextbook: true }} disabled={isPageCompleted}>
 						Sprint
 					</Button>
-					<Button component={RouterLink} to="/audiocall" state={{ fromTextbook: true }}>
+					<Button component={RouterLink} to="/audiocall" state={{ fromTextbook: true }} disabled={isPageCompleted}>
 						Audiocall
 					</Button>
 				</Stack>

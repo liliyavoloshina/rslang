@@ -1,4 +1,4 @@
-import { ApiMethod, ApiBody, ApiConfig, ApiHeaders, GetUserWordsResponse } from '../types/api'
+import { ApiMethod, ApiBody, ApiConfig, ApiHeaders, GetUserWordsResponse, GetUserStatisticResponse } from '../types/api'
 import { SignInData, SignInResponse, SignUpData, SignUpResponse } from '../types/auth'
 import { UserWord, Word } from '../types/word'
 import { localStorageGetUser } from './localStorage'
@@ -66,6 +66,24 @@ apiClient.addWordToLearned = async (userId: string, wordId: string, isLearned: b
 			isLearned,
 		},
 	})
+}
+
+apiClient.updateCompletedPages = (userId: string, page: number, group: number, isPageCompleted: boolean) => {
+	const dataToSend = {
+		optional: {
+			completedPages: {
+				[group]: {
+					[page]: isPageCompleted,
+				},
+			},
+		},
+	}
+
+	return apiClient<GetUserStatisticResponse>(`users/${userId}/statistics`, ApiMethod.Put, dataToSend)
+}
+
+apiClient.getCompletedPages = (userId: string) => {
+	return apiClient<GetUserStatisticResponse>(`users/${userId}/statistics`, ApiMethod.Get)
 }
 
 apiClient.signIn = (signinData: SignInData) => {

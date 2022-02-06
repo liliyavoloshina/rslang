@@ -3,7 +3,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { RootState } from '../../app/store'
 import { Word } from '../../types/word'
 import apiClient from '../../utils/api'
-import { MAX_AUDIOCALL_ANSWERS_AMOUNT, MAX_WORD_GAME_AMOUNT } from '../../utils/constants'
+import { MAX_AUDIOCALL_ANSWERS_AMOUNT, WORD_PER_PAGE_AMOUNT } from '../../utils/constants'
 import { shuffleArray } from '../../utils/helpers'
 
 const DOMAIN_URL = process.env.REACT_APP_DOMAIN as string
@@ -55,7 +55,7 @@ export const audiocallSlice = createSlice({
 	initialState,
 	reducers: {
 		nextWord: state => {
-			if (state.currentIdx === MAX_WORD_GAME_AMOUNT - 1) {
+			if (state.currentIdx === WORD_PER_PAGE_AMOUNT - 1) {
 				state.isFinished = true
 				return
 			}

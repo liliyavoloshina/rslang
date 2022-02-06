@@ -13,14 +13,12 @@ import {
 	fetchAudiocallWords,
 	selectAudiocallWords,
 	selectAudiocallAnswers,
-	selectAudiocallCurrentIdx,
 	selectAudiocallStatus,
 	selectAudiocallCurrentWord,
 	selectAudiocallIsFinished,
 	nextWord,
 	selectAudiocallIsLevelSelection,
 	toggleLevelSelection,
-	toggleAudiocallAudio,
 } from '../features/audiocall/audiocallSlice'
 import Popup from '../components/layout/Popup'
 import { selectTextbookGroup, selectTextbookPage } from '../features/textbook/textbookSlice'
