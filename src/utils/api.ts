@@ -1,4 +1,4 @@
-import { ApiMethod, ApiBody, ApiConfig, ApiHeaders, GetUserWordsResponse, GetUserStatisticResponse } from '../types/api'
+import { ApiMethod, ApiBody, ApiConfig, ApiHeaders, GetUserWordsResponse, UserStatistic } from '../types/api'
 import { SignInData, SignInResponse, SignUpData, SignUpResponse } from '../types/auth'
 import { UserWord, Word } from '../types/word'
 import { localStorageGetUser } from './localStorage'
@@ -68,12 +68,16 @@ apiClient.addWordToLearned = async (userId: string, wordId: string, isLearned: b
 	})
 }
 
-apiClient.updateCompletedPages = (userId: string, updatedStatistic: GetUserStatisticResponse['optional']) => {
-	return apiClient<GetUserStatisticResponse>(`users/${userId}/statistics`, ApiMethod.Put, { optional: updatedStatistic })
+apiClient.updateCompletedPages = (userId: string, updatedStatistic: UserStatistic['optional']) => {
+	return apiClient<UserStatistic>(`users/${userId}/statistics`, ApiMethod.Put, { optional: updatedStatistic })
+}
+
+apiClient.setNewStatistic = (userId: string, newStatistic: UserStatistic) => {
+	return apiClient<UserStatistic>(`users/${userId}/statistics`, ApiMethod.Put, newStatistic)
 }
 
 apiClient.getUserStatistic = (userId: string) => {
-	return apiClient<GetUserStatisticResponse>(`users/${userId}/statistics`, ApiMethod.Get)
+	return apiClient<UserStatistic>(`users/${userId}/statistics`, ApiMethod.Get)
 }
 
 apiClient.signIn = (signinData: SignInData) => {

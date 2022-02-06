@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 // eslint-disable-next-line import/no-cycle
 import { RootState } from '../../app/store'
-import { ApiMethod, CompletedPages } from '../../types/api'
+import { ApiMethod, CompletedPages, StatisticOptional } from '../../types/api'
 import { Word, WordDifficulty } from '../../types/word'
 import apiClient from '../../utils/api'
 import { WORD_PER_PAGE_AMOUNT } from '../../utils/constants'
@@ -47,7 +47,7 @@ export const fetchTextbookWords = createAsyncThunk('textbook/fetchWords', async 
 export const getCompletedPages = createAsyncThunk('textbook/getCompletedPages', async (arg, { getState }) => {
 	const state = getState() as RootState
 	const { userInfo } = state.auth
-	const res = await apiClient.getUserStatistic(userInfo.userId as string)
+	const res = (await apiClient.getUserStatistic(userInfo.userId as string)) || {}
 	return res.optional.completedPages as CompletedPages
 })
 
@@ -110,6 +110,19 @@ export const changeWordLearnedStatus = createAsyncThunk('textbook/changeWordLear
 	}
 
 	return { wordId, wordLearnedStatus, isPageCompleted }
+})
+
+export const createNewStatistic = createAsyncThunk('textbook/createNewStatistic', async (arg, { getState }) => {
+	const state = getState() as RootState
+	const { userInfo } = state.auth
+	const newStatistic = {
+		learnedWords: 0,
+		optional: {
+			completedPages: { 0: { 0: false } },
+		},
+	}
+
+	await apiClient.setNewStatistic(userInfo.userId as string, newStatistic)
 })
 
 export const textbookSlice = createSlice({

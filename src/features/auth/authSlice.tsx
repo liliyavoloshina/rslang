@@ -19,6 +19,7 @@ export const signIn = createAsyncThunk('auth/signin', async (arg: SignInData, { 
 export const signUp = createAsyncThunk('auth/signup', async (arg: SignUpData, { rejectWithValue }) => {
 	try {
 		await apiClient.signUp(arg)
+
 		return { email: arg.email, password: arg.password }
 	} catch (e) {
 		const errorToShow = handleError(e)

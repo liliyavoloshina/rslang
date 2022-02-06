@@ -9,8 +9,19 @@ import Button from '@mui/material/Button'
 import { Link as RouterLink, useNavigate } from 'react-router-dom'
 import React, { useEffect, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '../app/hooks'
-import { signUp, selectAuthLoading, clearError, selectAuthSignUpError, selectAuthIsLoggedIn, selectAuthIsSignUpInProcess, signIn } from '../features/auth/authSlice'
+import {
+	signUp,
+	selectAuthLoading,
+	clearError,
+	selectAuthSignUpError,
+	selectAuthIsLoggedIn,
+	selectAuthIsSignUpInProcess,
+	signIn,
+	selectAuthUserInfo,
+} from '../features/auth/authSlice'
 import { validateEmail } from '../utils/helpers'
+import apiClient from '../utils/api'
+import { createNewStatistic } from '../features/textbook/textbookSlice'
 
 function SignUp() {
 	const navigate = useNavigate()
@@ -61,9 +72,14 @@ function SignUp() {
 		await dispatch(signUp({ name: nameData, email: emailData, password: passwordData }))
 	}
 
+	const signInAfterSignUp = async () => {
+		await dispatch(signIn({ email: emailData, password: passwordData }))
+		await dispatch(createNewStatistic())
+	}
+
 	useEffect(() => {
-		if (!signUpError) {
-			dispatch(signIn({ email: emailData, password: passwordData }))
+		if (!signUpError && isSignUpInProcess) {
+			signInAfterSignUp()
 		}
 	}, [isSignUpInProcess])
 

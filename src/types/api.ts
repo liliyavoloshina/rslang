@@ -29,17 +29,17 @@ interface GetUserWordsResponse {
 	]
 }
 
-interface StatisticOptional {
-	completedPages: CompletedPages
-}
-
 interface CompletedPages {
 	[key: number]: {
 		[key: number]: boolean
 	}
 }
 
-interface GetUserStatisticResponse {
+interface StatisticOptional {
+	completedPages: CompletedPages
+}
+
+interface UserStatistic {
 	learnedWords: number
 	optional: StatisticOptional
 }
@@ -47,4 +47,4 @@ interface GetUserStatisticResponse {
 type ApiBody = any
 
 export { ApiMethod }
-export type { ApiConfig, ApiBody, ApiHeaders, GetUserWordsResponse, GetUserStatisticResponse, CompletedPages }
+export type { ApiConfig, ApiBody, ApiHeaders, GetUserWordsResponse, UserStatistic, CompletedPages, StatisticOptional }
