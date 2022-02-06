@@ -68,21 +68,11 @@ apiClient.addWordToLearned = async (userId: string, wordId: string, isLearned: b
 	})
 }
 
-apiClient.updateCompletedPages = (userId: string, page: number, group: number, isPageCompleted: boolean) => {
-	const dataToSend = {
-		optional: {
-			completedPages: {
-				[group]: {
-					[page]: isPageCompleted,
-				},
-			},
-		},
-	}
-
-	return apiClient<GetUserStatisticResponse>(`users/${userId}/statistics`, ApiMethod.Put, dataToSend)
+apiClient.updateCompletedPages = (userId: string, updatedStatistic: GetUserStatisticResponse['optional']) => {
+	return apiClient<GetUserStatisticResponse>(`users/${userId}/statistics`, ApiMethod.Put, { optional: updatedStatistic })
 }
 
-apiClient.getCompletedPages = (userId: string) => {
+apiClient.getUserStatistic = (userId: string) => {
 	return apiClient<GetUserStatisticResponse>(`users/${userId}/statistics`, ApiMethod.Get)
 }
 

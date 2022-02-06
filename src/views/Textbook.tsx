@@ -47,6 +47,12 @@ function Textbook() {
 			<Stack spacing={2} direction="row" justifyContent="space-between" sx={{ marginBottom: '50px' }}>
 				<TextbookGroupDropdown />
 
+				<Box>
+					<Typography variant="h6" sx={{ display: isPageCompleted ? 'block' : 'none' }}>
+						Fully learned section!
+					</Typography>
+				</Box>
+
 				<Stack spacing={2} direction="row" justifyContent="space-between">
 					<Button component={RouterLink} to="/sprint" state={{ fromTextbook: true }} disabled={isPageCompleted}>
 						Sprint

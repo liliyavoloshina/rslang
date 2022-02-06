@@ -47,7 +47,7 @@ export const fetchTextbookWords = createAsyncThunk('textbook/fetchWords', async 
 export const getCompletedPages = createAsyncThunk('textbook/getCompletedPages', async (arg, { getState }) => {
 	const state = getState() as RootState
 	const { userInfo } = state.auth
-	const res = await apiClient.getCompletedPages(userInfo.userId as string)
+	const res = await apiClient.getUserStatistic(userInfo.userId as string)
 	return res.optional.completedPages as CompletedPages
 })
 
@@ -90,19 +90,26 @@ export const changeWordLearnedStatus = createAsyncThunk('textbook/changeWordLear
 		await apiClient.addWordToLearned(userId, wordId, wordLearnedStatus, ApiMethod.Post)
 	}
 
+	let isPageCompleted = false
+
 	if (wordLearnedStatus === true) {
-		const isPageCompleted = words.filter(word => word.userWord?.difficulty === WordDifficulty.Difficult || word.userWord?.optional?.isLearned).length === WORD_PER_PAGE_AMOUNT - 1
+		const learnedOrDifficultWord = words.filter(word => word.userWord?.difficulty === WordDifficulty.Difficult || word.userWord?.optional?.isLearned === true)
+		isPageCompleted = learnedOrDifficultWord.length + 1 === WORD_PER_PAGE_AMOUNT
+		const currentStatistic = await apiClient.getUserStatistic(userId)
 
-		if (isPageCompleted) {
-			await apiClient.updateCompletedPages(userId, page, group, true)
-		} else {
-			await apiClient.updateCompletedPages(userId, page, group, false)
+		const newGroupField = {
+			...currentStatistic.optional.completedPages[group],
 		}
+		newGroupField[page] = isPageCompleted
 
+		const updatedOptional = { ...currentStatistic.optional }
+		updatedOptional.completedPages[group] = newGroupField
+
+		await apiClient.updateCompletedPages(userId, updatedOptional)
 		await apiClient.removeWordFromDifficult(userId, wordId, WordDifficulty.Normal)
 	}
 
-	return { wordId, wordLearnedStatus }
+	return { wordId, wordLearnedStatus, isPageCompleted }
 })
 
 export const textbookSlice = createSlice({
@@ -160,7 +167,7 @@ export const textbookSlice = createSlice({
 				}
 			})
 			.addCase(changeWordLearnedStatus.fulfilled, (state, action) => {
-				const { wordId, wordLearnedStatus } = action.payload!
+				const { wordId, wordLearnedStatus, isPageCompleted } = action.payload!
 
 				state.words = state.words.map(word => {
 					if (word.id === wordId) {
@@ -184,6 +191,10 @@ export const textbookSlice = createSlice({
 
 				if (wordLearnedStatus === true && state.group === 6) {
 					state.words = state.words.filter(word => word.id !== wordId)
+				}
+
+				if (isPageCompleted) {
+					state.completedPages[state.group][state.page] = true
 				}
 
 				if (wordLearnedStatus === true) {
