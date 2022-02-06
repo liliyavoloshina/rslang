@@ -20,4 +20,25 @@ const localStorageRemoveUser = () => {
 	localStorage.removeItem(`${LS_KEYWORD}-userinfo`)
 }
 
-export { localStorageSetUser, localStorageGetUser, localStorageRemoveUser }
+interface LSPaginationParams {
+	name: 'group' | 'page'
+	value: number
+}
+
+const localStorageSetPagination = ({ value, name }: LSPaginationParams) => {
+	const valueToStore = JSON.stringify(value)
+	localStorage.setItem(`${LS_KEYWORD}-${name}`, valueToStore)
+}
+
+const localStorageGetPagination = () => {
+	const storedGroup = localStorage.getItem(`${LS_KEYWORD}-group`)
+	const storedPage = localStorage.getItem(`${LS_KEYWORD}-page`)
+
+	if (storedGroup && storedPage) {
+		return { group: JSON.parse(storedGroup), page: JSON.parse(storedPage) }
+	}
+
+	return { group: 0, page: 0 }
+}
+
+export { localStorageSetUser, localStorageGetUser, localStorageRemoveUser, localStorageSetPagination, localStorageGetPagination }

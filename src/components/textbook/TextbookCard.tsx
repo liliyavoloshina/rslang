@@ -112,7 +112,7 @@ export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: Te
 								<BookmarkAddedIcon />
 							</IconButton>
 						</Tooltip>
-						<Tooltip title={isDifficultDisable ? '' : 'Add to difficult'}>
+						<Tooltip title={isDifficultDisable ? '' : isDifficult ? 'Remove from difficult' : 'Add to difficult'}>
 							<IconButton sx={{ color: difficultBtnColor }} onClick={toggleWordDifficulty} disabled={isDifficultDisable}>
 								<DiamondIcon />
 							</IconButton>

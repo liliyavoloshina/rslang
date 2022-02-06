@@ -16,9 +16,13 @@ import {
 	getCompletedPages,
 	selectTextbookCompletedPages,
 	selectTextbookPage,
+	changeGroup,
+	changePage,
+	fetchDifficultWords,
 } from '../features/textbook/textbookSlice'
 import { useAppDispatch, useAppSelector } from '../app/hooks'
 import { selectAuthIsLoggedIn } from '../features/auth/authSlice'
+import { localStorageGetPagination } from '../utils/localStorage'
 
 function Textbook() {
 	const dispatch = useAppDispatch()
@@ -34,7 +38,18 @@ function Textbook() {
 	const isPageCompleted = group in completedPages && completedPages[group][page]
 
 	useEffect(() => {
-		dispatch(fetchTextbookWords())
+		const storedPagination = localStorageGetPagination()
+		const storedGroup = storedPagination.group
+		const storedPage = storedPagination.page
+		dispatch(changeGroup(storedGroup))
+		dispatch(changePage(storedPage))
+
+		if (storedGroup === 6) {
+			dispatch(fetchDifficultWords())
+		} else {
+			dispatch(fetchTextbookWords())
+		}
+
 		dispatch(getCompletedPages())
 	}, [])
 
@@ -48,7 +63,7 @@ function Textbook() {
 				<TextbookGroupDropdown />
 
 				<Box>
-					<Typography variant="h6" sx={{ display: isPageCompleted ? 'block' : 'none' }}>
+					<Typography variant="h6" sx={{ display: isPageCompleted ? 'block' : 'none', color: lightGreen[500] }}>
 						Fully learned section!
 					</Typography>
 				</Box>

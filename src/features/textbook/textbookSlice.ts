@@ -5,6 +5,7 @@ import { ApiMethod, CompletedPages } from '../../types/api'
 import { Word, WordDifficulty } from '../../types/word'
 import apiClient from '../../utils/api'
 import { WORD_PER_PAGE_AMOUNT } from '../../utils/constants'
+import { localStorageSetPagination } from '../../utils/localStorage'
 
 export interface TextbookState {
 	words: Word[]
@@ -143,10 +144,14 @@ export const textbookSlice = createSlice({
 	initialState,
 	reducers: {
 		changePage: (state, action) => {
-			state.page = action.payload
+			const newPage = action.payload
+			state.page = newPage
+			localStorageSetPagination({ name: 'page', value: newPage })
 		},
 		changeGroup: (state, action) => {
-			state.group = action.payload
+			const newGroup = action.payload
+			state.group = newGroup
+			localStorageSetPagination({ name: 'group', value: newGroup })
 		},
 	},
 	extraReducers: builder => {
@@ -169,7 +174,11 @@ export const textbookSlice = createSlice({
 				const { wordId, difficulty, isPageCompleted } = action.payload!
 
 				if (isPageCompleted) {
-					state.completedPages[state.group][state.page] = true
+					if (state.completedPages[state.group]) {
+						state.completedPages[state.group][state.page] = true
+					} else {
+						state.completedPages[state.group] = { [state.page]: true }
+					}
 				}
 
 				state.words = state.words.map(word => {
@@ -224,7 +233,11 @@ export const textbookSlice = createSlice({
 				}
 
 				if (isPageCompleted) {
-					state.completedPages[state.group][state.page] = true
+					if (state.completedPages[state.group]) {
+						state.completedPages[state.group][state.page] = true
+					} else {
+						state.completedPages[state.group] = { [state.page]: true }
+					}
 				}
 
 				if (wordLearnedStatus === true) {

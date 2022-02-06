@@ -28,13 +28,15 @@ export default function TextbookPagination() {
 				renderItem={item => {
 					let isCompleted = false
 					if (Object.keys(completedPages).length !== 0) {
-						const completed = item.type === 'page' && completedPages[group][item.page - 1]
-						isCompleted = !!completed
+						if (completedPages[group]) {
+							const completed = item.type === 'page' && completedPages[group][item.page - 1]
+							isCompleted = !!completed
+						}
 					}
 
 					item.color = isCompleted ? 'standard' : 'primary'
 
-					return <PaginationItem {...item} sx={{ backgroundColor: isCompleted ? `${lightGreen[300]} !important` : '' }} />
+					return <PaginationItem {...item} sx={{ backgroundColor: isCompleted ? `${lightGreen[100]}` : '' }} />
 				}}
 			/>
 		</Stack>
