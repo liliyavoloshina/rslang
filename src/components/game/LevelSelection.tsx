@@ -16,12 +16,13 @@ import { GameName } from '~/types/game'
 
 interface LevelSelectionProps {
 	gameName: GameName
+	onLevelSelected?: (group: number) => void
 }
 
 function LevelSelection(props: LevelSelectionProps) {
 	const [group, setGroup] = useState(0)
 
-	const { gameName } = props
+	const { gameName, onLevelSelected } = props
 	const gameDesc = gameName === GameName.Audiocall ? 'Улучши восприятие слов нас слух' : 'Сколько слов ты сможешь угадать за 30 секунд?'
 	const dispatch = useAppDispatch()
 
@@ -31,7 +32,11 @@ function LevelSelection(props: LevelSelectionProps) {
 	}
 
 	const handlePlay = () => {
-		dispatch(fetchAudiocallWords({ group, page: 0 }))
+		if (gameName === GameName.Audiocall) {
+			dispatch(fetchAudiocallWords({ group, page: 0 }))
+		} else {
+			onLevelSelected?.(group)
+		}
 		dispatch(toggleLevelSelection(false))
 	}
 
@@ -61,6 +66,10 @@ function LevelSelection(props: LevelSelectionProps) {
 			</Button>
 		</Container>
 	)
+}
+
+LevelSelection.defaultProps = {
+	onLevelSelected: undefined,
 }
 
 export default LevelSelection

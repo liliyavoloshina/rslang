@@ -25,10 +25,7 @@ const initialState: AudiocallState = {
 	status: 'idle',
 }
 
-export const fetchAudiocallWords = createAsyncThunk('audiocall/fetchWords', async ({ group, page }: { group: number; page: number }) => {
-	const response = await apiClient.getAllWords(group, page)
-	return response
-})
+export const fetchAudiocallWords = createAsyncThunk('audiocall/fetchWords', ({ group, page }: { group: number; page: number }) => apiClient.getAllWords(group, page))
 
 const getRandomAnswers = (correctAnswer: string, answers: string[]) => {
 	shuffleArray(answers)
