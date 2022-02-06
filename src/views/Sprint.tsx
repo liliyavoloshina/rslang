@@ -1,8 +1,29 @@
+import React, { useEffect, useState } from 'react'
+import { useDispatch } from 'react-redux'
+
+import Container from '@mui/material/Container'
+
+import { useAppSelector } from '~/app/hooks'
+import { GameName } from '~/types/game'
+import { reset, selectSprintQuestion } from '~/features/sprint/sprintSlice'
+import LevelSelection from '~/components/game/LevelSelection'
+import SprintGame from '~/components/game/Sprint'
+
 function Sprint() {
+	const [group, setGroup] = useState<number | undefined>()
+	const { isIdle } = useAppSelector(selectSprintQuestion)
+
+	const dispatch = useDispatch()
+
+	useEffect(() => {
+		dispatch(reset())
+	}, [dispatch])
+
 	return (
-		<div className="sprint">
-			<h1>Sprint page</h1>
-		</div>
+		<Container maxWidth="sm" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+			{isIdle && <LevelSelection gameName={GameName.Sprint} onLevelSelected={setGroup} />}
+			{group !== undefined && <SprintGame group={group} page={0} />}
+		</Container>
 	)
 }
 
