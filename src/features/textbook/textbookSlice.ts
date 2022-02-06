@@ -185,6 +185,19 @@ export const textbookSlice = createSlice({
 				if (wordLearnedStatus === true && state.group === 6) {
 					state.words = state.words.filter(word => word.id !== wordId)
 				}
+
+				if (wordLearnedStatus === true) {
+					state.words = state.words.map(word => {
+						if (word.id === wordId) {
+							word.userWord = {
+								...word.userWord,
+								difficulty: WordDifficulty.Normal,
+							}
+						}
+
+						return word
+					})
+				}
 			})
 			.addCase(getCompletedPages.fulfilled, (state, action) => {
 				state.completedPages = action.payload
