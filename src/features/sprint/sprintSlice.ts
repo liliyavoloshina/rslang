@@ -8,8 +8,8 @@ import { shuffleArray } from '../../utils/helpers'
 
 type SprintState = {
 	words: Word[]
-	currentWord?: Word
-	suggestedTranslation?: string
+	currentWord: Word | undefined
+	suggestedTranslation: string | undefined
 	currentIdx: number
 	isFinished: boolean
 	correctWords: Word[]
@@ -21,6 +21,8 @@ const initialState: SprintState = {
 	words: [],
 	currentIdx: 0,
 	isFinished: false,
+	currentWord: undefined,
+	suggestedTranslation: undefined,
 	correctWords: [],
 	incorrectWords: [],
 	status: 'idle',
@@ -65,12 +67,7 @@ export const sprintSlice = createSlice({
 			}
 		},
 		reset: state => {
-			state.status = 'idle'
-			state.currentIdx = 0
-			state.correctWords = []
-			state.incorrectWords = []
-			state.isFinished = false
-			state.currentWord = undefined
+			Object.assign(state, initialState)
 		},
 	},
 	extraReducers: builder => {
