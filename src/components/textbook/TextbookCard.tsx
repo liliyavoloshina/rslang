@@ -6,6 +6,7 @@ import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
 import CardContent from '@mui/material/CardContent'
 import Stack from '@mui/material/Stack'
+import Chip from '@mui/material/Chip'
 import Tooltip from '@mui/material/Tooltip'
 import VolumeUpIcon from '@mui/icons-material/VolumeUp'
 import BookmarkAddedIcon from '@mui/icons-material/BookmarkAdded'
@@ -32,9 +33,10 @@ export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: Te
 		passedWord
 
 	const isLearned = userWord?.optional?.isLearned as boolean
-	const isDifficultDisable = (userWord?.difficulty === WordDifficulty.Difficult && group !== 6) || isLearned
-	const toDifficultBtnColor = blue.A200
-	const toLearnedBtnColor = lightGreen[500]
+	const isDifficult = userWord?.difficulty === WordDifficulty.Difficult
+	const isDifficultDisable = (isDifficult && group !== 6) || isLearned
+	const difficultBtnColor = blue.A200
+	const learnedBtnColor = lightGreen[500]
 
 	const imageUrl = `${DOMAIN_URL}/${image}`
 	const audioUrls = [`${DOMAIN_URL}/${audio}`, `${DOMAIN_URL}/${audioMeaning}`, `${DOMAIN_URL}/${audioExample}`]
@@ -66,7 +68,7 @@ export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: Te
 	return (
 		<Card sx={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
 			<CardMedia sx={{ flex: '1 1 150px', minHeight: '200px' }} image={imageUrl} />
-			<CardContent sx={{ flex: '1 1 500px', display: 'flex', flexDirection: 'column' }}>
+			<CardContent sx={{ flex: '1 1 500px', display: 'flex', flexDirection: 'column', rowGap: '10px' }}>
 				<Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
 					<Box>
 						<Typography variant="h6">
@@ -82,7 +84,7 @@ export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: Te
 				</Box>
 
 				<Stack flexDirection="row" justifyContent="space-between" alignItems="center">
-					<Stack rowGap="10px" paddingTop="15px">
+					<Stack rowGap="10px">
 						<Stack>
 							<Typography
 								className={styles.textbookCardMarkdown}
@@ -102,28 +104,34 @@ export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: Te
 								{textExampleTranslate}
 							</Typography>
 						</Stack>
-
-						<Box sx={{ display: isLoggedIn ? 'block' : 'none' }}>
-							<Typography variant="subtitle2" color={theme => theme.text.success}>
-								Правильных ответов: {userWord?.optional?.correctAnswers ? userWord?.optional?.correctAnswers : 0}
-							</Typography>
-							<Typography variant="subtitle2" color={theme => theme.text.danger}>
-								Неправильных ответов: {userWord?.optional?.incorrectAnswers ? userWord?.optional?.incorrectAnswers : 0}
-							</Typography>
-						</Box>
 					</Stack>
 
 					<Stack>
 						<Tooltip title={isLearned ? '' : 'Add to learned'} placement="top">
-							<IconButton sx={{ color: toLearnedBtnColor }} onClick={addToLearned} disabled={isLearned}>
+							<IconButton sx={{ color: learnedBtnColor }} onClick={addToLearned} disabled={isLearned}>
 								<BookmarkAddedIcon />
 							</IconButton>
 						</Tooltip>
 						<Tooltip title={isDifficultDisable ? '' : 'Add to difficult'}>
-							<IconButton sx={{ color: toDifficultBtnColor }} onClick={toggleWordDifficulty} disabled={isDifficultDisable}>
+							<IconButton sx={{ color: difficultBtnColor }} onClick={toggleWordDifficulty} disabled={isDifficultDisable}>
 								<DiamondIcon />
 							</IconButton>
 						</Tooltip>
+					</Stack>
+				</Stack>
+
+				<Stack flexDirection="row" justifyContent="space-between" sx={{ display: isLoggedIn ? 'flex' : 'none' }}>
+					<Box>
+						<Typography variant="subtitle2" color={theme => theme.text.success}>
+							Правильных ответов: {userWord?.optional?.correctAnswers ? userWord?.optional?.correctAnswers : 0}
+						</Typography>
+						<Typography variant="subtitle2" color={theme => theme.text.danger}>
+							Неправильных ответов: {userWord?.optional?.incorrectAnswers ? userWord?.optional?.incorrectAnswers : 0}
+						</Typography>
+					</Box>
+					<Stack flexDirection="row" columnGap="10px">
+						<Chip sx={{ display: isLearned ? 'flex' : 'none', backgroundColor: learnedBtnColor, color: '#fff' }} label="Learned" />
+						<Chip sx={{ display: isDifficult ? 'flex' : 'none', backgroundColor: difficultBtnColor, color: '#fff' }} label="Difficult" />
 					</Stack>
 				</Stack>
 			</CardContent>

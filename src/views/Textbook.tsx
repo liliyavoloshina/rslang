@@ -19,8 +19,6 @@ import {
 } from '../features/textbook/textbookSlice'
 import { useAppDispatch, useAppSelector } from '../app/hooks'
 import { selectAuthIsLoggedIn } from '../features/auth/authSlice'
-import { WordDifficulty } from '../types/word'
-import { WORD_PER_PAGE_AMOUNT } from '../utils/constants'
 
 function Textbook() {
 	const dispatch = useAppDispatch()
