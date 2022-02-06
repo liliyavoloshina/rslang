@@ -16,10 +16,6 @@ const localStorageGetUser = (): UserInfo | null => {
 	return null
 }
 
-// const localStorageRemoveUser = () => {
-// 	localStorage.removeItem(`${LS_KEYWORD}-userinfo`)
-// }
-
 interface LSPaginationParams {
 	name: 'group' | 'page'
 	value: number

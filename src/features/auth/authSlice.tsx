@@ -1,5 +1,4 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-// eslint-disable-next-line import/no-cycle
 import { RootState } from '../../app/store'
 import { SignInData, SignUpData, UserInfo } from '../../types/auth'
 import apiClient from '../../utils/api'

@@ -1,5 +1,4 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-// eslint-disable-next-line import/no-cycle
 import { RootState } from '../../app/store'
 import { ApiMethod, CompletedPages } from '../../types/api'
 import { Word, WordDifficulty } from '../../types/word'

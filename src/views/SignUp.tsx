@@ -9,18 +9,8 @@ import Button from '@mui/material/Button'
 import { Link as RouterLink, useNavigate } from 'react-router-dom'
 import React, { useEffect, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '../app/hooks'
-import {
-	signUp,
-	selectAuthLoading,
-	clearError,
-	selectAuthSignUpError,
-	selectAuthIsLoggedIn,
-	selectAuthIsSignUpInProcess,
-	signIn,
-	selectAuthUserInfo,
-} from '../features/auth/authSlice'
+import { signUp, selectAuthLoading, clearError, selectAuthSignUpError, selectAuthIsLoggedIn, selectAuthIsSignUpInProcess, signIn } from '../features/auth/authSlice'
 import { validateEmail } from '../utils/helpers'
-import apiClient from '../utils/api'
 import { createNewStatistic } from '../features/textbook/textbookSlice'
 
 function SignUp() {

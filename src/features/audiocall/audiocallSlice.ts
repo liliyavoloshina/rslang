@@ -1,5 +1,4 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-// eslint-disable-next-line import/no-cycle
 import { RootState } from '../../app/store'
 import { Word } from '../../types/word'
 import apiClient from '../../utils/api'
@@ -72,8 +71,6 @@ export const audiocallSlice = createSlice({
 			state.isLevelSelection = action.payload
 		},
 		toggleAudiocallAudio: state => {
-			console.log(state.currentWord, 'state.currentWord')
-
 			const newAudio = new Audio(`${DOMAIN_URL}/${state.currentWord!.audio}`)
 			newAudio.play()
 		},
