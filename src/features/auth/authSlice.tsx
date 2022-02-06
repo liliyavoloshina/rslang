@@ -4,7 +4,7 @@ import { RootState } from '../../app/store'
 import { SignInData, SignUpData, UserInfo } from '../../types/auth'
 import apiClient from '../../utils/api'
 import { handleError } from '../../utils/helpers'
-import { localStorageRemoveUser, localStorageSetUser } from '../../utils/localStorage'
+import { localStorageClear, localStorageSetUser } from '../../utils/localStorage'
 
 export const signIn = createAsyncThunk('auth/signin', async (arg: SignInData, { rejectWithValue }) => {
 	try {
@@ -60,7 +60,7 @@ export const authSlice = createSlice({
 		signOut: state => {
 			state.userInfo = {}
 			state.isLoggedIn = false
-			localStorageRemoveUser()
+			localStorageClear()
 		},
 	},
 	extraReducers: builder => {

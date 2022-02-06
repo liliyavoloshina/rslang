@@ -16,9 +16,9 @@ const localStorageGetUser = (): UserInfo | null => {
 	return null
 }
 
-const localStorageRemoveUser = () => {
-	localStorage.removeItem(`${LS_KEYWORD}-userinfo`)
-}
+// const localStorageRemoveUser = () => {
+// 	localStorage.removeItem(`${LS_KEYWORD}-userinfo`)
+// }
 
 interface LSPaginationParams {
 	name: 'group' | 'page'
@@ -41,4 +41,8 @@ const localStorageGetPagination = () => {
 	return { group: 0, page: 0 }
 }
 
-export { localStorageSetUser, localStorageGetUser, localStorageRemoveUser, localStorageSetPagination, localStorageGetPagination }
+const localStorageClear = () => {
+	localStorage.clear()
+}
+
+export { localStorageSetUser, localStorageGetUser, localStorageSetPagination, localStorageGetPagination, localStorageClear }
