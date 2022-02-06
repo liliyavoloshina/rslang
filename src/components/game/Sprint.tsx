@@ -12,7 +12,7 @@ import { useAppSelector } from '../../app/hooks'
 import { selectSprintQuestion, answer, startGame } from '../../features/sprint/sprintSlice'
 
 type SprintProps = {
-	page: number
+	page?: number
 	group: number
 }
 
@@ -52,6 +52,10 @@ function Sprint({ group, page }: SprintProps) {
 			<Popup isOpen={isFinished} incorrectWords={incorrectWords} correctWords={correctWords} />
 		</>
 	)
+}
+
+Sprint.defaultProps = {
+	page: undefined,
 }
 
 export default Sprint

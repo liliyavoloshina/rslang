@@ -22,7 +22,7 @@ function Sprint() {
 	return (
 		<Container maxWidth="sm" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
 			{isIdle && <LevelSelection gameName={GameName.Sprint} onLevelSelected={setGroup} />}
-			{group !== undefined && <SprintGame group={group} page={0} />}
+			{group !== undefined && <SprintGame group={group} />}
 		</Container>
 	)
 }

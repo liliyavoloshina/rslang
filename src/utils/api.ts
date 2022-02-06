@@ -32,8 +32,8 @@ const apiClient = async <T>(endpoint: string, method: ApiMethod, body?: ApiBody)
 	return data
 }
 
-apiClient.getAllWords = (group: number, page: number) => {
-	return apiClient<Word[]>(`words?group=${group}&page=${page}`, ApiMethod.Get)
+apiClient.getAllWords = (group: number, page?: number) => {
+	return apiClient<Word[]>(`words?group=${group}${page !== undefined ? `&page=${page}` : ''}`, ApiMethod.Get)
 }
 
 apiClient.getUserWords = (id: string, group: number, page: number) => {
