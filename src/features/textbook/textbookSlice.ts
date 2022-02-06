@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 // eslint-disable-next-line import/no-cycle
 import { RootState } from '../../app/store'
-import { ApiMethod, CompletedPages, StatisticOptional } from '../../types/api'
+import { ApiMethod, CompletedPages } from '../../types/api'
 import { Word, WordDifficulty } from '../../types/word'
 import apiClient from '../../utils/api'
 import { WORD_PER_PAGE_AMOUNT } from '../../utils/constants'
@@ -20,6 +20,26 @@ const initialState: TextbookState = {
 	group: 0,
 	status: 'idle',
 	completedPages: {},
+}
+
+const updateCompletedPages = async (words: Word[], group: number, page: number, userId: string) => {
+	let isPageCompleted = false
+
+	const learnedOrDifficultWord = words.filter(word => word.userWord?.difficulty === WordDifficulty.Difficult || word.userWord?.optional?.isLearned === true)
+	isPageCompleted = learnedOrDifficultWord.length + 1 === WORD_PER_PAGE_AMOUNT
+	const currentStatistic = await apiClient.getUserStatistic(userId)
+
+	const newGroupField = {
+		...currentStatistic.optional.completedPages[group],
+	}
+	newGroupField[page] = isPageCompleted
+
+	const updatedOptional = { ...currentStatistic.optional }
+	updatedOptional.completedPages[group] = newGroupField
+
+	await apiClient.updateCompletedPages(userId, updatedOptional)
+
+	return isPageCompleted
 }
 
 export const fetchTextbookWords = createAsyncThunk('textbook/fetchWords', async (arg, { getState }) => {
@@ -66,15 +86,20 @@ export const fetchDifficultWords = createAsyncThunk('textbook/fetchDifficultWord
 export const changeWordDifficulty = createAsyncThunk('textbook/changeWordDifficulty', async (arg: { wordId: string; difficulty: string }, { getState }) => {
 	const state = getState() as RootState
 	const { userInfo } = state.auth
+	const { words, group, page } = state.textbook
 	const { wordId, difficulty } = arg
+	const userId = userInfo.userId as string
+
+	let isPageCompleted = false
 
 	if (difficulty === WordDifficulty.Normal) {
-		await apiClient.removeWordFromDifficult(userInfo.userId as string, wordId, difficulty)
+		await apiClient.removeWordFromDifficult(userId, wordId, difficulty)
 	} else {
-		await apiClient.addWordToDifficult(userInfo.userId as string, wordId, difficulty)
+		await apiClient.addWordToDifficult(userId, wordId, difficulty)
+		isPageCompleted = await updateCompletedPages(words, group, page, userId)
 	}
 
-	return { wordId, difficulty }
+	return { wordId, difficulty, isPageCompleted }
 })
 
 export const changeWordLearnedStatus = createAsyncThunk('textbook/changeWordLearnedStatus', async (arg: { wordId: string; wordLearnedStatus: boolean }, { getState }) => {
@@ -93,19 +118,7 @@ export const changeWordLearnedStatus = createAsyncThunk('textbook/changeWordLear
 	let isPageCompleted = false
 
 	if (wordLearnedStatus === true) {
-		const learnedOrDifficultWord = words.filter(word => word.userWord?.difficulty === WordDifficulty.Difficult || word.userWord?.optional?.isLearned === true)
-		isPageCompleted = learnedOrDifficultWord.length + 1 === WORD_PER_PAGE_AMOUNT
-		const currentStatistic = await apiClient.getUserStatistic(userId)
-
-		const newGroupField = {
-			...currentStatistic.optional.completedPages[group],
-		}
-		newGroupField[page] = isPageCompleted
-
-		const updatedOptional = { ...currentStatistic.optional }
-		updatedOptional.completedPages[group] = newGroupField
-
-		await apiClient.updateCompletedPages(userId, updatedOptional)
+		isPageCompleted = await updateCompletedPages(words, group, page, userId)
 		await apiClient.removeWordFromDifficult(userId, wordId, WordDifficulty.Normal)
 	}
 
@@ -153,7 +166,11 @@ export const textbookSlice = createSlice({
 				state.words = action.payload
 			})
 			.addCase(changeWordDifficulty.fulfilled, (state, action) => {
-				const { wordId, difficulty } = action.payload!
+				const { wordId, difficulty, isPageCompleted } = action.payload!
+
+				if (isPageCompleted) {
+					state.completedPages[state.group][state.page] = true
+				}
 
 				state.words = state.words.map(word => {
 					if (word.id === wordId) {
