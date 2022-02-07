@@ -1,6 +1,7 @@
 import BookmarkAddedIcon from '@mui/icons-material/BookmarkAdded'
 import DiamondIcon from '@mui/icons-material/Diamond'
 import VolumeUpIcon from '@mui/icons-material/VolumeUp'
+import { Theme } from '@mui/material'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
@@ -74,7 +75,7 @@ export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: Te
 						<Typography variant="h6">
 							{word} - [{transcription}]
 						</Typography>
-						<Typography variant="h6" color={theme => theme.text.secondary}>
+						<Typography variant="h6" color={(theme: Theme) => theme.text.secondary}>
 							{wordTranslate}
 						</Typography>
 					</Box>
@@ -90,17 +91,22 @@ export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: Te
 								className={styles.textbookCardMarkdown}
 								sx={{ fontStyle: 'italic' }}
 								variant="subtitle2"
-								color={theme => theme.text.secondary}
+								color={(theme: Theme) => theme.text.secondary}
 								dangerouslySetInnerHTML={{ __html: textMeaning }}
 							/>
-							<Typography sx={{ fontStyle: 'italic' }} variant="subtitle2" color={theme => theme.text.secondary}>
+							<Typography sx={{ fontStyle: 'italic' }} variant="subtitle2" color={(theme: Theme) => theme.text.secondary}>
 								{textMeaningTranslate}
 							</Typography>
 						</Stack>
 
 						<Stack>
-							<Typography className={styles.textbookCardMarkdown} variant="subtitle2" color={theme => theme.text.secondary} dangerouslySetInnerHTML={{ __html: textExample }} />
-							<Typography variant="subtitle2" color={theme => theme.text.secondary}>
+							<Typography
+								className={styles.textbookCardMarkdown}
+								variant="subtitle2"
+								color={(theme: Theme) => theme.text.secondary}
+								dangerouslySetInnerHTML={{ __html: textExample }}
+							/>
+							<Typography variant="subtitle2" color={(theme: Theme) => theme.text.secondary}>
 								{textExampleTranslate}
 							</Typography>
 						</Stack>
@@ -121,6 +127,23 @@ export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: Te
 						</Stack>
 					)}
 				</Stack>
+
+				{isLoggedIn && (
+					<Stack flexDirection="row" justifyContent="space-between">
+						<Box>
+							<Typography variant="subtitle2" color={(theme: Theme) => theme.text.success}>
+								Правильных ответов: {userWord?.optional?.correctAnswers ? userWord?.optional?.correctAnswers : 0}
+							</Typography>
+							<Typography variant="subtitle2" color={(theme: Theme) => theme.text.danger}>
+								Неправильных ответов: {userWord?.optional?.incorrectAnswers ? userWord?.optional?.incorrectAnswers : 0}
+							</Typography>
+						</Box>
+						<Stack flexDirection="row" columnGap="10px">
+							<Chip sx={{ display: isLearned ? 'flex' : 'none', backgroundColor: learnedBtnColor, color: '#fff' }} label="Learned" />
+							<Chip sx={{ display: isDifficult ? 'flex' : 'none', backgroundColor: difficultBtnColor, color: '#fff' }} label="Difficult" />
+						</Stack>
+					</Stack>
+				)}
 			</CardContent>
 		</Card>
 	)

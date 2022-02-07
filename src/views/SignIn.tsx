@@ -1,4 +1,4 @@
-import { SyntheticEvent, useEffect, useState } from 'react'
+import { ChangeEvent, SyntheticEvent, useEffect, useState } from 'react'
 import { Link as RouterLink, useNavigate } from 'react-router-dom'
 
 import Alert from '@mui/lab/Alert'
@@ -72,10 +72,17 @@ function SignIn() {
 					</Alert>
 				)}
 				<FormControl fullWidth sx={{ my: 1 }}>
-					<TextField value={emailData} onChange={e => setEmailData(e.target.value)} label="Email" error={!!emailError} helperText={emailError} />
+					<TextField value={emailData} onChange={(e: ChangeEvent<HTMLInputElement>) => setEmailData(e.target.value)} label="Email" error={!!emailError} helperText={emailError} />
 				</FormControl>
 				<FormControl fullWidth sx={{ my: 1 }}>
-					<TextField value={passwordData} onChange={e => setPasswordData(e.target.value)} label="Password" type="password" error={!!passwordError} helperText={passwordError} />
+					<TextField
+						value={passwordData}
+						onChange={(e: ChangeEvent<HTMLInputElement>) => setPasswordData(e.target.value)}
+						label="Password"
+						type="password"
+						error={!!passwordError}
+						helperText={passwordError}
+					/>
 				</FormControl>
 				<LoadingButton fullWidth type="submit" disabled={!!passwordError || !!emailError} loading={loading} loadingIndicator="Loading..." variant="outlined">
 					Sign In
