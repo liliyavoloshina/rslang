@@ -53,7 +53,7 @@ function Textbook() {
 		}
 
 		dispatch(getCompletedPages())
-	}, [])
+	}, [dispatch])
 
 	return (
 		<Container maxWidth="lg" sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>

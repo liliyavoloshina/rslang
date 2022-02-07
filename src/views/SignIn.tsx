@@ -40,7 +40,7 @@ function SignIn() {
 
 	useEffect(() => {
 		dispatch(clearError())
-	}, [emailData, passwordData])
+	}, [dispatch, emailData, passwordData])
 
 	const handleSubmit = (e: SyntheticEvent) => {
 		e.preventDefault()
@@ -58,7 +58,7 @@ function SignIn() {
 		if (isLoggedIn) {
 			return navigate('/')
 		}
-	}, [isLoggedIn])
+	}, [navigate, isLoggedIn])
 
 	return (
 		<Stack alignItems="center" justifyContent="center" sx={{ height: '100%' }}>
