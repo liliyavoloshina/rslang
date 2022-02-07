@@ -6,12 +6,12 @@ import Container from '@mui/material/Container'
 import { useAppSelector } from '~/app/hooks'
 import LevelSelection from '~/components/game/LevelSelection'
 import SprintGame from '~/components/game/Sprint'
-import { reset, selectSprintQuestion } from '~/features/sprint/sprintSlice'
+import { reset, selectSprintState } from '~/features/sprint'
 import { GameName } from '~/types/game'
 
 function Sprint() {
 	const [group, setGroup] = useState<number | undefined>()
-	const { isIdle } = useAppSelector(selectSprintQuestion)
+	const { isIdle } = useAppSelector(selectSprintState)
 
 	const dispatch = useDispatch()
 

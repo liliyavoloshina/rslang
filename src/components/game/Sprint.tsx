@@ -8,7 +8,7 @@ import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 
 import { useAppSelector } from '~/app/hooks'
-import { answer, selectSprintQuestion, startGame } from '~/features/sprint/sprintSlice'
+import { answer, selectSprintState, startGame } from '~/features/sprint'
 
 import Popup from '../layout/Popup'
 
@@ -18,7 +18,7 @@ type SprintProps = {
 }
 
 function Sprint({ group, page }: SprintProps) {
-	const { word, suggestedTranslation, isFinished, correctWords, incorrectWords } = useAppSelector(selectSprintQuestion)
+	const { word, suggestedTranslation, isFinished, correctWords, incorrectWords } = useAppSelector(selectSprintState)
 
 	const dispatch = useDispatch()
 
