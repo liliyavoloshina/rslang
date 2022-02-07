@@ -106,36 +106,21 @@ export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: Te
 						</Stack>
 					</Stack>
 
-					<Stack>
-						<Tooltip title={isLearned ? '' : 'Add to learned'} placement="top">
-							<IconButton sx={{ color: learnedBtnColor }} onClick={addToLearned} disabled={isLearned}>
-								<BookmarkAddedIcon />
-							</IconButton>
-						</Tooltip>
-						<Tooltip title={isDifficultDisable ? '' : isDifficult ? 'Remove from difficult' : 'Add to difficult'}>
-							<IconButton sx={{ color: difficultBtnColor }} onClick={toggleWordDifficulty} disabled={isDifficultDisable}>
-								<DiamondIcon />
-							</IconButton>
-						</Tooltip>
-					</Stack>
-				</Stack>
-
-				{isLoggedIn && (
-					<Stack flexDirection="row" justifyContent="space-between" sx={{ display: 'flex' }}>
-						<Box>
-							<Typography variant="subtitle2" color={theme => theme.text.success}>
-								Правильных ответов: {userWord?.optional?.correctAnswers ? userWord?.optional?.correctAnswers : 0}
-							</Typography>
-							<Typography variant="subtitle2" color={theme => theme.text.danger}>
-								Неправильных ответов: {userWord?.optional?.incorrectAnswers ? userWord?.optional?.incorrectAnswers : 0}
-							</Typography>
-						</Box>
-						<Stack flexDirection="row" columnGap="10px">
-							<Chip sx={{ display: isLearned ? 'flex' : 'none', backgroundColor: learnedBtnColor, color: '#fff' }} label="Learned" />
-							<Chip sx={{ display: isDifficult ? 'flex' : 'none', backgroundColor: difficultBtnColor, color: '#fff' }} label="Difficult" />
+					{isLoggedIn && (
+						<Stack>
+							<Tooltip title={isLearned ? '' : 'Add to learned'} placement="top">
+								<IconButton sx={{ color: learnedBtnColor }} onClick={addToLearned} disabled={isLearned}>
+									<BookmarkAddedIcon />
+								</IconButton>
+							</Tooltip>
+							<Tooltip title={isDifficultDisable ? '' : isDifficult ? 'Remove from difficult' : 'Add to difficult'}>
+								<IconButton sx={{ color: difficultBtnColor }} onClick={toggleWordDifficulty} disabled={isDifficultDisable}>
+									<DiamondIcon />
+								</IconButton>
+							</Tooltip>
 						</Stack>
-					</Stack>
-				)}
+					)}
+				</Stack>
 			</CardContent>
 		</Card>
 	)
