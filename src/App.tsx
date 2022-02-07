@@ -4,7 +4,7 @@ import { ThemeProvider } from '@mui/material/styles'
 
 import Footer from '~/components/layout/Footer'
 import Header from '~/components/layout/Header'
-import { Router } from '~/components/router'
+import { Path, Router } from '~/components/router'
 import { setUser } from '~/features/auth'
 import { localStorageGetUser } from '~/utils/localStorage'
 import theme from '~/utils/theme'
@@ -15,7 +15,7 @@ function App() {
 	const location = useLocation().pathname
 	const dispatch = useAppDispatch()
 
-	const isFooter = !!(location !== '/audiocall' && location !== '/sprint')
+	const isFooter = [Path.AUDIO_CALL, Path.SPRINT].every(pattern => !location.startsWith(pattern))
 
 	const user = localStorageGetUser()
 

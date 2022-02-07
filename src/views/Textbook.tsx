@@ -8,6 +8,7 @@ import Stack from '@mui/material/Stack'
 import { cyan, deepPurple, lightBlue, lightGreen, orange, pink } from '@mui/material/colors'
 
 import { useAppDispatch, useAppSelector } from '~/app/hooks'
+import { Path } from '~/components/router'
 import TextbookCard from '~/components/textbook/TextbookCard'
 import TextbookGroupDropdown from '~/components/textbook/TextbookGroupDropdown'
 import TextbookPagination from '~/components/textbook/TextbookPagination'
@@ -73,7 +74,7 @@ function Textbook() {
 				)}
 
 				<Stack spacing={2} direction="row" justifyContent="space-between">
-					<Button component={RouterLink} to="/sprint" state={{ fromTextbook: true }} disabled={isPageCompleted}>
+					<Button component={RouterLink} to={`${Path.SPRINT}/${group}/${page}`} state={{ fromTextbook: true }} disabled={isPageCompleted}>
 						Sprint
 					</Button>
 					<Button component={RouterLink} to="/audiocall" state={{ fromTextbook: true }} disabled={isPageCompleted}>

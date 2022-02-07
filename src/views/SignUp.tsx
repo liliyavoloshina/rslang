@@ -11,6 +11,7 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 
 import { useAppDispatch, useAppSelector } from '~/app/hooks'
+import { Path } from '~/components/router'
 import { clearError, selectAuthIsLoggedIn, selectAuthIsSignUpInProcess, selectAuthLoading, selectAuthSignUpError, signIn, signUp } from '~/features/auth'
 import { createNewStatistic } from '~/features/textbook/textbookSlice'
 import { validateEmail } from '~/utils/helpers'
@@ -75,10 +76,11 @@ function SignUp() {
 		}
 	}, [isSignUpInProcess, signInAfterSignUp, signUpError])
 
+	// TODO: maybe it's a good idea to move this logic to store or app context
 	// eslint-disable-next-line consistent-return
 	useEffect(() => {
 		if (isLoggedIn) {
-			return navigate('/')
+			return navigate(Path.HOME)
 		}
 	}, [navigate, isLoggedIn])
 
