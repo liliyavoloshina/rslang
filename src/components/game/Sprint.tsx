@@ -24,7 +24,7 @@ function Sprint({ group, page }: SprintProps) {
 
 	useEffect(() => {
 		dispatch(startGame({ group, page }))
-	}, [startGame, group, page])
+	}, [dispatch, group, page])
 
 	const selectOption = (option: boolean) => dispatch(answer(option))
 

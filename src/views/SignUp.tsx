@@ -1,4 +1,4 @@
-import { ChangeEvent, SyntheticEvent, useEffect, useState } from 'react'
+import { ChangeEvent, SyntheticEvent, useCallback, useEffect, useState } from 'react'
 import { Link as RouterLink, useNavigate } from 'react-router-dom'
 
 import LoadingButton from '@mui/lab/LoadingButton'
@@ -50,7 +50,7 @@ function SignUp() {
 
 	useEffect(() => {
 		dispatch(clearError())
-	}, [nameData, emailData, passwordData])
+	}, [dispatch, nameData, emailData, passwordData])
 
 	const handleSubmit = async (e: SyntheticEvent) => {
 		e.preventDefault()
@@ -64,23 +64,23 @@ function SignUp() {
 		await dispatch(signUp({ name: nameData, email: emailData, password: passwordData }))
 	}
 
-	const signInAfterSignUp = async () => {
+	const signInAfterSignUp = useCallback(async () => {
 		await dispatch(signIn({ email: emailData, password: passwordData }))
 		await dispatch(createNewStatistic())
-	}
+	}, [dispatch, emailData, passwordData])
 
 	useEffect(() => {
 		if (!signUpError && isSignUpInProcess) {
 			signInAfterSignUp()
 		}
-	}, [isSignUpInProcess])
+	}, [isSignUpInProcess, signInAfterSignUp, signUpError])
 
 	// eslint-disable-next-line consistent-return
 	useEffect(() => {
 		if (isLoggedIn) {
 			return navigate('/')
 		}
-	}, [isLoggedIn])
+	}, [navigate, isLoggedIn])
 
 	return (
 		<Stack alignItems="center" justifyContent="center" sx={{ height: '100%' }}>
