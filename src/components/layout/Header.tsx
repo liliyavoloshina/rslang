@@ -17,42 +17,43 @@ import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 
 import { useAppDispatch, useAppSelector } from '~/app/hooks'
+import { Path } from '~/components/router'
 import { selectAuthUserInfo, signOut } from '~/features/auth'
 
-const pages = [
+const PAGES: { name: string; path: Path }[] = [
 	{
 		name: 'Home',
-		path: '/',
+		path: Path.HOME,
 	},
 	{
 		name: 'Textbook',
-		path: 'textbook',
+		path: Path.TEXTBOOK,
 	},
 	{
 		name: 'Statistic',
-		path: 'statistic',
+		path: Path.STATISTIC,
 	},
 ]
 
-const games = [
+const GAMES: { name: string; path: Path }[] = [
 	{
 		name: 'Sprint',
-		path: 'sprint',
+		path: Path.SPRINT,
 	},
 	{
 		name: 'Audiocall',
-		path: 'audiocall',
+		path: Path.AUDIO_CALL,
 	},
 ]
 
-const settings = [
+const SETTINGS: { name: string; path: Path }[] = [
 	{
 		name: 'Sign Up',
-		path: 'signup',
+		path: Path.SIGN_UP,
 	},
 	{
 		name: 'Sign In',
-		path: 'signin',
+		path: Path.SIGN_IN,
 	},
 ]
 
@@ -91,7 +92,7 @@ function Header() {
 	const handleSignOut = () => {
 		dispatch(signOut())
 		handleCloseUserMenu()
-		navigate('/')
+		navigate(Path.HOME)
 	}
 
 	return (
@@ -124,14 +125,14 @@ function Header() {
 								display: { xs: 'block', md: 'none' },
 							}}
 						>
-							{pages.map((page, idx) => (
+							{PAGES.map((page, idx) => (
 								<MenuItem key={page.name} onClick={handleCloseNavMenu}>
 									<Link underline="none" key={idx} component={RouterLink} to={page.path}>
 										<Typography textAlign="center">{page.name}</Typography>
 									</Link>
 								</MenuItem>
 							))}
-							{games.map((page, idx) => (
+							{GAMES.map((page, idx) => (
 								<MenuItem key={page.name} onClick={handleCloseNavMenu}>
 									<Link underline="none" key={idx} component={RouterLink} to={page.path}>
 										<Typography textAlign="center">{page.name}</Typography>
@@ -143,7 +144,7 @@ function Header() {
 
 					{/* desktop  */}
 					<Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-						{pages.map((page, idx) => (
+						{PAGES.map((page, idx) => (
 							<Button component={RouterLink} to={page.path} key={idx} onClick={handleCloseNavMenu} sx={{ my: 2, color: 'white', display: 'block' }}>
 								{page.name}
 							</Button>
@@ -170,7 +171,7 @@ function Header() {
 							open={Boolean(anchorElGames)}
 							onClose={handleCloseGamesMenu}
 						>
-							{games.map((game, idx) => (
+							{GAMES.map((game, idx) => (
 								<MenuItem key={game.name} onClick={handleCloseNavMenu}>
 									<Link underline="none" key={idx} component={RouterLink} to={game.path} state={{ fromTextbook: false }}>
 										<Typography textAlign="center">{game.name}</Typography>
@@ -206,7 +207,7 @@ function Header() {
 							{userInfo?.token ? (
 								<Button onClick={handleSignOut}>Sign Out</Button>
 							) : (
-								settings.map((setting, idx) => (
+								SETTINGS.map((setting, idx) => (
 									<MenuItem key={setting.name} onClick={handleCloseUserMenu}>
 										<Link underline="none" key={idx} component={RouterLink} to={setting.path}>
 											<Typography textAlign="center">{setting.name}</Typography>
