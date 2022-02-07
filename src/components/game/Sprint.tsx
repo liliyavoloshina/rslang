@@ -1,15 +1,16 @@
 import React, { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import Box from '@mui/material/Box'
-import YesIcon from '@mui/icons-material/CheckCircle'
+
 import NoIcon from '@mui/icons-material/Cancel'
+import YesIcon from '@mui/icons-material/CheckCircle'
+import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 
-import Popup from '../layout/Popup'
-import { useAppSelector } from '../../app/hooks'
+import { useAppSelector } from '~/app/hooks'
+import { answer, selectSprintQuestion, startGame } from '~/features/sprint/sprintSlice'
 
-import { selectSprintQuestion, answer, startGame } from '../../features/sprint/sprintSlice'
+import Popup from '../layout/Popup'
 
 type SprintProps = {
 	page?: number
