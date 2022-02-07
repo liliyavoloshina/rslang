@@ -1,16 +1,19 @@
-import Typography from '@mui/material/Typography'
-import Stack from '@mui/material/Stack'
-import Box from '@mui/material/Box'
-import TextField from '@mui/material/TextField'
-import FormControl from '@mui/material/FormControl'
+import { ChangeEvent, SyntheticEvent, useEffect, useState } from 'react'
+import { Link as RouterLink, useNavigate } from 'react-router-dom'
+
 import LoadingButton from '@mui/lab/LoadingButton'
 import Alert from '@mui/material/Alert'
+import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import { Link as RouterLink, useNavigate } from 'react-router-dom'
-import React, { useEffect, useState } from 'react'
-import { useAppDispatch, useAppSelector } from '../app/hooks'
-import { signUp, selectAuthLoading, clearError, selectAuthSignUpError, selectAuthIsLoggedIn, selectAuthIsSignUpInProcess, signIn } from '../features/auth/authSlice'
-import { validateEmail } from '../utils/helpers'
+import FormControl from '@mui/material/FormControl'
+import Stack from '@mui/material/Stack'
+import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
+
+import { useAppDispatch, useAppSelector } from '~/app/hooks'
+import { clearError, selectAuthIsLoggedIn, selectAuthIsSignUpInProcess, selectAuthLoading, selectAuthSignUpError, signIn, signUp } from '~/features/auth'
+import { createNewStatistic } from '~/features/textbook/textbookSlice'
+import { validateEmail } from '~/utils/helpers'
 
 function SignUp() {
 	const navigate = useNavigate()
@@ -49,7 +52,7 @@ function SignUp() {
 		dispatch(clearError())
 	}, [nameData, emailData, passwordData])
 
-	const handleSubmit = async (e: React.SyntheticEvent) => {
+	const handleSubmit = async (e: SyntheticEvent) => {
 		e.preventDefault()
 
 		if (!nameData || !passwordData || !emailData) {
@@ -61,9 +64,14 @@ function SignUp() {
 		await dispatch(signUp({ name: nameData, email: emailData, password: passwordData }))
 	}
 
+	const signInAfterSignUp = async () => {
+		await dispatch(signIn({ email: emailData, password: passwordData }))
+		await dispatch(createNewStatistic())
+	}
+
 	useEffect(() => {
-		if (!signUpError) {
-			dispatch(signIn({ email: emailData, password: passwordData }))
+		if (!signUpError && isSignUpInProcess) {
+			signInAfterSignUp()
 		}
 	}, [isSignUpInProcess])
 
@@ -86,13 +94,20 @@ function SignUp() {
 					</Alert>
 				)}
 				<FormControl fullWidth sx={{ my: 1 }}>
-					<TextField value={nameData} onChange={e => setNameData(e.target.value)} label="Name" error={!!nameError} helperText={nameError} />
+					<TextField value={nameData} onChange={(e: ChangeEvent<HTMLInputElement>) => setNameData(e.target.value)} label="Name" error={!!nameError} helperText={nameError} />
 				</FormControl>
 				<FormControl fullWidth sx={{ my: 1 }}>
-					<TextField value={emailData} onChange={e => setEmailData(e.target.value)} label="Email" error={!!emailError} helperText={emailError} />
+					<TextField value={emailData} onChange={(e: ChangeEvent<HTMLInputElement>) => setEmailData(e.target.value)} label="Email" error={!!emailError} helperText={emailError} />
 				</FormControl>
 				<FormControl fullWidth sx={{ my: 1 }}>
-					<TextField value={passwordData} onChange={e => setPasswordData(e.target.value)} label="Password" type="password" error={!!passwordError} helperText={passwordError} />
+					<TextField
+						value={passwordData}
+						onChange={(e: ChangeEvent<HTMLInputElement>) => setPasswordData(e.target.value)}
+						label="Password"
+						type="password"
+						error={!!passwordError}
+						helperText={passwordError}
+					/>
 				</FormControl>
 				<LoadingButton sx={{ my: 1 }} fullWidth type="submit" disabled={!!passwordError || !!emailError} loading={loading} loadingIndicator="Loading..." variant="outlined">
 					Sign Up

@@ -29,7 +29,22 @@ interface GetUserWordsResponse {
 	]
 }
 
-type ApiBody = any
+interface CompletedPages {
+	[key: number]: {
+		[key: number]: boolean
+	}
+}
+
+interface StatisticOptional {
+	completedPages: CompletedPages
+}
+
+interface UserStatistic {
+	learnedWords: number
+	optional: StatisticOptional
+}
+
+type ApiBody = unknown
 
 export { ApiMethod }
-export type { ApiConfig, ApiBody, ApiHeaders, GetUserWordsResponse }
+export type { ApiConfig, ApiBody, ApiHeaders, GetUserWordsResponse, UserStatistic, CompletedPages, StatisticOptional }

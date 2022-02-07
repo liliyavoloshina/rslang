@@ -20,16 +20,17 @@ interface Word {
 interface UserWordOptional {
 	correctAnswers: number
 	incorrectAnswers: number
+	isLearned: boolean
 }
 
 interface UserWord {
-	wordId?: string
 	difficulty?: string
 	optional?: Record<string, unknown> | UserWordOptional
 }
 
 enum WordDifficulty {
 	Difficult = 'difficult',
+	Normal = 'normal',
 }
 
 export type { Word, UserWord }

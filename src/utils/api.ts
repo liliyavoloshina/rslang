@@ -1,9 +1,9 @@
-import { ApiMethod, ApiBody, ApiConfig, ApiHeaders, GetUserWordsResponse } from '../types/api'
-import { SignInData, SignInResponse, SignUpData, SignUpResponse } from '../types/auth'
-import { UserWord, Word } from '../types/word'
-import { localStorageGetUser } from './localStorage'
+import { ApiBody, ApiConfig, ApiHeaders, ApiMethod, GetUserWordsResponse, UserStatistic } from '~/types/api'
+import { SignInData, SignInResponse, SignUpData, SignUpResponse } from '~/types/auth'
+import { UserWord, Word } from '~/types/word'
 
-const DOMAIN_URL = process.env.REACT_APP_DOMAIN as string
+import { DOMAIN_URL } from './constants'
+import { localStorageGetUser } from './localStorage'
 
 const apiClient = async <T>(endpoint: string, method: ApiMethod, body?: ApiBody): Promise<T> => {
 	const config: ApiConfig = {
@@ -40,13 +40,45 @@ apiClient.getUserWords = (id: string, group: number, page: number) => {
 	return apiClient<GetUserWordsResponse[]>(`users/${id}/aggregatedWords?group=${group}&page=${page}&wordsPerPage=20`, ApiMethod.Get)
 }
 
+apiClient.getUserWord = (userId: string, wordId: string) => {
+	return apiClient<Word>(`users/${userId}/words/${wordId}`, ApiMethod.Get)
+}
+
 apiClient.getDifficultWords = (id: string) => {
 	return apiClient<GetUserWordsResponse[]>(`users/${id}/aggregatedWords?filter={"$and":[{"userWord.difficulty":"difficult"}]}`, ApiMethod.Get)
 }
 
-// apiClient.addWordToDifficult = (id: string) => {
-// 	return apiClient<Word[]>(`users/${id}/words`, ApiMethod.Get)
-// }
+apiClient.addWordToDifficult = (userId: string, wordId: string, difficulty: string) => {
+	return apiClient<UserWord>(`users/${userId}/words/${wordId}`, ApiMethod.Post, {
+		difficulty,
+	})
+}
+
+apiClient.removeWordFromDifficult = (userId: string, wordId: string, difficulty: string) => {
+	return apiClient<UserWord>(`users/${userId}/words/${wordId}`, ApiMethod.Put, {
+		difficulty,
+	})
+}
+
+apiClient.addWordToLearned = async (userId: string, wordId: string, isLearned: boolean, method: ApiMethod) => {
+	return apiClient<UserWord>(`users/${userId}/words/${wordId}`, method, {
+		optional: {
+			isLearned,
+		},
+	})
+}
+
+apiClient.updateCompletedPages = (userId: string, updatedStatistic: UserStatistic['optional']) => {
+	return apiClient<UserStatistic>(`users/${userId}/statistics`, ApiMethod.Put, { optional: updatedStatistic })
+}
+
+apiClient.setNewStatistic = (userId: string, newStatistic: UserStatistic) => {
+	return apiClient<UserStatistic>(`users/${userId}/statistics`, ApiMethod.Put, newStatistic)
+}
+
+apiClient.getUserStatistic = (userId: string) => {
+	return apiClient<UserStatistic>(`users/${userId}/statistics`, ApiMethod.Get)
+}
 
 apiClient.signIn = (signinData: SignInData) => {
 	return apiClient<SignInResponse>(`signin`, ApiMethod.Post, signinData)

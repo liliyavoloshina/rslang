@@ -1,16 +1,18 @@
-import Typography from '@mui/material/Typography'
-import Stack from '@mui/material/Stack'
-import Box from '@mui/material/Box'
-import TextField from '@mui/material/TextField'
-import FormControl from '@mui/material/FormControl'
-import Button from '@mui/material/Button'
-import LoadingButton from '@mui/lab/LoadingButton'
-import Alert from '@mui/lab/Alert'
-import React, { useEffect, useState } from 'react'
+import { ChangeEvent, SyntheticEvent, useEffect, useState } from 'react'
 import { Link as RouterLink, useNavigate } from 'react-router-dom'
-import { useAppDispatch, useAppSelector } from '../app/hooks'
-import { signIn, selectAuthLoading, selectAuthIsLoggedIn, selectAuthSignInError, clearError } from '../features/auth/authSlice'
-import { validateEmail } from '../utils/helpers'
+
+import Alert from '@mui/lab/Alert'
+import LoadingButton from '@mui/lab/LoadingButton'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import FormControl from '@mui/material/FormControl'
+import Stack from '@mui/material/Stack'
+import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
+
+import { useAppDispatch, useAppSelector } from '~/app/hooks'
+import { clearError, selectAuthIsLoggedIn, selectAuthLoading, selectAuthSignInError, signIn } from '~/features/auth'
+import { validateEmail } from '~/utils/helpers'
 
 function SignIn() {
 	const navigate = useNavigate()
@@ -40,7 +42,7 @@ function SignIn() {
 		dispatch(clearError())
 	}, [emailData, passwordData])
 
-	const handleSubmit = (e: React.SyntheticEvent) => {
+	const handleSubmit = (e: SyntheticEvent) => {
 		e.preventDefault()
 
 		if (!passwordData || !emailData) {
@@ -70,10 +72,17 @@ function SignIn() {
 					</Alert>
 				)}
 				<FormControl fullWidth sx={{ my: 1 }}>
-					<TextField value={emailData} onChange={e => setEmailData(e.target.value)} label="Email" error={!!emailError} helperText={emailError} />
+					<TextField value={emailData} onChange={(e: ChangeEvent<HTMLInputElement>) => setEmailData(e.target.value)} label="Email" error={!!emailError} helperText={emailError} />
 				</FormControl>
 				<FormControl fullWidth sx={{ my: 1 }}>
-					<TextField value={passwordData} onChange={e => setPasswordData(e.target.value)} label="Password" type="password" error={!!passwordError} helperText={passwordError} />
+					<TextField
+						value={passwordData}
+						onChange={(e: ChangeEvent<HTMLInputElement>) => setPasswordData(e.target.value)}
+						label="Password"
+						type="password"
+						error={!!passwordError}
+						helperText={passwordError}
+					/>
 				</FormControl>
 				<LoadingButton fullWidth type="submit" disabled={!!passwordError || !!emailError} loading={loading} loadingIndicator="Loading..." variant="outlined">
 					Sign In

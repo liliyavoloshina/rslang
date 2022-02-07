@@ -1,29 +1,58 @@
 import React, { useEffect } from 'react'
-import { Container, Typography, Box, Grid } from '@mui/material'
-import Stack from '@mui/material/Stack'
-import Button from '@mui/material/Button'
-import CircularProgress from '@mui/material/CircularProgress'
-import Skeleton from '@mui/material/Skeleton'
-import { pink, orange, lightGreen, lightBlue, cyan, deepPurple } from '@mui/material/colors'
 import { Link as RouterLink } from 'react-router-dom'
-import TextbookGroupDropdown from '../components/textbook/TextbookGroupDropdown'
-import TextbookCard from '../components/textbook/TextbookCard'
-import TextbookPagination from '../components/textbook/TextbookPagination'
-import { fetchTextbookWords, selectTextbookWords, selectTextbookGroup, selectTextbookStatus } from '../features/textbook/textbookSlice'
-import { useAppDispatch, useAppSelector } from '../app/hooks'
-import { selectAuthIsLoggedIn } from '../features/auth/authSlice'
+
+import { Box, Container, Grid, Typography } from '@mui/material'
+import Button from '@mui/material/Button'
+import Skeleton from '@mui/material/Skeleton'
+import Stack from '@mui/material/Stack'
+import { cyan, deepPurple, lightBlue, lightGreen, orange, pink } from '@mui/material/colors'
+
+import { useAppDispatch, useAppSelector } from '~/app/hooks'
+import TextbookCard from '~/components/textbook/TextbookCard'
+import TextbookGroupDropdown from '~/components/textbook/TextbookGroupDropdown'
+import TextbookPagination from '~/components/textbook/TextbookPagination'
+import { selectAuthIsLoggedIn } from '~/features/auth'
+import {
+	changeGroup,
+	changePage,
+	fetchDifficultWords,
+	fetchTextbookWords,
+	getCompletedPages,
+	selectTextbookCompletedPages,
+	selectTextbookGroup,
+	selectTextbookPage,
+	selectTextbookStatus,
+	selectTextbookWords,
+} from '~/features/textbook'
+import { localStorageGetPagination } from '~/utils/localStorage'
 
 function Textbook() {
 	const dispatch = useAppDispatch()
 	const words = useAppSelector(selectTextbookWords)
 	const group = useAppSelector(selectTextbookGroup)
+	const page = useAppSelector(selectTextbookPage)
 	const isLoggedIn = useAppSelector(selectAuthIsLoggedIn)
 	const status = useAppSelector(selectTextbookStatus)
 	const groupColors = [pink[500], orange[500], lightGreen[500], lightBlue[500], cyan[500], deepPurple[500]]
 	const activeColor = groupColors[group]
+	const completedPages = useAppSelector(selectTextbookCompletedPages)
+
+	const isPageCompleted = group in completedPages && completedPages[group][page]
 
 	useEffect(() => {
-		dispatch(fetchTextbookWords())
+		const storedPagination = localStorageGetPagination()
+		const storedGroup = storedPagination.group
+		const storedPage = storedPagination.page
+		dispatch(changeGroup(storedGroup))
+		dispatch(changePage(storedPage))
+
+		if (storedGroup === 6) {
+			dispatch(fetchDifficultWords())
+		} else {
+			dispatch(fetchTextbookWords())
+		}
+
+		dispatch(getCompletedPages())
 	}, [])
 
 	return (
@@ -35,11 +64,19 @@ function Textbook() {
 			<Stack spacing={2} direction="row" justifyContent="space-between" sx={{ marginBottom: '50px' }}>
 				<TextbookGroupDropdown />
 
+				{isPageCompleted && (
+					<Box>
+						<Typography variant="h6" sx={{ color: lightGreen[500] }}>
+							Fully learned section!
+						</Typography>
+					</Box>
+				)}
+
 				<Stack spacing={2} direction="row" justifyContent="space-between">
-					<Button component={RouterLink} to="/sprint" state={{ fromTextbook: true }}>
+					<Button component={RouterLink} to="/sprint" state={{ fromTextbook: true }} disabled={isPageCompleted}>
 						Sprint
 					</Button>
-					<Button component={RouterLink} to="/audiocall" state={{ fromTextbook: true }}>
+					<Button component={RouterLink} to="/audiocall" state={{ fromTextbook: true }} disabled={isPageCompleted}>
 						Audiocall
 					</Button>
 				</Stack>
@@ -63,9 +100,11 @@ function Textbook() {
 					  })}
 			</Grid>
 
-			<Box sx={{ flex: '0 0 auto', display: group !== 6 ? 'block' : 'none' }}>
-				<TextbookPagination />
-			</Box>
+			{group !== 6 && (
+				<Box sx={{ flex: '0 0 auto' }}>
+					<TextbookPagination />
+				</Box>
+			)}
 		</Container>
 	)
 }

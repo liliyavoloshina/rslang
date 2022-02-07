@@ -1,4 +1,4 @@
-import { UserInfo } from '../types/auth'
+import { UserInfo } from '~/types/auth'
 
 const LS_KEYWORD = 'soberkoala'
 
@@ -16,8 +16,29 @@ const localStorageGetUser = (): UserInfo | null => {
 	return null
 }
 
-const localStorageRemoveUser = () => {
-	localStorage.removeItem(`${LS_KEYWORD}-userinfo`)
+interface LSPaginationParams {
+	name: 'group' | 'page'
+	value: number
 }
 
-export { localStorageSetUser, localStorageGetUser, localStorageRemoveUser }
+const localStorageSetPagination = ({ value, name }: LSPaginationParams) => {
+	const valueToStore = JSON.stringify(value)
+	localStorage.setItem(`${LS_KEYWORD}-${name}`, valueToStore)
+}
+
+const localStorageGetPagination = () => {
+	const storedGroup = localStorage.getItem(`${LS_KEYWORD}-group`)
+	const storedPage = localStorage.getItem(`${LS_KEYWORD}-page`)
+
+	if (storedGroup && storedPage) {
+		return { group: JSON.parse(storedGroup), page: JSON.parse(storedPage) }
+	}
+
+	return { group: 0, page: 0 }
+}
+
+const localStorageClear = () => {
+	localStorage.clear()
+}
+
+export { localStorageSetUser, localStorageGetUser, localStorageSetPagination, localStorageGetPagination, localStorageClear }

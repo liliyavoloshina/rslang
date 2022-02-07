@@ -1,21 +1,23 @@
-import * as React from 'react'
+import { MouseEvent, useState } from 'react'
 import { Link as RouterLink, useNavigate } from 'react-router-dom'
-import { Menu as MenuIcon } from '@mui/icons-material'
-import Link from '@mui/material/Link'
-import Stack from '@mui/material/Stack'
+
+import MenuIcon from '@mui/icons-material/Menu'
+import PersonIcon from '@mui/icons-material/Person'
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
-import Toolbar from '@mui/material/Toolbar'
-import IconButton from '@mui/material/IconButton'
-import Typography from '@mui/material/Typography'
-import Menu from '@mui/material/Menu'
-import Container from '@mui/material/Container'
 import Button from '@mui/material/Button'
-import Tooltip from '@mui/material/Tooltip'
+import Container from '@mui/material/Container'
+import IconButton from '@mui/material/IconButton'
+import Link from '@mui/material/Link'
+import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
-import PersonIcon from '@mui/icons-material/Person'
-import { useAppDispatch, useAppSelector } from '../../app/hooks'
-import { selectAuthUserInfo, signOut } from '../../features/auth/authSlice'
+import Stack from '@mui/material/Stack'
+import Toolbar from '@mui/material/Toolbar'
+import Tooltip from '@mui/material/Tooltip'
+import Typography from '@mui/material/Typography'
+
+import { useAppDispatch, useAppSelector } from '~/app/hooks'
+import { selectAuthUserInfo, signOut } from '~/features/auth'
 
 const pages = [
 	{
@@ -58,19 +60,19 @@ function Header() {
 	const dispatch = useAppDispatch()
 	const navigate = useNavigate()
 	const userInfo = useAppSelector(selectAuthUserInfo)
-	const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null)
-	const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null)
-	const [anchorElGames, setAnchorElGames] = React.useState<null | HTMLElement>(null)
+	const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null)
+	const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null)
+	const [anchorElGames, setAnchorElGames] = useState<null | HTMLElement>(null)
 
-	const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
+	const handleOpenNavMenu = (event: MouseEvent<HTMLElement>) => {
 		setAnchorElNav(event.currentTarget)
 	}
 
-	const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+	const handleOpenUserMenu = (event: MouseEvent<HTMLElement>) => {
 		setAnchorElUser(event.currentTarget)
 	}
 
-	const handleOpenGamesMenu = (event: React.MouseEvent<HTMLElement>) => {
+	const handleOpenGamesMenu = (event: MouseEvent<HTMLElement>) => {
 		setAnchorElGames(event.currentTarget)
 	}
 
@@ -179,7 +181,7 @@ function Header() {
 					</Box>
 
 					<Stack flexDirection="row" alignItems="center" sx={{ flexGrow: 0 }}>
-						{userInfo.token && <Typography variant="h6">Hello, {userInfo.name}!</Typography>}
+						{userInfo?.token && <Typography variant="h6">Hello, {userInfo.name}!</Typography>}
 						<Tooltip title="Open Account">
 							<IconButton onClick={handleOpenUserMenu} sx={{ color: 'white' }}>
 								<PersonIcon />
@@ -201,7 +203,7 @@ function Header() {
 							open={Boolean(anchorElUser)}
 							onClose={handleCloseUserMenu}
 						>
-							{userInfo.token ? (
+							{userInfo?.token ? (
 								<Button onClick={handleSignOut}>Sign Out</Button>
 							) : (
 								settings.map((setting, idx) => (

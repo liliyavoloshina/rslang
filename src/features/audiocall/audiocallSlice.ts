@@ -1,12 +1,9 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-// eslint-disable-next-line import/no-cycle
-import { RootState } from '../../app/store'
-import { Word } from '../../types/word'
-import apiClient from '../../utils/api'
-import { MAX_AUDIOCALL_ANSWERS_AMOUNT, MAX_WORD_GAME_AMOUNT } from '../../utils/constants'
-import { shuffleArray } from '../../utils/helpers'
 
-const DOMAIN_URL = process.env.REACT_APP_DOMAIN as string
+import { Word } from '~/types/word'
+import apiClient from '~/utils/api'
+import { DOMAIN_URL, MAX_AUDIOCALL_ANSWERS_AMOUNT, WORD_PER_PAGE_AMOUNT } from '~/utils/constants'
+import { shuffleArray } from '~/utils/helpers'
 
 export interface AudiocallState {
 	words: Word[]
@@ -55,7 +52,7 @@ export const audiocallSlice = createSlice({
 	initialState,
 	reducers: {
 		nextWord: state => {
-			if (state.currentIdx === MAX_WORD_GAME_AMOUNT - 1) {
+			if (state.currentIdx === WORD_PER_PAGE_AMOUNT - 1) {
 				state.isFinished = true
 				return
 			}
@@ -72,8 +69,6 @@ export const audiocallSlice = createSlice({
 			state.isLevelSelection = action.payload
 		},
 		toggleAudiocallAudio: state => {
-			console.log(state.currentWord, 'state.currentWord')
-
 			const newAudio = new Audio(`${DOMAIN_URL}/${state.currentWord!.audio}`)
 			newAudio.play()
 		},
@@ -99,11 +94,4 @@ export const audiocallSlice = createSlice({
 })
 
 export const { nextWord, toggleAudiocallAudio, toggleLevelSelection } = audiocallSlice.actions
-export const selectAudiocallWords = (state: RootState) => state.audiocall.words
-export const selectAudiocallAnswers = (state: RootState) => state.audiocall.answers
-export const selectAudiocallCurrentIdx = (state: RootState) => state.audiocall.currentIdx
-export const selectAudiocallCurrentWord = (state: RootState) => state.audiocall.currentWord
-export const selectAudiocallStatus = (state: RootState) => state.audiocall.status
-export const selectAudiocallIsLevelSelection = (state: RootState) => state.audiocall.isLevelSelection
-export const selectAudiocallIsFinished = (state: RootState) => state.audiocall.isFinished
 export default audiocallSlice.reducer
