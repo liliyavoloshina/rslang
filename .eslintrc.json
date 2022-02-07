@@ -31,6 +31,8 @@
 		"no-return-assign": "off",
 		// react 17 does not require React import in jsx files
 		"react/jsx-uses-react": "off",
-		"react/react-in-jsx-scope": "off"
+		"react/react-in-jsx-scope": "off",
+		// disabling rule which does not allow arrow function style for component declaration
+		"react/function-component-definition": "off"
 	}
 }
