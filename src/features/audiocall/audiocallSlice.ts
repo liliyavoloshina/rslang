@@ -2,10 +2,8 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 
 import { Word } from '~/types/word'
 import apiClient from '~/utils/api'
-import { MAX_AUDIOCALL_ANSWERS_AMOUNT, WORD_PER_PAGE_AMOUNT } from '~/utils/constants'
+import { DOMAIN_URL, MAX_AUDIOCALL_ANSWERS_AMOUNT, WORD_PER_PAGE_AMOUNT } from '~/utils/constants'
 import { shuffleArray } from '~/utils/helpers'
-
-const DOMAIN_URL = process.env.REACT_APP_DOMAIN as string
 
 export interface AudiocallState {
 	words: Word[]

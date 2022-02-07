@@ -15,10 +15,9 @@ import { blue, lightGreen } from '@mui/material/colors'
 import { useAppDispatch, useAppSelector } from '~/app/hooks'
 import { changeWordDifficulty, changeWordLearnedStatus, selectTextbookGroup } from '~/features/textbook'
 import { Word, WordDifficulty } from '~/types/word'
+import { DOMAIN_URL } from '~/utils/constants'
 
 import styles from './Textbook.module.css'
-
-const DOMAIN_URL = process.env.REACT_APP_DOMAIN as string
 
 interface TextbookCardProps {
 	activeColor: string

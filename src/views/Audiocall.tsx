@@ -25,8 +25,7 @@ import {
 import { selectTextbookGroup, selectTextbookPage } from '~/features/textbook'
 import { GameName } from '~/types/game'
 import { Word } from '~/types/word'
-
-const DOMAIN_URL = process.env.REACT_APP_DOMAIN as string
+import { DOMAIN_URL } from '~/utils/constants'
 
 interface LocationState {
 	fromTextbook: boolean

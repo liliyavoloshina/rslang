@@ -18,8 +18,7 @@ import Typography from '@mui/material/Typography'
 import { TransitionProps } from '@mui/material/transitions'
 
 import { Word } from '~/types/word'
-
-const DOMAIN_URL = process.env.REACT_APP_DOMAIN as string
+import { DOMAIN_URL } from '~/utils/constants'
 
 interface PopupProps {
 	isOpen: boolean
