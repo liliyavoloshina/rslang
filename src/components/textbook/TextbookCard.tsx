@@ -16,6 +16,7 @@ import Typography from '@mui/material/Typography'
 import { blue, lightGreen } from '@mui/material/colors'
 
 import { useAppDispatch, useAppSelector } from '~/app/hooks'
+import { updateCompletedPages, updateWordStatistic } from '~/features/statistic'
 import { changeWordDifficulty, changeWordLearnedStatus, selectTextbookGroup } from '~/features/textbook'
 import { Word, WordDifficulty } from '~/types/word'
 import { DOMAIN_URL } from '~/utils/constants'
@@ -33,13 +34,27 @@ export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: Te
 
 	const dispatch = useAppDispatch()
 
-	const group = useAppSelector(selectTextbookGroup)
-	const { id, image, word, transcription, wordTranslate, textMeaning, textMeaningTranslate, textExample, textExampleTranslate, audio, audioExample, audioMeaning, userWord } =
-		passedWord
+	const currentGroup = useAppSelector(selectTextbookGroup)
+	const {
+		page,
+		group,
+		image,
+		word,
+		transcription,
+		wordTranslate,
+		textMeaning,
+		textMeaningTranslate,
+		textExample,
+		textExampleTranslate,
+		audio,
+		audioExample,
+		audioMeaning,
+		userWord,
+	} = passedWord
 
 	const isLearned = !!userWord?.optional?.isLearned
 	const isDifficult = userWord?.difficulty === WordDifficulty.Difficult
-	const isDifficultDisable = (isDifficult && group !== 6) || isLearned
+	const isDifficultDisable = (isDifficult && currentGroup !== 6) || isLearned
 	const difficultBtnColor = blue.A200
 	const learnedBtnColor = lightGreen[500]
 
@@ -60,14 +75,24 @@ export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: Te
 		}
 	}
 
-	const toggleWordDifficulty = () => {
+	const toggleWordDifficulty = async () => {
 		const difficulty = userWord?.difficulty === WordDifficulty.Difficult ? WordDifficulty.Normal : WordDifficulty.Difficult
 
-		dispatch(changeWordDifficulty({ wordId: id, difficulty }))
+		// update word stat
+		await dispatch(updateWordStatistic({ wordToUpdate: passedWord, newFields: { difficulty } }))
+		// update ui
+		dispatch(changeWordDifficulty({ passedWord, difficulty }))
+
+		dispatch(updateCompletedPages({ page, group }))
 	}
 
-	const addToLearned = () => {
-		dispatch(changeWordLearnedStatus({ wordId: id, wordLearnedStatus: true }))
+	const addToLearned = async () => {
+		// update word stat
+		await dispatch(updateWordStatistic({ wordToUpdate: passedWord, newFields: { isLearned: true } }))
+		// update ui
+		dispatch(changeWordLearnedStatus(passedWord.id))
+
+		dispatch(updateCompletedPages({ page, group }))
 	}
 
 	return (

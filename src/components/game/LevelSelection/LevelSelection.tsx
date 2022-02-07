@@ -12,7 +12,7 @@ import Select from '@mui/material/Select'
 import Typography from '@mui/material/Typography'
 
 import { useAppDispatch } from '~/app/hooks'
-import { toggleLevelSelection } from '~/features/audiocall'
+import { resetGame, toggleLevelSelection } from '~/features/audiocall'
 
 import { LevelSelectionProps } from './LevelSelection.types'
 
@@ -29,6 +29,7 @@ const LevelSelection = ({ title, description, onLevelSelected }: LevelSelectionP
 	}
 
 	const handlePlay = () => {
+		dispatch(resetGame())
 		onLevelSelected?.(group)
 		dispatch(toggleLevelSelection(false))
 	}

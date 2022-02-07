@@ -10,4 +10,8 @@ const validateEmail = (email: string) =>
 
 const handleError = (err: unknown) => `Ooops! ${err instanceof Error ? err.message : 'Unknown Error'}`
 
-export { shuffleArray, handleError, validateEmail }
+const isTheSameDay = (d1: Date, d2: Date) => {
+	return d1.getFullYear() === d2.getFullYear() && d1.getMonth() === d2.getMonth() && d1.getDate() === d2.getDate()
+}
+
+export { shuffleArray, handleError, validateEmail, isTheSameDay }

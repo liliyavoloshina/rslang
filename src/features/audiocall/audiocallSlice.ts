@@ -2,7 +2,8 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 
 import { RootState } from '~/app/store'
 import { Word } from '~/types/word'
-import { getAllWords, getNotLearnedWord } from '~/utils/api'
+import { getNotLearnedWord, getUserWords } from '~/utils/api/userWords'
+import { getAllWords } from '~/utils/api/words'
 import { DOMAIN_URL, MAX_AUDIOCALL_ANSWERS_AMOUNT, WORD_PER_PAGE_AMOUNT } from '~/utils/constants'
 import { shuffleArray } from '~/utils/helpers'
 
@@ -14,6 +15,10 @@ export interface AudiocallState {
 	answeredWord: string | null
 	incorrectAnswers: Word[]
 	correctAnswers: Word[]
+	longestSeries: {
+		correctAnswers: number[]
+		stopped: boolean
+	}
 	isLevelSelection: boolean
 	isFinished: boolean
 	audioPath: string
@@ -28,6 +33,10 @@ const initialState: AudiocallState = {
 	answeredWord: null,
 	incorrectAnswers: [],
 	correctAnswers: [],
+	longestSeries: {
+		correctAnswers: [0],
+		stopped: false,
+	},
 	isLevelSelection: false,
 	isFinished: false,
 	audioPath: '',
@@ -40,29 +49,47 @@ interface FetchWordsParams {
 	isFromTextbook: boolean
 }
 
-export const fetchAudiocallWords = createAsyncThunk<Word[], FetchWordsParams, { state: RootState }>(
+export const fetchAudiocallWords = createAsyncThunk<{ wordsForGame: Word[]; answers: string[] }, FetchWordsParams, { state: RootState }>(
 	'audiocall/fetchWords',
 	async ({ group, page, isFromTextbook }, { getState }) => {
 		const state = getState()
 		const { isLoggedIn, userInfo } = state.auth
 
+		let wordsForGame
+		let answers
+
 		// if there are possibly learned words
-		if (isFromTextbook && isLoggedIn && userInfo) {
-			const addNotLearnedWordsFromPage = async (currentPage: number, words: Word[]): Promise<Word[]> => {
-				const data = await getNotLearnedWord(userInfo.userId, group, currentPage)
-				const wordsFromPage = data[0].paginatedResults
-				words.unshift(...wordsFromPage)
+		if (userInfo && isLoggedIn) {
+			const allUserWordsResponse = await getUserWords(userInfo.userId, group, page)
+			const allUserWords = allUserWordsResponse[0].paginatedResults
 
-				if (words.length < WORD_PER_PAGE_AMOUNT && currentPage > 0) {
-					return addNotLearnedWordsFromPage(currentPage - 1, words)
+			if (isFromTextbook) {
+				const addNotLearnedWordsFromPage = async (currentPage: number, words: Word[]): Promise<Word[]> => {
+					const response = await getNotLearnedWord(userInfo.userId, group, currentPage)
+					const wordsFromPage = response[0].paginatedResults
+					words.unshift(...wordsFromPage)
+
+					if (words.length < WORD_PER_PAGE_AMOUNT && currentPage !== 0) {
+						return addNotLearnedWordsFromPage(currentPage - 1, words)
+					}
+
+					const sliced = words.slice(0, WORD_PER_PAGE_AMOUNT)
+					return sliced
 				}
-
-				return words.slice(0, WORD_PER_PAGE_AMOUNT)
+				wordsForGame = await addNotLearnedWordsFromPage(page, [])
+			} else {
+				wordsForGame = allUserWords
 			}
-			return addNotLearnedWordsFromPage(page, [])
+
+			// there maybe not enough answers if available words is less than 5
+			answers = allUserWords.map((word: Word) => word.wordTranslate)
+		} else {
+			const allWords = await getAllWords(group, page)
+			wordsForGame = allWords
+			answers = allWords.map((word: Word) => word.wordTranslate)
 		}
 
-		return getAllWords(group, page)
+		return { wordsForGame, answers }
 	}
 )
 
@@ -88,22 +115,32 @@ export const audiocallSlice = createSlice({
 	initialState,
 	reducers: {
 		showNextWord: state => {
-			if (state.currentIdx === WORD_PER_PAGE_AMOUNT - 1) {
+			const currentWord = state.currentWord!
+
+			if (!state.answeredWord) {
+				// eslint-disable-next-line no-underscore-dangle
+				const updatedWord = { ...currentWord, id: currentWord._id! }
+				state.incorrectAnswers = [...state.incorrectAnswers, updatedWord]
+				state.longestSeries.stopped = true
+			}
+
+			if (state.currentIdx === state.words.length - 1) {
 				state.isFinished = true
 				return
 			}
 
-			if (!state.answeredWord) {
-				state.incorrectAnswers = [...state.incorrectAnswers, state.currentWord!]
-			}
 			state.currentIdx += 1
-			state.currentWord = state.words[state.currentIdx]
+			const newCurrentWord = state.words[state.currentIdx]
+			const audioPath = `${DOMAIN_URL}/${newCurrentWord.audio}`
 			const correctAnswer = state.words[state.currentIdx].wordTranslate
 			const onlyAnswers = state.words.map(word => word.wordTranslate)
 			const randomAnswers = getRandomAnswers(correctAnswer, onlyAnswers)
+
+			state.currentWord = newCurrentWord
+
 			state.answers = randomAnswers
-			state.audioPath = `${DOMAIN_URL}/${state.currentWord!.audio}`
-			const newAudio = new Audio(state.audioPath)
+			state.audioPath = audioPath
+			const newAudio = new Audio(audioPath)
 			newAudio.play()
 			state.answeredWord = null
 		},
@@ -130,10 +167,21 @@ export const audiocallSlice = createSlice({
 
 			state.answeredWord = actualWord
 
+			// eslint-disable-next-line no-underscore-dangle
+			const updatedWord = { ...currentWord!, id: currentWord!._id! }
+
 			if (actualWord !== currentWord!.wordTranslate) {
-				state.incorrectAnswers = [...state.incorrectAnswers, currentWord!]
+				state.incorrectAnswers = [...state.incorrectAnswers, updatedWord]
+				state.longestSeries.stopped = true
 			} else {
-				state.correctAnswers = [...state.correctAnswers, currentWord!]
+				if (state.longestSeries.stopped) {
+					state.longestSeries.correctAnswers = [...state.longestSeries.correctAnswers, 1]
+					state.longestSeries.stopped = false
+				} else {
+					state.longestSeries.correctAnswers[state.longestSeries.correctAnswers.length - 1] += 1
+				}
+
+				state.correctAnswers = [...state.correctAnswers, updatedWord]
 			}
 		},
 	},
@@ -144,13 +192,16 @@ export const audiocallSlice = createSlice({
 			})
 			.addCase(fetchAudiocallWords.fulfilled, (state, action) => {
 				state.status = 'success'
-				state.words = action.payload
+				const { wordsForGame, answers } = action.payload
+				state.words = wordsForGame
 				const correctAnswer = state.words[state.currentIdx].wordTranslate
-				const onlyAnswers = state.words.map(word => word.wordTranslate)
-				const randomAnswers = getRandomAnswers(correctAnswer, onlyAnswers)
+
+				const randomAnswers = getRandomAnswers(correctAnswer, answers)
 				state.answers = randomAnswers
+
 				// eslint-disable-next-line prefer-destructuring
 				state.currentWord = state.words[0]
+
 				state.audioPath = `${DOMAIN_URL}/${state.currentWord!.audio}`
 				const newAudio = new Audio(state.audioPath)
 				newAudio.play()

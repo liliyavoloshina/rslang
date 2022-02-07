@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 import { useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLocation, useMatch, useNavigate } from 'react-router-dom'
@@ -24,10 +25,15 @@ import {
 	selectAudiocallIncorrectAnswers,
 	selectAudiocallIsFinished,
 	selectAudiocallIsLevelSelection,
+	selectAudiocallLongestSeries,
 	selectAudiocallStatus,
+	selectAudiocallWords,
 	showNextWord,
 	toggleAudiocallAudio,
 } from '~/features/audiocall'
+import { selectAuthIsLoggedIn } from '~/features/auth'
+import { sendUpdatedStatistic, updateCompletedPagesAfterGame, updateGameStatistic, updateWordStatistic } from '~/features/statistic'
+import { GameName } from '~/types/statistic'
 import { DOMAIN_URL, PAGES_PER_GROUP } from '~/utils/constants'
 
 interface LocationState {
@@ -49,6 +55,9 @@ function Audiocall() {
 	const incorrectWords = useAppSelector(selectAudiocallIncorrectAnswers)
 	const correctWords = useAppSelector(selectAudiocallCorrectAnswers)
 	const answeredWord = useAppSelector(selectAudiocallAnsweredWord)
+	const isLoggedIn = useAppSelector(selectAuthIsLoggedIn)
+	const audiocallWords = useAppSelector(selectAudiocallWords)
+	const bestSeries = useAppSelector(selectAudiocallLongestSeries)
 
 	const groupMatch = useMatch(Path.AUDIOCALL_WITH_GROUP)
 	const pageMatch = useMatch(Path.AUDIOCALL_WITH_GROUP_AND_PAGE)
@@ -92,6 +101,50 @@ function Audiocall() {
 			window.removeEventListener('keydown', handleKeyDown)
 		}
 	}, [dispatch, fetchWords, handleKeyDown])
+
+	const getAudiocallGameStatistic = useCallback(() => {
+		const newWords = audiocallWords.filter(word => !word.userWord?.optional).length
+		const correctWordsPercent = (correctWords.length / audiocallWords.length) * 100
+		const longestSeries = Math.max(...bestSeries.correctAnswers)
+
+		const newStatistic = {
+			newWords,
+			correctWordsPercent: [correctWordsPercent],
+			longestSeries,
+		}
+
+		return newStatistic
+	}, [audiocallWords, bestSeries.correctAnswers, correctWords.length])
+
+	const updateEveryWordStatistic = useCallback(async () => {
+		// update word statistic
+		correctWords.forEach(word => dispatch(updateWordStatistic({ wordToUpdate: word, newFields: { correctAnswers: 1 } })))
+
+		incorrectWords.forEach(word => dispatch(updateWordStatistic({ wordToUpdate: word, newFields: { incorrectAnswers: 1 } })))
+	}, [correctWords, dispatch, incorrectWords])
+
+	const finish = useCallback(async () => {
+		// update every word statistic and learned words in short stat if necessary
+		await updateEveryWordStatistic()
+
+		if (isLoggedIn) {
+			// set to completed page field store
+			await dispatch(updateCompletedPagesAfterGame({ correctWords, incorrectWords }))
+
+			// caluclate and set new game statistic
+			const gameStatistic = getAudiocallGameStatistic()
+			dispatch(updateGameStatistic({ gameName: GameName.Audiocall, newStatistic: gameStatistic }))
+
+			// send updated stat to the server
+			dispatch(sendUpdatedStatistic())
+		}
+	}, [correctWords, dispatch, getAudiocallGameStatistic, incorrectWords, isLoggedIn, updateEveryWordStatistic])
+
+	useEffect(() => {
+		if (isFinished) {
+			finish()
+		}
+	}, [finish, isFinished])
 
 	if (isLevelSelection) {
 		return <LevelSelection title={t('AUDIOCALL.TITLE')} description={t('AUDIOCALL.DESCRIPTION')} />
@@ -154,6 +207,7 @@ function Audiocall() {
 					{answers.map(answer => (
 						<Grid key={answer} item>
 							<Button
+								disabled={isFinished}
 								onClick={() => dispatch(checkAnswer({ answer, isKeyboard: false }))}
 								variant="contained"
 								sx={{ pointerEvents: answeredWord ? 'none' : 'all' }}
@@ -173,7 +227,7 @@ function Audiocall() {
 					))}
 				</Grid>
 
-				<Button onClick={() => dispatch(showNextWord())} tabIndex={0} variant="contained" color="secondary" fullWidth>
+				<Button onClick={() => dispatch(showNextWord())} disabled={isFinished} tabIndex={0} variant="contained" color="secondary" fullWidth>
 					{t(answeredWord ? 'AUDIOCALL.NEXT' : 'AUDIOCALL.SKIP')}
 				</Button>
 			</Box>
