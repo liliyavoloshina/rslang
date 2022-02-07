@@ -46,10 +46,10 @@ const updateCompletedPages = async (words: Word[], group: number, page: number, 
 export const fetchTextbookWords = createAsyncThunk('textbook/fetchWords', async (_arg, { getState }) => {
 	const state = getState() as RootState
 	const { page, group } = state.textbook
-	const { isLoggedIn, userInfo } = state.auth
+	const { userInfo } = state.auth
 
-	if (isLoggedIn) {
-		const response = await apiClient.getUserWords(userInfo.userId as string, group, page)
+	if (userInfo) {
+		const response = await apiClient.getUserWords(userInfo.userId, group, page)
 
 		// TODO: check if this map function is really needed here
 		// eslint-disable-next-line no-underscore-dangle
@@ -62,13 +62,20 @@ export const fetchTextbookWords = createAsyncThunk('textbook/fetchWords', async 
 export const getCompletedPages = createAsyncThunk('textbook/getCompletedPages', async (arg, { getState }) => {
 	const state = getState() as RootState
 	const { userInfo } = state.auth
+	if (!userInfo) {
+		return []
+	}
+
 	const res = (await apiClient.getUserStatistic(userInfo.userId as string)) || {}
-	return res.optional.completedPages as CompletedPages
+	return res.optional.completedPages
 })
 
 export const fetchDifficultWords = createAsyncThunk('textbook/fetchDifficultWords', async (arg, { getState }) => {
 	const state = getState() as RootState
 	const { userInfo } = state.auth
+	if (!userInfo) {
+		return []
+	}
 
 	const response = await apiClient.getDifficultWords(userInfo.userId as string)
 	// TODO: refactor duplicated code
@@ -79,6 +86,10 @@ export const fetchDifficultWords = createAsyncThunk('textbook/fetchDifficultWord
 export const changeWordDifficulty = createAsyncThunk('textbook/changeWordDifficulty', async (arg: { wordId: string; difficulty: string }, { getState }) => {
 	const state = getState() as RootState
 	const { userInfo } = state.auth
+	if (!userInfo) {
+		return undefined
+	}
+
 	const { words, group, page } = state.textbook
 	const { wordId, difficulty } = arg
 	const userId = userInfo.userId as string
@@ -98,6 +109,10 @@ export const changeWordDifficulty = createAsyncThunk('textbook/changeWordDifficu
 export const changeWordLearnedStatus = createAsyncThunk('textbook/changeWordLearnedStatus', async (arg: { wordId: string; wordLearnedStatus: boolean }, { getState }) => {
 	const state = getState() as RootState
 	const { userInfo } = state.auth
+	if (!userInfo) {
+		return undefined
+	}
+
 	const { words, page, group } = state.textbook
 	const { wordId, wordLearnedStatus } = arg
 	const userId = userInfo.userId as string
@@ -121,6 +136,10 @@ export const changeWordLearnedStatus = createAsyncThunk('textbook/changeWordLear
 export const createNewStatistic = createAsyncThunk('textbook/createNewStatistic', async (arg, { getState }) => {
 	const state = getState() as RootState
 	const { userInfo } = state.auth
+	if (!userInfo) {
+		return
+	}
+
 	const newStatistic = {
 		learnedWords: 0,
 		optional: {

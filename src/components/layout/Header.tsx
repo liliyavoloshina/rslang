@@ -181,7 +181,7 @@ function Header() {
 					</Box>
 
 					<Stack flexDirection="row" alignItems="center" sx={{ flexGrow: 0 }}>
-						{userInfo.token && <Typography variant="h6">Hello, {userInfo.name}!</Typography>}
+						{userInfo?.token && <Typography variant="h6">Hello, {userInfo.name}!</Typography>}
 						<Tooltip title="Open Account">
 							<IconButton onClick={handleOpenUserMenu} sx={{ color: 'white' }}>
 								<PersonIcon />
@@ -203,7 +203,7 @@ function Header() {
 							open={Boolean(anchorElUser)}
 							onClose={handleCloseUserMenu}
 						>
-							{userInfo.token ? (
+							{userInfo?.token ? (
 								<Button onClick={handleSignOut}>Sign Out</Button>
 							) : (
 								settings.map((setting, idx) => (

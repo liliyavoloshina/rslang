@@ -33,7 +33,7 @@ export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: Te
 	const { id, image, word, transcription, wordTranslate, textMeaning, textMeaningTranslate, textExample, textExampleTranslate, audio, audioExample, audioMeaning, userWord } =
 		passedWord
 
-	const isLearned = userWord?.optional?.isLearned as boolean
+	const isLearned = !!userWord?.optional?.isLearned
 	const isDifficult = userWord?.difficulty === WordDifficulty.Difficult
 	const isDifficultDisable = (isDifficult && group !== 6) || isLearned
 	const difficultBtnColor = blue.A200

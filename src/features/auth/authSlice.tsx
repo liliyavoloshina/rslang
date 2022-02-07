@@ -27,7 +27,7 @@ export const signUp = createAsyncThunk('auth/signup', async (arg: SignUpData, { 
 })
 
 interface AuthState {
-	userInfo: UserInfo | Record<string, unknown>
+	userInfo: UserInfo | undefined
 	isLoggedIn: boolean
 	isSignUpInProcess: boolean
 	signUpError: string
@@ -36,7 +36,7 @@ interface AuthState {
 }
 
 const initialState: AuthState = {
-	userInfo: {},
+	userInfo: undefined,
 	isLoggedIn: false,
 	isSignUpInProcess: false,
 	signUpError: '',
@@ -57,7 +57,7 @@ export const authSlice = createSlice({
 			state.userInfo = action.payload
 		},
 		signOut: state => {
-			state.userInfo = {}
+			state.userInfo = undefined
 			state.isLoggedIn = false
 			localStorageClear()
 		},
