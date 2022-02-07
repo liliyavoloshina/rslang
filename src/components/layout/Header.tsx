@@ -1,4 +1,4 @@
-import * as React from 'react'
+import { MouseEvent, useState } from 'react'
 import { Link as RouterLink, useNavigate } from 'react-router-dom'
 
 import MenuIcon from '@mui/icons-material/Menu'
@@ -60,19 +60,19 @@ function Header() {
 	const dispatch = useAppDispatch()
 	const navigate = useNavigate()
 	const userInfo = useAppSelector(selectAuthUserInfo)
-	const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null)
-	const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null)
-	const [anchorElGames, setAnchorElGames] = React.useState<null | HTMLElement>(null)
+	const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null)
+	const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null)
+	const [anchorElGames, setAnchorElGames] = useState<null | HTMLElement>(null)
 
-	const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
+	const handleOpenNavMenu = (event: MouseEvent<HTMLElement>) => {
 		setAnchorElNav(event.currentTarget)
 	}
 
-	const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+	const handleOpenUserMenu = (event: MouseEvent<HTMLElement>) => {
 		setAnchorElUser(event.currentTarget)
 	}
 
-	const handleOpenGamesMenu = (event: React.MouseEvent<HTMLElement>) => {
+	const handleOpenGamesMenu = (event: MouseEvent<HTMLElement>) => {
 		setAnchorElGames(event.currentTarget)
 	}
 

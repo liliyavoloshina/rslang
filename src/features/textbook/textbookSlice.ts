@@ -43,8 +43,8 @@ const updateCompletedPages = async (words: Word[], group: number, page: number, 
 	return isPageCompleted
 }
 
-export const fetchTextbookWords = createAsyncThunk('textbook/fetchWords', async (_arg, { getState }) => {
-	const state = getState() as RootState
+export const fetchTextbookWords = createAsyncThunk<Word[], void, { state: RootState }>('textbook/fetchWords', async (_arg, { getState }) => {
+	const state = getState()
 	const { page, group } = state.textbook
 	const { userInfo } = state.auth
 
@@ -59,22 +59,22 @@ export const fetchTextbookWords = createAsyncThunk('textbook/fetchWords', async 
 	return apiClient.getAllWords(group, page)
 })
 
-export const getCompletedPages = createAsyncThunk('textbook/getCompletedPages', async (arg, { getState }) => {
-	const state = getState() as RootState
+export const getCompletedPages = createAsyncThunk<CompletedPages, void, { state: RootState }>('textbook/getCompletedPages', async (arg, { getState }) => {
+	const state = getState()
 	const { userInfo } = state.auth
 	if (!userInfo) {
-		return []
+		throw new Error('Not permitted')
 	}
 
-	const res = (await apiClient.getUserStatistic(userInfo.userId as string)) || {}
+	const res = (await apiClient.getUserStatistic(userInfo.userId)) || {}
 	return res.optional.completedPages
 })
 
-export const fetchDifficultWords = createAsyncThunk('textbook/fetchDifficultWords', async (arg, { getState }) => {
-	const state = getState() as RootState
+export const fetchDifficultWords = createAsyncThunk<Word[], void, { state: RootState }>('textbook/fetchDifficultWords', async (arg, { getState }) => {
+	const state = getState()
 	const { userInfo } = state.auth
 	if (!userInfo) {
-		return []
+		throw new Error('Not permitted')
 	}
 
 	const response = await apiClient.getDifficultWords(userInfo.userId as string)
@@ -87,12 +87,12 @@ export const changeWordDifficulty = createAsyncThunk('textbook/changeWordDifficu
 	const state = getState() as RootState
 	const { userInfo } = state.auth
 	if (!userInfo) {
-		return undefined
+		throw new Error('Not permitted')
 	}
 
 	const { words, group, page } = state.textbook
 	const { wordId, difficulty } = arg
-	const userId = userInfo.userId as string
+	const { userId } = userInfo
 
 	let isPageCompleted = false
 
@@ -110,12 +110,12 @@ export const changeWordLearnedStatus = createAsyncThunk('textbook/changeWordLear
 	const state = getState() as RootState
 	const { userInfo } = state.auth
 	if (!userInfo) {
-		return undefined
+		throw new Error('Not permitted')
 	}
 
 	const { words, page, group } = state.textbook
 	const { wordId, wordLearnedStatus } = arg
-	const userId = userInfo.userId as string
+	const { userId } = userInfo
 
 	try {
 		await apiClient.addWordToLearned(userId, wordId, wordLearnedStatus, ApiMethod.Put)
@@ -125,7 +125,7 @@ export const changeWordLearnedStatus = createAsyncThunk('textbook/changeWordLear
 
 	let isPageCompleted = false
 
-	if (wordLearnedStatus === true) {
+	if (wordLearnedStatus) {
 		isPageCompleted = await updateCompletedPages(words, group, page, userId)
 		await apiClient.removeWordFromDifficult(userId, wordId, WordDifficulty.Normal)
 	}
@@ -137,7 +137,7 @@ export const createNewStatistic = createAsyncThunk('textbook/createNewStatistic'
 	const state = getState() as RootState
 	const { userInfo } = state.auth
 	if (!userInfo) {
-		return
+		throw new Error('Not permitted')
 	}
 
 	const newStatistic = {
@@ -147,7 +147,7 @@ export const createNewStatistic = createAsyncThunk('textbook/createNewStatistic'
 		},
 	}
 
-	await apiClient.setNewStatistic(userInfo.userId as string, newStatistic)
+	await apiClient.setNewStatistic(userInfo.userId, newStatistic)
 })
 
 export const textbookSlice = createSlice({
