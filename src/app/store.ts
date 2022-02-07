@@ -2,8 +2,8 @@ import { Action, ThunkAction, configureStore } from '@reduxjs/toolkit'
 
 import audiocallReducer from '~/features/audiocall/audiocallSlice'
 import authReducer from '~/features/auth/authSlice'
-import textbookReducer from '~/features/textbook/textbookSlice'
 import sprintReducer from '~/features/sprint/sprintSlice'
+import textbookReducer from '~/features/textbook/textbookSlice'
 
 export const store = configureStore({
 	reducer: {

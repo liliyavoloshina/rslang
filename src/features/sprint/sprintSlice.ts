@@ -1,10 +1,10 @@
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-// eslint-disable-next-line import/no-cycle
-import { RootState } from '../../app/store'
-import { Word } from '../../types/word'
-// import { MAX_WORD_GAME_AMOUNT } from '../../utils/constants'
-import apiClient from '../../utils/api'
-import { shuffleArray } from '../../utils/helpers'
+
+import { RootState } from '~/app/store'
+import { Word } from '~/types/word'
+// import { MAX_WORD_GAME_AMOUNT } from '~/utils/constants'
+import apiClient from '~/utils/api'
+import { shuffleArray } from '~/utils/helpers'
 
 type SprintState = {
 	words: Word[]

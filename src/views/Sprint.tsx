@@ -4,10 +4,10 @@ import { useDispatch } from 'react-redux'
 import Container from '@mui/material/Container'
 
 import { useAppSelector } from '~/app/hooks'
-import { GameName } from '~/types/game'
-import { reset, selectSprintQuestion } from '~/features/sprint/sprintSlice'
 import LevelSelection from '~/components/game/LevelSelection'
 import SprintGame from '~/components/game/Sprint'
+import { reset, selectSprintQuestion } from '~/features/sprint/sprintSlice'
+import { GameName } from '~/types/game'
 
 function Sprint() {
 	const [group, setGroup] = useState<number | undefined>()
