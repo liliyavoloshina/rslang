@@ -15,6 +15,7 @@ import Popup from '~/components/layout/Popup'
 import {
 	fetchAudiocallWords,
 	nextWord,
+	resetGame,
 	selectAudiocallAnswers,
 	selectAudiocallCurrentWord,
 	selectAudiocallIsFinished,
@@ -49,6 +50,8 @@ function Audiocall() {
 	const isFromTextbook = !!(location.state as LocationState)?.fromTextbook
 
 	useEffect(() => {
+		dispatch(resetGame())
+
 		if (isFromTextbook) {
 			dispatch(fetchAudiocallWords({ group: currentGroup, page: currentPage }))
 		} else {
