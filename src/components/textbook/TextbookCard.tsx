@@ -120,20 +120,22 @@ export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: Te
 					</Stack>
 				</Stack>
 
-				<Stack flexDirection="row" justifyContent="space-between" sx={{ display: isLoggedIn ? 'flex' : 'none' }}>
-					<Box>
-						<Typography variant="subtitle2" color={theme => theme.text.success}>
-							Правильных ответов: {userWord?.optional?.correctAnswers ? userWord?.optional?.correctAnswers : 0}
-						</Typography>
-						<Typography variant="subtitle2" color={theme => theme.text.danger}>
-							Неправильных ответов: {userWord?.optional?.incorrectAnswers ? userWord?.optional?.incorrectAnswers : 0}
-						</Typography>
-					</Box>
-					<Stack flexDirection="row" columnGap="10px">
-						<Chip sx={{ display: isLearned ? 'flex' : 'none', backgroundColor: learnedBtnColor, color: '#fff' }} label="Learned" />
-						<Chip sx={{ display: isDifficult ? 'flex' : 'none', backgroundColor: difficultBtnColor, color: '#fff' }} label="Difficult" />
+				{isLoggedIn && (
+					<Stack flexDirection="row" justifyContent="space-between" sx={{ display: 'flex' }}>
+						<Box>
+							<Typography variant="subtitle2" color={theme => theme.text.success}>
+								Правильных ответов: {userWord?.optional?.correctAnswers ? userWord?.optional?.correctAnswers : 0}
+							</Typography>
+							<Typography variant="subtitle2" color={theme => theme.text.danger}>
+								Неправильных ответов: {userWord?.optional?.incorrectAnswers ? userWord?.optional?.incorrectAnswers : 0}
+							</Typography>
+						</Box>
+						<Stack flexDirection="row" columnGap="10px">
+							<Chip sx={{ display: isLearned ? 'flex' : 'none', backgroundColor: learnedBtnColor, color: '#fff' }} label="Learned" />
+							<Chip sx={{ display: isDifficult ? 'flex' : 'none', backgroundColor: difficultBtnColor, color: '#fff' }} label="Difficult" />
+						</Stack>
 					</Stack>
-				</Stack>
+				)}
 			</CardContent>
 		</Card>
 	)

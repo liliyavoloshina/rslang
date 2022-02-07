@@ -95,38 +95,38 @@ function Audiocall() {
 	return (
 		<Container maxWidth="lg" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
 			<Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '20px' }}>
-				<Button
-					variant="outlined"
-					onClick={() => toggleAudio()}
-					sx={{
-						width: 150,
-						height: 150,
-						borderRadius: '100%',
-						display: answeredWord ? 'none' : 'block',
-					}}
-				>
-					<VolumeUp sx={{ fontSize: 80 }} />
-				</Button>
-
-				<Box
-					sx={{
-						width: 150,
-						height: 150,
-						borderRadius: '100%',
-						display: answeredWord ? 'block' : 'none',
-					}}
-				>
-					<img
-						style={{
-							width: '100%',
-							height: '100%',
+				{!answeredWord ? (
+					<Button
+						variant="outlined"
+						onClick={() => toggleAudio()}
+						sx={{
+							width: 150,
+							height: 150,
 							borderRadius: '100%',
-							objectFit: 'cover',
 						}}
-						src={`${DOMAIN_URL}/${currentWord!.image}`}
-						alt=""
-					/>
-				</Box>
+					>
+						<VolumeUp sx={{ fontSize: 80 }} />
+					</Button>
+				) : (
+					<Box
+						sx={{
+							width: 150,
+							height: 150,
+							borderRadius: '100%',
+						}}
+					>
+						<img
+							style={{
+								width: '100%',
+								height: '100%',
+								borderRadius: '100%',
+								objectFit: 'cover',
+							}}
+							src={`${DOMAIN_URL}/${currentWord!.image}`}
+							alt=""
+						/>
+					</Box>
+				)}
 				<Box
 					sx={{
 						display: answeredWord ? 'flex' : 'none',

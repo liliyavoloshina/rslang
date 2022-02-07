@@ -26,7 +26,7 @@ const initialState: TextbookState = {
 const updateCompletedPages = async (words: Word[], group: number, page: number, userId: string) => {
 	let isPageCompleted = false
 
-	const learnedOrDifficultWord = words.filter(word => word.userWord?.difficulty === WordDifficulty.Difficult || word.userWord?.optional?.isLearned === true)
+	const learnedOrDifficultWord = words.filter(word => word.userWord?.difficulty === WordDifficulty.Difficult || !!word.userWord?.optional?.isLearned)
 	isPageCompleted = learnedOrDifficultWord.length + 1 === WORD_PER_PAGE_AMOUNT
 	const currentStatistic = await apiClient.getUserStatistic(userId)
 

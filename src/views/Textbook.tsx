@@ -64,11 +64,13 @@ function Textbook() {
 			<Stack spacing={2} direction="row" justifyContent="space-between" sx={{ marginBottom: '50px' }}>
 				<TextbookGroupDropdown />
 
-				<Box>
-					<Typography variant="h6" sx={{ display: isPageCompleted ? 'block' : 'none', color: lightGreen[500] }}>
-						Fully learned section!
-					</Typography>
-				</Box>
+				{isPageCompleted && (
+					<Box>
+						<Typography variant="h6" sx={{ color: lightGreen[500] }}>
+							Fully learned section!
+						</Typography>
+					</Box>
+				)}
 
 				<Stack spacing={2} direction="row" justifyContent="space-between">
 					<Button component={RouterLink} to="/sprint" state={{ fromTextbook: true }} disabled={isPageCompleted}>
@@ -98,9 +100,11 @@ function Textbook() {
 					  })}
 			</Grid>
 
-			<Box sx={{ flex: '0 0 auto', display: group !== 6 ? 'block' : 'none' }}>
-				<TextbookPagination />
-			</Box>
+			{group !== 6 && (
+				<Box sx={{ flex: '0 0 auto' }}>
+					<TextbookPagination />
+				</Box>
+			)}
 		</Container>
 	)
 }
