@@ -1,7 +1,7 @@
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 
-import { RootState } from '~/app/store'
 import { Word } from '~/types/word'
+// TODO: uncomment and use this instead of hardcoded temp test value
 // import { MAX_WORD_GAME_AMOUNT } from '~/utils/constants'
 import apiClient from '~/utils/api'
 import { shuffleArray } from '~/utils/helpers'
@@ -57,6 +57,7 @@ export const sprintSlice = createSlice({
 				}
 			}
 
+			// TODO: uncomment me
 			// if (state.currentIdx < MAX_WORD_GAME_AMOUNT - 1) {
 			if (state.currentIdx < 2) {
 				state.currentIdx += 1
@@ -86,14 +87,5 @@ export const sprintSlice = createSlice({
 })
 
 export const { answer, reset } = sprintSlice.actions
-export const selectSprintQuestion = ({ sprint }: RootState) => ({
-	word: sprint.currentWord?.word,
-	suggestedTranslation: sprint.suggestedTranslation,
-	correctOption: sprint.currentWord && sprint.suggestedTranslation === sprint.currentWord?.word,
-	correctWords: sprint.correctWords,
-	incorrectWords: sprint.incorrectWords,
-	isFinished: sprint.isFinished,
-	isIdle: sprint.status === 'idle',
-})
 
 export default sprintSlice.reducer
