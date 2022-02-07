@@ -1,10 +1,8 @@
-import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit'
-// eslint-disable-next-line import/no-cycle
-import audiocallReducer from '../features/audiocall/audiocallSlice'
-// eslint-disable-next-line import/no-cycle
-import textbookReducer from '../features/textbook/textbookSlice'
-// eslint-disable-next-line import/no-cycle
-import authReducer from '../features/auth/authSlice'
+import { Action, ThunkAction, configureStore } from '@reduxjs/toolkit'
+
+import audiocallReducer from '~/features/audiocall/audiocallSlice'
+import authReducer from '~/features/auth/authSlice'
+import textbookReducer from '~/features/textbook/textbookSlice'
 
 export const store = configureStore({
 	reducer: {

@@ -1,10 +1,11 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { RootState } from '../../app/store'
-import { ApiMethod, CompletedPages } from '../../types/api'
-import { Word, WordDifficulty } from '../../types/word'
-import apiClient from '../../utils/api'
-import { WORD_PER_PAGE_AMOUNT } from '../../utils/constants'
-import { localStorageSetPagination } from '../../utils/localStorage'
+
+import { RootState } from '~/app/store'
+import { ApiMethod, CompletedPages } from '~/types/api'
+import { Word, WordDifficulty } from '~/types/word'
+import apiClient from '~/utils/api'
+import { WORD_PER_PAGE_AMOUNT } from '~/utils/constants'
+import { localStorageSetPagination } from '~/utils/localStorage'
 
 export interface TextbookState {
 	words: Word[]
@@ -42,26 +43,20 @@ const updateCompletedPages = async (words: Word[], group: number, page: number, 
 	return isPageCompleted
 }
 
-export const fetchTextbookWords = createAsyncThunk('textbook/fetchWords', async (arg, { getState }) => {
+export const fetchTextbookWords = createAsyncThunk('textbook/fetchWords', async (_arg, { getState }) => {
 	const state = getState() as RootState
 	const { page, group } = state.textbook
 	const { isLoggedIn, userInfo } = state.auth
 
-	let words
-
 	if (isLoggedIn) {
 		const response = await apiClient.getUserWords(userInfo.userId as string, group, page)
 
-		words = response[0].paginatedResults.map(word => {
-			const wordId = word._id!
-			word.id = wordId
-			return word
-		})
-	} else {
-		words = await apiClient.getAllWords(group, page)
+		// TODO: check if this map function is really needed here
+		// eslint-disable-next-line no-underscore-dangle
+		return response[0].paginatedResults.map(word => ({ ...word, id: word._id! }))
 	}
 
-	return words
+	return apiClient.getAllWords(group, page)
 })
 
 export const getCompletedPages = createAsyncThunk('textbook/getCompletedPages', async (arg, { getState }) => {
@@ -76,11 +71,9 @@ export const fetchDifficultWords = createAsyncThunk('textbook/fetchDifficultWord
 	const { userInfo } = state.auth
 
 	const response = await apiClient.getDifficultWords(userInfo.userId as string)
-	return response[0].paginatedResults.map(word => {
-		const wordId = word._id!
-		word.id = wordId
-		return word
-	})
+	// TODO: refactor duplicated code
+	// eslint-disable-next-line no-underscore-dangle
+	return response[0].paginatedResults.map(word => ({ ...word, id: word._id! }))
 })
 
 export const changeWordDifficulty = createAsyncThunk('textbook/changeWordDifficulty', async (arg: { wordId: string; difficulty: string }, { getState }) => {
@@ -259,9 +252,4 @@ export const textbookSlice = createSlice({
 })
 
 export const { changePage, changeGroup } = textbookSlice.actions
-export const selectTextbookWords = (state: RootState) => state.textbook.words
-export const selectTextbookStatus = (state: RootState) => state.textbook.status
-export const selectTextbookGroup = (state: RootState) => state.textbook.group
-export const selectTextbookPage = (state: RootState) => state.textbook.page
-export const selectTextbookCompletedPages = (state: RootState) => state.textbook.completedPages
 export default textbookSlice.reducer

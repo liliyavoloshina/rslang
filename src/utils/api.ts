@@ -1,6 +1,7 @@
-import { ApiMethod, ApiBody, ApiConfig, ApiHeaders, GetUserWordsResponse, UserStatistic } from '../types/api'
-import { SignInData, SignInResponse, SignUpData, SignUpResponse } from '../types/auth'
-import { UserWord, Word } from '../types/word'
+import { ApiBody, ApiConfig, ApiHeaders, ApiMethod, GetUserWordsResponse, UserStatistic } from '~/types/api'
+import { SignInData, SignInResponse, SignUpData, SignUpResponse } from '~/types/auth'
+import { UserWord, Word } from '~/types/word'
+
 import { localStorageGetUser } from './localStorage'
 
 const DOMAIN_URL = process.env.REACT_APP_DOMAIN as string

@@ -1,28 +1,30 @@
 import React, { useEffect } from 'react'
-import { Container, Typography, Box, Grid } from '@mui/material'
-import Stack from '@mui/material/Stack'
+import { Link as RouterLink } from 'react-router-dom'
+
+import { Box, Container, Grid, Typography } from '@mui/material'
 import Button from '@mui/material/Button'
 import Skeleton from '@mui/material/Skeleton'
-import { pink, orange, lightGreen, lightBlue, cyan, deepPurple } from '@mui/material/colors'
-import { Link as RouterLink } from 'react-router-dom'
-import TextbookGroupDropdown from '../components/textbook/TextbookGroupDropdown'
-import TextbookCard from '../components/textbook/TextbookCard'
-import TextbookPagination from '../components/textbook/TextbookPagination'
+import Stack from '@mui/material/Stack'
+import { cyan, deepPurple, lightBlue, lightGreen, orange, pink } from '@mui/material/colors'
+
+import { useAppDispatch, useAppSelector } from '~/app/hooks'
+import TextbookCard from '~/components/textbook/TextbookCard'
+import TextbookGroupDropdown from '~/components/textbook/TextbookGroupDropdown'
+import TextbookPagination from '~/components/textbook/TextbookPagination'
+import { selectAuthIsLoggedIn } from '~/features/auth'
 import {
-	fetchTextbookWords,
-	selectTextbookWords,
-	selectTextbookGroup,
-	selectTextbookStatus,
-	getCompletedPages,
-	selectTextbookCompletedPages,
-	selectTextbookPage,
 	changeGroup,
 	changePage,
 	fetchDifficultWords,
-} from '../features/textbook/textbookSlice'
-import { useAppDispatch, useAppSelector } from '../app/hooks'
-import { selectAuthIsLoggedIn } from '../features/auth/authSlice'
-import { localStorageGetPagination } from '../utils/localStorage'
+	fetchTextbookWords,
+	getCompletedPages,
+	selectTextbookCompletedPages,
+	selectTextbookGroup,
+	selectTextbookPage,
+	selectTextbookStatus,
+	selectTextbookWords,
+} from '~/features/textbook'
+import { localStorageGetPagination } from '~/utils/localStorage'
 
 function Textbook() {
 	const dispatch = useAppDispatch()

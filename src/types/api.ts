@@ -44,7 +44,7 @@ interface UserStatistic {
 	optional: StatisticOptional
 }
 
-type ApiBody = any
+type ApiBody = unknown
 
 export { ApiMethod }
 export type { ApiConfig, ApiBody, ApiHeaders, GetUserWordsResponse, UserStatistic, CompletedPages, StatisticOptional }

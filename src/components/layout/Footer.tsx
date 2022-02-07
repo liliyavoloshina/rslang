@@ -1,5 +1,4 @@
-import React from 'react'
-import { Container, Box, Typography } from '@mui/material'
+import { Box, Container, Typography } from '@mui/material'
 
 export default function Footer() {
 	return (

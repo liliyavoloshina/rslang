@@ -3,5 +3,8 @@
 	"semi": false,
 	"arrowParens": "avoid",
 	"endOfLine": "auto",
-	"printWidth": 180
+	"printWidth": 180,
+	"importOrder": ["^react.*", "<THIRD_PARTY_MODULES>", "^@/(.*)$", "^~/(.*)$", "^[./]"],
+  "importOrderSeparation": true,
+  "importOrderSortSpecifiers": true
 }
