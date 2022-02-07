@@ -1,31 +1,31 @@
 import React, { useEffect, useState } from 'react'
-import Container from '@mui/material/Container'
-import IconButton from '@mui/material/IconButton'
-import Grid from '@mui/material/Grid'
-import Button from '@mui/material/Button'
-import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
-import { VolumeUp } from '@mui/icons-material'
 import { useLocation } from 'react-router-dom'
-import { Word } from '../types/word'
-import { useAppDispatch, useAppSelector } from '../app/hooks'
+
+import { VolumeUp } from '@mui/icons-material'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Container from '@mui/material/Container'
+import Grid from '@mui/material/Grid'
+import IconButton from '@mui/material/IconButton'
+import Typography from '@mui/material/Typography'
+
+import { useAppDispatch, useAppSelector } from '~/app/hooks'
+import LevelSelection from '~/components/game/LevelSelection'
+import Popup from '~/components/layout/Popup'
 import {
 	fetchAudiocallWords,
-	selectAudiocallWords,
+	nextWord,
 	selectAudiocallAnswers,
-	selectAudiocallStatus,
 	selectAudiocallCurrentWord,
 	selectAudiocallIsFinished,
-	nextWord,
 	selectAudiocallIsLevelSelection,
+	selectAudiocallStatus,
 	toggleLevelSelection,
-} from '../features/audiocall/audiocallSlice'
-import Popup from '../components/layout/Popup'
-import { selectTextbookGroup, selectTextbookPage } from '../features/textbook/textbookSlice'
-import LevelSelection from '../components/game/LevelSelection'
-import { GameName } from '../types/game'
-
-const DOMAIN_URL = process.env.REACT_APP_DOMAIN as string
+} from '~/features/audiocall'
+import { selectTextbookGroup, selectTextbookPage } from '~/features/textbook'
+import { GameName } from '~/types/game'
+import { Word } from '~/types/word'
+import { DOMAIN_URL } from '~/utils/constants'
 
 interface LocationState {
 	fromTextbook: boolean
@@ -35,7 +35,6 @@ function Audiocall() {
 	const location = useLocation()
 	const dispatch = useAppDispatch()
 	const status = useAppSelector(selectAudiocallStatus)
-	const words = useAppSelector(selectAudiocallWords)
 	const currentPage = useAppSelector(selectTextbookPage)
 	const currentGroup = useAppSelector(selectTextbookGroup)
 	const currentWord = useAppSelector(selectAudiocallCurrentWord)
@@ -96,38 +95,38 @@ function Audiocall() {
 	return (
 		<Container maxWidth="lg" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
 			<Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '20px' }}>
-				<Button
-					variant="outlined"
-					onClick={() => toggleAudio()}
-					sx={{
-						width: 150,
-						height: 150,
-						borderRadius: '100%',
-						display: answeredWord ? 'none' : 'block',
-					}}
-				>
-					<VolumeUp sx={{ fontSize: 80 }} />
-				</Button>
-
-				<Box
-					sx={{
-						width: 150,
-						height: 150,
-						borderRadius: '100%',
-						display: answeredWord ? 'block' : 'none',
-					}}
-				>
-					<img
-						style={{
-							width: '100%',
-							height: '100%',
+				{!answeredWord ? (
+					<Button
+						variant="outlined"
+						onClick={() => toggleAudio()}
+						sx={{
+							width: 150,
+							height: 150,
 							borderRadius: '100%',
-							objectFit: 'cover',
 						}}
-						src={`${DOMAIN_URL}/${currentWord!.image}`}
-						alt=""
-					/>
-				</Box>
+					>
+						<VolumeUp sx={{ fontSize: 80 }} />
+					</Button>
+				) : (
+					<Box
+						sx={{
+							width: 150,
+							height: 150,
+							borderRadius: '100%',
+						}}
+					>
+						<img
+							style={{
+								width: '100%',
+								height: '100%',
+								borderRadius: '100%',
+								objectFit: 'cover',
+							}}
+							src={`${DOMAIN_URL}/${currentWord!.image}`}
+							alt=""
+						/>
+					</Box>
+				)}
 				<Box
 					sx={{
 						display: answeredWord ? 'flex' : 'none',
@@ -142,19 +141,17 @@ function Audiocall() {
 				</Box>
 
 				<Grid container spacing={2}>
-					{answers.map(answer => {
-						return (
-							<Grid key={answer} item>
-								<Button
-									onClick={() => checkAnswer(answer)}
-									variant="contained"
-									color={answer === correctAnswer && answeredWord ? 'success' : answeredWord === answer ? (answer === correctAnswer ? 'success' : 'error') : 'primary'}
-								>
-									{answer}
-								</Button>
-							</Grid>
-						)
-					})}
+					{answers.map(answer => (
+						<Grid key={answer} item>
+							<Button
+								onClick={() => checkAnswer(answer)}
+								variant="contained"
+								color={answer === correctAnswer && answeredWord ? 'success' : answeredWord === answer ? (answer === correctAnswer ? 'success' : 'error') : 'primary'}
+							>
+								{answer}
+							</Button>
+						</Grid>
+					))}
 				</Grid>
 
 				<Button onClick={() => showNextWord()} variant="contained" color="secondary" fullWidth>

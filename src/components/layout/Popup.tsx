@@ -1,25 +1,24 @@
-import React from 'react'
+import { Ref, forwardRef } from 'react'
+import { Link as RouterLink } from 'react-router-dom'
+
+import VolumeUp from '@mui/icons-material/VolumeUp'
 import Button from '@mui/material/Button'
+import Chip from '@mui/material/Chip'
 import Dialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
-import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
-import Typography from '@mui/material/Typography'
-import ListItemText from '@mui/material/ListItemText'
-import ListItem from '@mui/material/ListItem'
-import List from '@mui/material/List'
 import IconButton from '@mui/material/IconButton'
-import Chip from '@mui/material/Chip'
-import Box from '@mui/material/Box'
-import Stack from '@mui/material/Stack'
+import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
+import ListItemText from '@mui/material/ListItemText'
 import Slide from '@mui/material/Slide'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import { TransitionProps } from '@mui/material/transitions'
-import { Link as RouterLink } from 'react-router-dom'
-import { VolumeUp } from '@mui/icons-material'
-import { Word } from '../../types/word'
 
-const DOMAIN_URL = process.env.REACT_APP_DOMAIN as string
+import { Word } from '~/types/word'
+import { DOMAIN_URL } from '~/utils/constants'
 
 interface PopupProps {
 	isOpen: boolean
@@ -27,11 +26,11 @@ interface PopupProps {
 	correctWords: Word[]
 }
 
-const Transition = React.forwardRef(function Transition(
+const Transition = forwardRef(function Transition(
 	props: TransitionProps & {
-		children: React.ReactElement<any, any>
+		children: JSX.Element
 	},
-	ref: React.Ref<unknown>
+	ref: Ref<unknown>
 ) {
 	return <Slide direction="up" ref={ref} {...props} />
 })
@@ -72,16 +71,14 @@ export default function Popup(props: PopupProps) {
 						<Chip label={correctWords.length} color="success" />
 					</Stack>
 					<List dense>
-						{correctWords.map(word => {
-							return (
-								<ListItem key={word.id}>
-									<IconButton aria-label="play audio" size="small" onClick={() => toggleAudio(word)}>
-										<VolumeUp fontSize="inherit" />
-									</IconButton>
-									<ListItemText primary={word.word} />
-								</ListItem>
-							)
-						})}
+						{correctWords.map(word => (
+							<ListItem key={word.id}>
+								<IconButton aria-label="play audio" size="small" onClick={() => toggleAudio(word)}>
+									<VolumeUp fontSize="inherit" />
+								</IconButton>
+								<ListItemText primary={word.word} />
+							</ListItem>
+						))}
 					</List>
 				</DialogContent>
 				<DialogActions>

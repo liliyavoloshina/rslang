@@ -1,10 +1,12 @@
-import React from 'react'
+import { ChangeEvent } from 'react'
+
 import Pagination from '@mui/material/Pagination'
-import Stack from '@mui/material/Stack'
 import PaginationItem from '@mui/material/PaginationItem'
+import Stack from '@mui/material/Stack'
 import { lightGreen } from '@mui/material/colors'
-import { useAppDispatch, useAppSelector } from '../../app/hooks'
-import { selectTextbookPage, changePage, fetchTextbookWords, selectTextbookCompletedPages, selectTextbookGroup } from '../../features/textbook/textbookSlice'
+
+import { useAppDispatch, useAppSelector } from '~/app/hooks'
+import { changePage, fetchTextbookWords, selectTextbookCompletedPages, selectTextbookGroup, selectTextbookPage } from '~/features/textbook'
 
 export default function TextbookPagination() {
 	const dispatch = useAppDispatch()
@@ -12,7 +14,7 @@ export default function TextbookPagination() {
 	const group = useAppSelector(selectTextbookGroup)
 	const completedPages = useAppSelector(selectTextbookCompletedPages)
 
-	const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
+	const handleChange = (event: ChangeEvent<unknown>, value: number) => {
 		dispatch(changePage(value - 1))
 		dispatch(fetchTextbookWords())
 	}

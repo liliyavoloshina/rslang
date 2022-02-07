@@ -1,4 +1,4 @@
-import { UserInfo } from '../types/auth'
+import { UserInfo } from '~/types/auth'
 
 const LS_KEYWORD = 'soberkoala'
 

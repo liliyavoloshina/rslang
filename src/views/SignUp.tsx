@@ -1,17 +1,19 @@
-import Typography from '@mui/material/Typography'
-import Stack from '@mui/material/Stack'
-import Box from '@mui/material/Box'
-import TextField from '@mui/material/TextField'
-import FormControl from '@mui/material/FormControl'
+import { SyntheticEvent, useEffect, useState } from 'react'
+import { Link as RouterLink, useNavigate } from 'react-router-dom'
+
 import LoadingButton from '@mui/lab/LoadingButton'
 import Alert from '@mui/material/Alert'
+import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import { Link as RouterLink, useNavigate } from 'react-router-dom'
-import React, { useEffect, useState } from 'react'
-import { useAppDispatch, useAppSelector } from '../app/hooks'
-import { signUp, selectAuthLoading, clearError, selectAuthSignUpError, selectAuthIsLoggedIn, selectAuthIsSignUpInProcess, signIn } from '../features/auth/authSlice'
-import { validateEmail } from '../utils/helpers'
-import { createNewStatistic } from '../features/textbook/textbookSlice'
+import FormControl from '@mui/material/FormControl'
+import Stack from '@mui/material/Stack'
+import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
+
+import { useAppDispatch, useAppSelector } from '~/app/hooks'
+import { clearError, selectAuthIsLoggedIn, selectAuthIsSignUpInProcess, selectAuthLoading, selectAuthSignUpError, signIn, signUp } from '~/features/auth'
+import { createNewStatistic } from '~/features/textbook/textbookSlice'
+import { validateEmail } from '~/utils/helpers'
 
 function SignUp() {
 	const navigate = useNavigate()
@@ -50,7 +52,7 @@ function SignUp() {
 		dispatch(clearError())
 	}, [nameData, emailData, passwordData])
 
-	const handleSubmit = async (e: React.SyntheticEvent) => {
+	const handleSubmit = async (e: SyntheticEvent) => {
 		e.preventDefault()
 
 		if (!nameData || !passwordData || !emailData) {

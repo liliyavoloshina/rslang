@@ -1,12 +1,12 @@
-import React from 'react'
+import { SelectChangeEvent } from '@mui/material'
 import FormControl from '@mui/material/FormControl'
 import InputLabel from '@mui/material/InputLabel'
-import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
-import { SelectChangeEvent } from '@mui/material'
-import { changeGroup, selectTextbookGroup, fetchTextbookWords, fetchDifficultWords } from '../../features/textbook/textbookSlice'
-import { useAppDispatch, useAppSelector } from '../../app/hooks'
-import { selectAuthIsLoggedIn } from '../../features/auth/authSlice'
+import Select from '@mui/material/Select'
+
+import { useAppDispatch, useAppSelector } from '~/app/hooks'
+import { selectAuthIsLoggedIn } from '~/features/auth'
+import { changeGroup, fetchDifficultWords, fetchTextbookWords, selectTextbookGroup } from '~/features/textbook'
 
 export default function SectionDropdown() {
 	const dispatch = useAppDispatch()

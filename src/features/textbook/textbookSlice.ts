@@ -1,10 +1,11 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { RootState } from '../../app/store'
-import { ApiMethod, CompletedPages } from '../../types/api'
-import { Word, WordDifficulty } from '../../types/word'
-import apiClient from '../../utils/api'
-import { WORD_PER_PAGE_AMOUNT } from '../../utils/constants'
-import { localStorageSetPagination } from '../../utils/localStorage'
+
+import { RootState } from '~/app/store'
+import { ApiMethod, CompletedPages } from '~/types/api'
+import { Word, WordDifficulty } from '~/types/word'
+import apiClient from '~/utils/api'
+import { WORD_PER_PAGE_AMOUNT } from '~/utils/constants'
+import { localStorageSetPagination } from '~/utils/localStorage'
 
 export interface TextbookState {
 	words: Word[]
@@ -25,7 +26,7 @@ const initialState: TextbookState = {
 const updateCompletedPages = async (words: Word[], group: number, page: number, userId: string) => {
 	let isPageCompleted = false
 
-	const learnedOrDifficultWord = words.filter(word => word.userWord?.difficulty === WordDifficulty.Difficult || word.userWord?.optional?.isLearned === true)
+	const learnedOrDifficultWord = words.filter(word => word.userWord?.difficulty === WordDifficulty.Difficult || !!word.userWord?.optional?.isLearned)
 	isPageCompleted = learnedOrDifficultWord.length + 1 === WORD_PER_PAGE_AMOUNT
 	const currentStatistic = await apiClient.getUserStatistic(userId)
 
@@ -42,53 +43,56 @@ const updateCompletedPages = async (words: Word[], group: number, page: number, 
 	return isPageCompleted
 }
 
-export const fetchTextbookWords = createAsyncThunk('textbook/fetchWords', async (arg, { getState }) => {
-	const state = getState() as RootState
+export const fetchTextbookWords = createAsyncThunk<Word[], void, { state: RootState }>('textbook/fetchWords', async (_arg, { getState }) => {
+	const state = getState()
 	const { page, group } = state.textbook
-	const { isLoggedIn, userInfo } = state.auth
+	const { userInfo } = state.auth
 
-	let words
+	if (userInfo) {
+		const response = await apiClient.getUserWords(userInfo.userId, group, page)
 
-	if (isLoggedIn) {
-		const response = await apiClient.getUserWords(userInfo.userId as string, group, page)
-
-		words = response[0].paginatedResults.map(word => {
-			const wordId = word._id!
-			word.id = wordId
-			return word
-		})
-	} else {
-		words = await apiClient.getAllWords(group, page)
+		// TODO: check if this map function is really needed here
+		// eslint-disable-next-line no-underscore-dangle
+		return response[0].paginatedResults.map(word => ({ ...word, id: word._id! }))
 	}
 
-	return words
+	return apiClient.getAllWords(group, page)
 })
 
-export const getCompletedPages = createAsyncThunk('textbook/getCompletedPages', async (arg, { getState }) => {
-	const state = getState() as RootState
+export const getCompletedPages = createAsyncThunk<CompletedPages, void, { state: RootState }>('textbook/getCompletedPages', async (arg, { getState }) => {
+	const state = getState()
 	const { userInfo } = state.auth
-	const res = (await apiClient.getUserStatistic(userInfo.userId as string)) || {}
-	return res.optional.completedPages as CompletedPages
+	if (!userInfo) {
+		throw new Error('Not permitted')
+	}
+
+	const res = (await apiClient.getUserStatistic(userInfo.userId)) || {}
+	return res.optional.completedPages
 })
 
-export const fetchDifficultWords = createAsyncThunk('textbook/fetchDifficultWords', async (arg, { getState }) => {
-	const state = getState() as RootState
+export const fetchDifficultWords = createAsyncThunk<Word[], void, { state: RootState }>('textbook/fetchDifficultWords', async (arg, { getState }) => {
+	const state = getState()
 	const { userInfo } = state.auth
+	if (!userInfo) {
+		throw new Error('Not permitted')
+	}
 
 	const response = await apiClient.getDifficultWords(userInfo.userId as string)
-	return response[0].paginatedResults.map(word => {
-		const wordId = word._id!
-		word.id = wordId
-		return word
-	})
+	// TODO: refactor duplicated code
+	// eslint-disable-next-line no-underscore-dangle
+	return response[0].paginatedResults.map(word => ({ ...word, id: word._id! }))
 })
 
 export const changeWordDifficulty = createAsyncThunk('textbook/changeWordDifficulty', async (arg: { wordId: string; difficulty: string }, { getState }) => {
 	const state = getState() as RootState
 	const { userInfo } = state.auth
+	if (!userInfo) {
+		throw new Error('Not permitted')
+	}
+
 	const { words, group, page } = state.textbook
 	const { wordId, difficulty } = arg
-	const userId = userInfo.userId as string
+	const { userId } = userInfo
 
 	let isPageCompleted = false
 
@@ -105,9 +109,13 @@ export const changeWordDifficulty = createAsyncThunk('textbook/changeWordDifficu
 export const changeWordLearnedStatus = createAsyncThunk('textbook/changeWordLearnedStatus', async (arg: { wordId: string; wordLearnedStatus: boolean }, { getState }) => {
 	const state = getState() as RootState
 	const { userInfo } = state.auth
+	if (!userInfo) {
+		throw new Error('Not permitted')
+	}
+
 	const { words, page, group } = state.textbook
 	const { wordId, wordLearnedStatus } = arg
-	const userId = userInfo.userId as string
+	const { userId } = userInfo
 
 	try {
 		await apiClient.addWordToLearned(userId, wordId, wordLearnedStatus, ApiMethod.Put)
@@ -117,7 +125,7 @@ export const changeWordLearnedStatus = createAsyncThunk('textbook/changeWordLear
 
 	let isPageCompleted = false
 
-	if (wordLearnedStatus === true) {
+	if (wordLearnedStatus) {
 		isPageCompleted = await updateCompletedPages(words, group, page, userId)
 		await apiClient.removeWordFromDifficult(userId, wordId, WordDifficulty.Normal)
 	}
@@ -128,6 +136,10 @@ export const changeWordLearnedStatus = createAsyncThunk('textbook/changeWordLear
 export const createNewStatistic = createAsyncThunk('textbook/createNewStatistic', async (arg, { getState }) => {
 	const state = getState() as RootState
 	const { userInfo } = state.auth
+	if (!userInfo) {
+		throw new Error('Not permitted')
+	}
+
 	const newStatistic = {
 		learnedWords: 0,
 		optional: {
@@ -135,7 +147,7 @@ export const createNewStatistic = createAsyncThunk('textbook/createNewStatistic'
 		},
 	}
 
-	await apiClient.setNewStatistic(userInfo.userId as string, newStatistic)
+	await apiClient.setNewStatistic(userInfo.userId, newStatistic)
 })
 
 export const textbookSlice = createSlice({
@@ -259,9 +271,4 @@ export const textbookSlice = createSlice({
 })
 
 export const { changePage, changeGroup } = textbookSlice.actions
-export const selectTextbookWords = (state: RootState) => state.textbook.words
-export const selectTextbookStatus = (state: RootState) => state.textbook.status
-export const selectTextbookGroup = (state: RootState) => state.textbook.group
-export const selectTextbookPage = (state: RootState) => state.textbook.page
-export const selectTextbookCompletedPages = (state: RootState) => state.textbook.completedPages
 export default textbookSlice.reducer

@@ -1,17 +1,18 @@
-import React, { useState } from 'react'
-import Container from '@mui/material/Container'
+import { useState } from 'react'
+
+import { SelectChangeEvent } from '@mui/material'
 import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
+import Button from '@mui/material/Button'
+import Container from '@mui/material/Container'
 import FormControl from '@mui/material/FormControl'
 import InputLabel from '@mui/material/InputLabel'
-import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
-import Button from '@mui/material/Button'
-import { SelectChangeEvent } from '@mui/material'
-import { GameName } from '../../types/game'
-import { useAppDispatch, useAppSelector } from '../../app/hooks'
-import { fetchAudiocallWords, toggleLevelSelection, toggleAudiocallAudio } from '../../features/audiocall/audiocallSlice'
-import { selectTextbookGroup, selectTextbookPage } from '../../features/textbook/textbookSlice'
+import Select from '@mui/material/Select'
+import Typography from '@mui/material/Typography'
+
+import { useAppDispatch } from '~/app/hooks'
+import { fetchAudiocallWords, toggleLevelSelection } from '~/features/audiocall'
+import { GameName } from '~/types/game'
 
 interface LevelSelectionProps {
 	gameName: GameName

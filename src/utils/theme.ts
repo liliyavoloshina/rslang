@@ -1,5 +1,5 @@
+import { green, grey, indigo, red } from '@mui/material/colors'
 import { createTheme } from '@mui/material/styles'
-import { grey, indigo, green, red } from '@mui/material/colors'
 
 const theme = createTheme({
 	text: {

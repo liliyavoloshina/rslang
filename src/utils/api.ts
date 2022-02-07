@@ -1,9 +1,9 @@
-import { ApiMethod, ApiBody, ApiConfig, ApiHeaders, GetUserWordsResponse, UserStatistic } from '../types/api'
-import { SignInData, SignInResponse, SignUpData, SignUpResponse } from '../types/auth'
-import { UserWord, Word } from '../types/word'
-import { localStorageGetUser } from './localStorage'
+import { ApiBody, ApiConfig, ApiHeaders, ApiMethod, GetUserWordsResponse, UserStatistic } from '~/types/api'
+import { SignInData, SignInResponse, SignUpData, SignUpResponse } from '~/types/auth'
+import { UserWord, Word } from '~/types/word'
 
-const DOMAIN_URL = process.env.REACT_APP_DOMAIN as string
+import { DOMAIN_URL } from './constants'
+import { localStorageGetUser } from './localStorage'
 
 const apiClient = async <T>(endpoint: string, method: ApiMethod, body?: ApiBody): Promise<T> => {
 	const config: ApiConfig = {

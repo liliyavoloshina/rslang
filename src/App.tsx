@@ -1,19 +1,21 @@
-import React from 'react'
-import { Routes, Route, useLocation } from 'react-router-dom'
+import { Route, Routes, useLocation } from 'react-router-dom'
+
 import { ThemeProvider } from '@mui/material/styles'
-import Header from './components/layout/Header'
-import Home from './views/Home'
-import Textbook from './views/Textbook'
-import AudioCall from './views/Audiocall'
-import Sprint from './views/Sprint'
-import Statistic from './views/Statistic'
-import SignIn from './views/SignIn'
-import SignUp from './views/SignUp'
-import Footer from './components/layout/Footer'
-import theme from './utils/theme'
-import { localStorageGetUser } from './utils/localStorage'
+
+import Footer from '~/components/layout/Footer'
+import Header from '~/components/layout/Header'
+import { setUser } from '~/features/auth'
+import { localStorageGetUser } from '~/utils/localStorage'
+import theme from '~/utils/theme'
+import AudioCall from '~/views/Audiocall'
+import Home from '~/views/Home'
+import SignIn from '~/views/SignIn'
+import SignUp from '~/views/SignUp'
+import Sprint from '~/views/Sprint'
+import Statistic from '~/views/Statistic'
+import Textbook from '~/views/Textbook'
+
 import { useAppDispatch } from './app/hooks'
-import { setUser } from './features/auth/authSlice'
 
 function App() {
 	const location = useLocation().pathname

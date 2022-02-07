@@ -1,23 +1,23 @@
-import React from 'react'
-import Box from '@mui/material/Box'
-import Card from '@mui/material/Card'
-import CardMedia from '@mui/material/CardMedia'
-import Typography from '@mui/material/Typography'
-import IconButton from '@mui/material/IconButton'
-import CardContent from '@mui/material/CardContent'
-import Stack from '@mui/material/Stack'
-import Chip from '@mui/material/Chip'
-import Tooltip from '@mui/material/Tooltip'
-import VolumeUpIcon from '@mui/icons-material/VolumeUp'
 import BookmarkAddedIcon from '@mui/icons-material/BookmarkAdded'
 import DiamondIcon from '@mui/icons-material/Diamond'
+import VolumeUpIcon from '@mui/icons-material/VolumeUp'
+import Box from '@mui/material/Box'
+import Card from '@mui/material/Card'
+import CardContent from '@mui/material/CardContent'
+import CardMedia from '@mui/material/CardMedia'
+import Chip from '@mui/material/Chip'
+import IconButton from '@mui/material/IconButton'
+import Stack from '@mui/material/Stack'
+import Tooltip from '@mui/material/Tooltip'
+import Typography from '@mui/material/Typography'
 import { blue, lightGreen } from '@mui/material/colors'
-import { Word, WordDifficulty } from '../../types/word'
-import styles from './Textbook.module.css'
-import { useAppDispatch, useAppSelector } from '../../app/hooks'
-import { changeWordDifficulty, changeWordLearnedStatus, selectTextbookGroup } from '../../features/textbook/textbookSlice'
 
-const DOMAIN_URL = process.env.REACT_APP_DOMAIN as string
+import { useAppDispatch, useAppSelector } from '~/app/hooks'
+import { changeWordDifficulty, changeWordLearnedStatus, selectTextbookGroup } from '~/features/textbook'
+import { Word, WordDifficulty } from '~/types/word'
+import { DOMAIN_URL } from '~/utils/constants'
+
+import styles from './Textbook.module.css'
 
 interface TextbookCardProps {
 	activeColor: string
@@ -32,7 +32,7 @@ export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: Te
 	const { id, image, word, transcription, wordTranslate, textMeaning, textMeaningTranslate, textExample, textExampleTranslate, audio, audioExample, audioMeaning, userWord } =
 		passedWord
 
-	const isLearned = userWord?.optional?.isLearned as boolean
+	const isLearned = !!userWord?.optional?.isLearned
 	const isDifficult = userWord?.difficulty === WordDifficulty.Difficult
 	const isDifficultDisable = (isDifficult && group !== 6) || isLearned
 	const difficultBtnColor = blue.A200
@@ -120,20 +120,22 @@ export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: Te
 					</Stack>
 				</Stack>
 
-				<Stack flexDirection="row" justifyContent="space-between" sx={{ display: isLoggedIn ? 'flex' : 'none' }}>
-					<Box>
-						<Typography variant="subtitle2" color={theme => theme.text.success}>
-							Правильных ответов: {userWord?.optional?.correctAnswers ? userWord?.optional?.correctAnswers : 0}
-						</Typography>
-						<Typography variant="subtitle2" color={theme => theme.text.danger}>
-							Неправильных ответов: {userWord?.optional?.incorrectAnswers ? userWord?.optional?.incorrectAnswers : 0}
-						</Typography>
-					</Box>
-					<Stack flexDirection="row" columnGap="10px">
-						<Chip sx={{ display: isLearned ? 'flex' : 'none', backgroundColor: learnedBtnColor, color: '#fff' }} label="Learned" />
-						<Chip sx={{ display: isDifficult ? 'flex' : 'none', backgroundColor: difficultBtnColor, color: '#fff' }} label="Difficult" />
+				{isLoggedIn && (
+					<Stack flexDirection="row" justifyContent="space-between" sx={{ display: 'flex' }}>
+						<Box>
+							<Typography variant="subtitle2" color={theme => theme.text.success}>
+								Правильных ответов: {userWord?.optional?.correctAnswers ? userWord?.optional?.correctAnswers : 0}
+							</Typography>
+							<Typography variant="subtitle2" color={theme => theme.text.danger}>
+								Неправильных ответов: {userWord?.optional?.incorrectAnswers ? userWord?.optional?.incorrectAnswers : 0}
+							</Typography>
+						</Box>
+						<Stack flexDirection="row" columnGap="10px">
+							<Chip sx={{ display: isLearned ? 'flex' : 'none', backgroundColor: learnedBtnColor, color: '#fff' }} label="Learned" />
+							<Chip sx={{ display: isDifficult ? 'flex' : 'none', backgroundColor: difficultBtnColor, color: '#fff' }} label="Difficult" />
+						</Stack>
 					</Stack>
-				</Stack>
+				)}
 			</CardContent>
 		</Card>
 	)
