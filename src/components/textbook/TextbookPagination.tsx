@@ -7,6 +7,7 @@ import { lightGreen } from '@mui/material/colors'
 
 import { useAppDispatch, useAppSelector } from '~/app/hooks'
 import { changePage, fetchTextbookWords, selectTextbookCompletedPages, selectTextbookGroup, selectTextbookPage } from '~/features/textbook'
+import { PAGES_PER_GROUP } from '~/utils/constants'
 
 export default function TextbookPagination() {
 	const dispatch = useAppDispatch()
@@ -22,7 +23,7 @@ export default function TextbookPagination() {
 	return (
 		<Stack spacing={2} sx={{ alignItems: 'center' }}>
 			<Pagination
-				count={30}
+				count={PAGES_PER_GROUP}
 				variant="outlined"
 				page={page}
 				color="primary"
