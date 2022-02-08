@@ -8,3 +8,6 @@ export const selectAudiocallStatus = (state: RootState) => state.audiocall.statu
 export const selectAudiocallIsLevelSelection = (state: RootState) => state.audiocall.isLevelSelection
 export const selectAudiocallIsFinished = (state: RootState) => state.audiocall.isFinished
 export const selectAudiocallAuduoPath = (state: RootState) => state.audiocall.audioPath
+export const selectAudiocallCorrectAnswers = (state: RootState) => state.audiocall.correctAnswers
+export const selectAudiocallIncorrectAnswers = (state: RootState) => state.audiocall.incorrectAnswers
+export const selectAudiocallAnsweredWord = (state: RootState) => state.audiocall.answeredWord

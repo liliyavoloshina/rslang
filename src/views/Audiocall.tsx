@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { VolumeUp } from '@mui/icons-material'
@@ -13,20 +13,23 @@ import { useAppDispatch, useAppSelector } from '~/app/hooks'
 import LevelSelection from '~/components/game/LevelSelection'
 import Popup from '~/components/layout/Popup'
 import {
+	checkAnswer,
 	fetchAudiocallWords,
-	nextWord,
 	resetGame,
+	selectAudiocallAnsweredWord,
 	selectAudiocallAnswers,
+	selectAudiocallCorrectAnswers,
 	selectAudiocallCurrentWord,
+	selectAudiocallIncorrectAnswers,
 	selectAudiocallIsFinished,
 	selectAudiocallIsLevelSelection,
 	selectAudiocallStatus,
+	showNextWord,
 	toggleAudiocallAudio,
 	toggleLevelSelection,
 } from '~/features/audiocall'
 import { selectTextbookGroup, selectTextbookPage } from '~/features/textbook'
 import { GameName } from '~/types/game'
-import { Word } from '~/types/word'
 import { DOMAIN_URL } from '~/utils/constants'
 
 interface LocationState {
@@ -43,25 +46,23 @@ function Audiocall() {
 	const answers = useAppSelector(selectAudiocallAnswers)
 	const isFinished = useAppSelector(selectAudiocallIsFinished)
 	const isLevelSelection = useAppSelector(selectAudiocallIsLevelSelection)
-
-	const [answeredWord, setAnsweredWord] = useState<null | string>(null)
-	const [incorrectWords, setIncorrectWords] = useState<Word[]>([])
-	const [correctWords, setCorrectWords] = useState<Word[]>([])
+	const incorrectWords = useAppSelector(selectAudiocallIncorrectAnswers)
+	const correctWords = useAppSelector(selectAudiocallCorrectAnswers)
+	const answeredWord = useAppSelector(selectAudiocallAnsweredWord)
 
 	const isFromTextbook = !!(location.state as LocationState)?.fromTextbook
 
-	const toggleAudio = () => {
-		dispatch(toggleAudiocallAudio())
-	}
-
 	const handleKeyDown = (event: KeyboardEvent) => {
+		event.preventDefault()
 		const { key } = event
 
-		if (key === ' ') {
-			toggleAudio()
+		if (key === '') {
+			dispatch(toggleAudiocallAudio())
+		} else if (['1', '2', '3', '4', '5'].includes(key)) {
+			dispatch(checkAnswer({ answer: key, isKeyboard: true }))
+		} else if (key === 'Enter') {
+			dispatch(showNextWord())
 		}
-
-		console.log('answerPressed', key)
 	}
 
 	const fetchWords = async () => {
@@ -91,26 +92,6 @@ function Audiocall() {
 		return <div>loading...</div>
 	}
 
-	const checkAnswer = (answer: string) => {
-		setAnsweredWord(answer)
-
-		if (answer !== currentWord!.wordTranslate) {
-			setIncorrectWords([...incorrectWords, currentWord!])
-		} else {
-			setCorrectWords([...correctWords, currentWord!])
-		}
-	}
-
-	const showNextWord = () => {
-		dispatch(nextWord())
-
-		if (!answeredWord) {
-			checkAnswer('skipped')
-		}
-
-		setAnsweredWord(null)
-	}
-
 	return (
 		<Container maxWidth="lg" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
 			<Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '20px' }}>
@@ -119,7 +100,7 @@ function Audiocall() {
 						visibility: answeredWord ? 'visible' : 'hidden',
 					}}
 				>
-					<IconButton aria-label="play audio" size="small" onClick={() => toggleAudio()}>
+					<IconButton aria-label="play audio" size="small" onClick={() => dispatch(toggleAudiocallAudio())}>
 						<VolumeUp fontSize="inherit" />
 					</IconButton>
 					<Typography variant="subtitle1" sx={{ fontWeight: '700' }}>
@@ -130,7 +111,7 @@ function Audiocall() {
 				{!answeredWord ? (
 					<Button
 						variant="outlined"
-						onClick={() => toggleAudio()}
+						onClick={() => dispatch(toggleAudiocallAudio())}
 						sx={{
 							width: 150,
 							height: 150,
@@ -164,7 +145,7 @@ function Audiocall() {
 					{answers.map(answer => (
 						<Grid key={answer} item>
 							<Button
-								onClick={() => checkAnswer(answer)}
+								onClick={() => dispatch(checkAnswer({ answer, isKeyboard: false }))}
 								variant="contained"
 								sx={{ pointerEvents: answeredWord ? 'none' : 'all' }}
 								color={
@@ -183,7 +164,7 @@ function Audiocall() {
 					))}
 				</Grid>
 
-				<Button onClick={() => showNextWord()} variant="contained" color="secondary" fullWidth>
+				<Button onClick={() => dispatch(showNextWord())} tabIndex={0} variant="contained" color="secondary" fullWidth>
 					{answeredWord ? 'Next' : 'Skip'}
 				</Button>
 			</Box>
