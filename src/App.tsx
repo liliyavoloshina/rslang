@@ -15,7 +15,7 @@ function App() {
 	const location = useLocation().pathname
 	const dispatch = useAppDispatch()
 
-	const isFooter = [Path.AUDIO_CALL, Path.SPRINT].every(pattern => !location.startsWith(pattern))
+	const isFooter = [Path.AUDIOCALL, Path.SPRINT].every(pattern => !location.startsWith(pattern))
 
 	const user = localStorageGetUser()
 

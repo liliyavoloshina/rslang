@@ -42,7 +42,7 @@ const GAMES: { name: string; path: Path }[] = [
 	},
 	{
 		name: 'Audiocall',
-		path: Path.AUDIO_CALL,
+		path: Path.AUDIOCALL,
 	},
 ]
 

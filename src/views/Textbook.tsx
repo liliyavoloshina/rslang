@@ -74,10 +74,10 @@ function Textbook() {
 				)}
 
 				<Stack spacing={2} direction="row" justifyContent="space-between">
-					<Button component={RouterLink} to={`${Path.SPRINT}/${group}/${page}`} state={{ fromTextbook: true }} disabled={isPageCompleted}>
+					<Button component={RouterLink} to={`${Path.SPRINT}/${group}/${page}`} disabled={isPageCompleted}>
 						Sprint
 					</Button>
-					<Button component={RouterLink} to="/audiocall" state={{ fromTextbook: true }} disabled={isPageCompleted}>
+					<Button component={RouterLink} to={`${Path.AUDIOCALL}/${group}/${page}`} disabled={isPageCompleted}>
 						Audiocall
 					</Button>
 				</Stack>
