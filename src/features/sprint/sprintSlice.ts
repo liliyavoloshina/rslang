@@ -41,7 +41,7 @@ const getSuggestedTranslation = (currentWord: Word, words: Word[]) => {
 	}
 }
 
-export const startGame = createAsyncThunk('sprint/startGame', ({ group, page }: { group: number; page?: number }) => apiClient.getAllWords(group, page))
+export const startGame = createAsyncThunk('sprint/startGame', ({ group, page }: { group: number; page: number }) => apiClient.getAllWords(group, page))
 
 export const sprintSlice = createSlice({
 	name: 'sprint',

@@ -13,6 +13,7 @@ import { useAppSelector } from '~/app/hooks'
 import Popup from '~/components/layout/Popup'
 import { Path } from '~/components/router'
 import { answer, reset, selectSprintState, startGame } from '~/features/sprint'
+import { PAGES_PER_GROUP } from '~/utils/constants'
 
 const Sprint = () => {
 	const dispatch = useDispatch()
@@ -32,7 +33,7 @@ const Sprint = () => {
 
 	// start on mount or when group/page changes
 	useEffect(() => {
-		dispatch(startGame({ group, page }))
+		dispatch(startGame({ group, page: page ?? Math.floor(Math.random() * PAGES_PER_GROUP) }))
 	}, [dispatch, group, page])
 
 	// reset game on unmount
@@ -58,11 +59,11 @@ const Sprint = () => {
 						</Typography>
 					</Box>
 					<Box sx={{ display: 'flex', justifyContent: 'center', gap: 3, mt: 2 }}>
-						<IconButton color="success" size="large" onClick={() => selectOption(true)}>
-							<YesIcon /> Yes
-						</IconButton>
 						<IconButton color="error" size="large" onClick={() => selectOption(false)}>
 							<NoIcon /> No
+						</IconButton>
+						<IconButton color="success" size="large" onClick={() => selectOption(true)}>
+							<YesIcon /> Yes
 						</IconButton>
 					</Box>
 				</Box>
