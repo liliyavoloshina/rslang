@@ -3,7 +3,15 @@ import { SignInData, SignInResponse, SignUpData, SignUpResponse } from '~/types/
 import { UserWord, Word } from '~/types/word'
 
 import { DOMAIN_URL } from './constants'
-import { localStorageGetUser } from './localStorage'
+import { localStorageGetUser, localStorageSetUser } from './localStorage'
+
+interface TokenResponse {
+	message: string
+	token: string
+	refreshToken: string
+	userId: string
+	name: string
+}
 
 const apiClient = async <T>(endpoint: string, method: ApiMethod, body?: ApiBody): Promise<T> => {
 	const config: ApiConfig = {
@@ -11,7 +19,7 @@ const apiClient = async <T>(endpoint: string, method: ApiMethod, body?: ApiBody)
 		method,
 	}
 
-	const user = localStorageGetUser()
+	let user = localStorageGetUser()
 
 	if (user && user.token) {
 		config.headers.Authorization = `Bearer ${user.token}`
@@ -21,7 +29,28 @@ const apiClient = async <T>(endpoint: string, method: ApiMethod, body?: ApiBody)
 		config.body = JSON.stringify(body)
 	}
 
-	const response = await fetch(`${DOMAIN_URL}/${endpoint}`, config)
+	let response = await fetch(`${DOMAIN_URL}/${endpoint}`, config)
+
+	if (user && response.status === 401) {
+		const refreshConfig = {
+			headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${user.refreshToken}` } as ApiHeaders,
+			method: 'GET',
+		}
+
+		const tokenRes = await fetch(`${DOMAIN_URL}/${user?.userId}/tokens`, refreshConfig)
+		const token = (await tokenRes.json()) as TokenResponse
+
+		user = {
+			name: token.name,
+			refreshToken: token.refreshToken,
+			token: token.token,
+			userId: token.userId,
+		}
+
+		localStorageSetUser(user)
+
+		response = await fetch(`${DOMAIN_URL}/${endpoint}`, config)
+	}
 
 	if (!response.ok) {
 		const error = await response.text()
