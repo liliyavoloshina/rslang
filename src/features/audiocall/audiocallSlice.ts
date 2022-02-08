@@ -10,6 +10,9 @@ export interface AudiocallState {
 	answers: string[]
 	currentIdx: number
 	currentWord: null | Word
+	answeredWord: string | null
+	incorrectAnswers: Word[]
+	correctAnswers: Word[]
 	isLevelSelection: boolean
 	isFinished: boolean
 	audioPath: string
@@ -21,6 +24,9 @@ const initialState: AudiocallState = {
 	answers: [],
 	currentIdx: 0,
 	currentWord: null,
+	answeredWord: null,
+	incorrectAnswers: [],
+	correctAnswers: [],
 	isLevelSelection: false,
 	isFinished: false,
 	audioPath: '',
@@ -55,10 +61,14 @@ export const audiocallSlice = createSlice({
 	name: 'audiocall',
 	initialState,
 	reducers: {
-		nextWord: state => {
+		showNextWord: state => {
 			if (state.currentIdx === WORD_PER_PAGE_AMOUNT - 1) {
 				state.isFinished = true
 				return
+			}
+
+			if (!state.answeredWord) {
+				state.incorrectAnswers = [...state.incorrectAnswers, state.currentWord!]
 			}
 			state.currentIdx += 1
 			state.currentWord = state.words[state.currentIdx]
@@ -67,22 +77,38 @@ export const audiocallSlice = createSlice({
 			const randomAnswers = getRandomAnswers(correctAnswer, onlyAnswers)
 			state.answers = randomAnswers
 			state.audioPath = `${DOMAIN_URL}/${state.currentWord!.audio}`
-			// const newAudio = new Audio(`${DOMAIN_URL}/${state.currentWord!.audio}`)
-			// newAudio.play()
 			const newAudio = new Audio(state.audioPath)
 			newAudio.play()
+			state.answeredWord = null
 		},
 		toggleLevelSelection: (state, action) => {
 			state.isLevelSelection = action.payload
 		},
 		toggleAudiocallAudio: state => {
-			// const newAudio = new Audio(`${DOMAIN_URL}/${state.currentWord!.audio}`)
-			// newAudio.play()
 			const newAudio = new Audio(state.audioPath)
 			newAudio.play()
 		},
 		resetGame: state => {
 			Object.assign(state, initialState)
+		},
+		checkAnswer: (state, action) => {
+			const { answer, isKeyboard } = action.payload
+			const { currentWord } = state
+			let actualWord
+
+			if (isKeyboard) {
+				actualWord = state.answers[answer - 1]
+			} else {
+				actualWord = answer
+			}
+
+			state.answeredWord = actualWord
+
+			if (actualWord !== currentWord!.wordTranslate) {
+				state.incorrectAnswers = [...state.incorrectAnswers, currentWord!]
+			} else {
+				state.correctAnswers = [...state.correctAnswers, currentWord!]
+			}
 		},
 	},
 	extraReducers: builder => {
@@ -102,14 +128,12 @@ export const audiocallSlice = createSlice({
 				state.audioPath = `${DOMAIN_URL}/${state.currentWord!.audio}`
 				const newAudio = new Audio(state.audioPath)
 				newAudio.play()
-				// const newAudio = new Audio(`${DOMAIN_URL}/${state.currentWord!.audio}`)
-				// newAudio.play()
 			})
-			.addCase(finishAudiocall.fulfilled, (state, action) => {
+			.addCase(finishAudiocall.fulfilled, state => {
 				state.isFinished = false
 			})
 	},
 })
 
-export const { nextWord, toggleAudiocallAudio, toggleLevelSelection, resetGame } = audiocallSlice.actions
+export const { showNextWord, toggleAudiocallAudio, toggleLevelSelection, resetGame, checkAnswer } = audiocallSlice.actions
 export default audiocallSlice.reducer
