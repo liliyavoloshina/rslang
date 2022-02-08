@@ -21,6 +21,7 @@ import {
 	selectAudiocallIsFinished,
 	selectAudiocallIsLevelSelection,
 	selectAudiocallStatus,
+	toggleAudiocallAudio,
 	toggleLevelSelection,
 } from '~/features/audiocall'
 import { selectTextbookGroup, selectTextbookPage } from '~/features/textbook'
@@ -50,8 +51,7 @@ function Audiocall() {
 	const isFromTextbook = !!(location.state as LocationState)?.fromTextbook
 
 	const toggleAudio = () => {
-		const audio = new Audio(`${DOMAIN_URL}/${currentWord!.audio}`)
-		audio.play()
+		dispatch(toggleAudiocallAudio())
 	}
 
 	const handleKeyDown = (event: KeyboardEvent) => {
@@ -61,23 +61,23 @@ function Audiocall() {
 			toggleAudio()
 		}
 
-		// const
-		// const answerPressed = answers[key - 1]
-		// console.log('answerPressed', answerPressed)
 		console.log('answerPressed', key)
+	}
+
+	const fetchWords = async () => {
+		if (isFromTextbook) {
+			await dispatch(fetchAudiocallWords({ group: currentGroup, page: currentPage }))
+		} else {
+			dispatch(toggleLevelSelection(true))
+		}
 	}
 
 	useEffect(() => {
 		dispatch(resetGame())
 
-		if (isFromTextbook) {
-			dispatch(fetchAudiocallWords({ group: currentGroup, page: currentPage }))
-		} else {
-			dispatch(toggleLevelSelection(true))
-		}
+		fetchWords()
 
 		window.addEventListener('keydown', handleKeyDown)
-
 		return () => {
 			window.removeEventListener('keydown', handleKeyDown)
 		}
@@ -90,8 +90,6 @@ function Audiocall() {
 	if (status !== 'success') {
 		return <div>loading...</div>
 	}
-
-	// const correctAnswer = currentWord!.wordTranslate
 
 	const checkAnswer = (answer: string) => {
 		setAnsweredWord(answer)

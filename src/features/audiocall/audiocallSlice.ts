@@ -12,6 +12,7 @@ export interface AudiocallState {
 	currentWord: null | Word
 	isLevelSelection: boolean
 	isFinished: boolean
+	audioPath: string
 	status: 'idle' | 'loading' | 'failed' | 'success'
 }
 
@@ -22,6 +23,7 @@ const initialState: AudiocallState = {
 	currentWord: null,
 	isLevelSelection: false,
 	isFinished: false,
+	audioPath: '',
 	status: 'idle',
 }
 
@@ -64,14 +66,19 @@ export const audiocallSlice = createSlice({
 			const onlyAnswers = state.words.map(word => word.wordTranslate)
 			const randomAnswers = getRandomAnswers(correctAnswer, onlyAnswers)
 			state.answers = randomAnswers
-			const newAudio = new Audio(`${DOMAIN_URL}/${state.currentWord!.audio}`)
+			state.audioPath = `${DOMAIN_URL}/${state.currentWord!.audio}`
+			// const newAudio = new Audio(`${DOMAIN_URL}/${state.currentWord!.audio}`)
+			// newAudio.play()
+			const newAudio = new Audio(state.audioPath)
 			newAudio.play()
 		},
 		toggleLevelSelection: (state, action) => {
 			state.isLevelSelection = action.payload
 		},
 		toggleAudiocallAudio: state => {
-			const newAudio = new Audio(`${DOMAIN_URL}/${state.currentWord!.audio}`)
+			// const newAudio = new Audio(`${DOMAIN_URL}/${state.currentWord!.audio}`)
+			// newAudio.play()
+			const newAudio = new Audio(state.audioPath)
 			newAudio.play()
 		},
 		resetGame: state => {
@@ -92,8 +99,11 @@ export const audiocallSlice = createSlice({
 				state.answers = randomAnswers
 				// eslint-disable-next-line prefer-destructuring
 				state.currentWord = state.words[0]
-				const newAudio = new Audio(`${DOMAIN_URL}/${state.currentWord!.audio}`)
+				state.audioPath = `${DOMAIN_URL}/${state.currentWord!.audio}`
+				const newAudio = new Audio(state.audioPath)
 				newAudio.play()
+				// const newAudio = new Audio(`${DOMAIN_URL}/${state.currentWord!.audio}`)
+				// newAudio.play()
 			})
 			.addCase(finishAudiocall.fulfilled, (state, action) => {
 				state.isFinished = false
