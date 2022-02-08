@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { VolumeUp } from '@mui/icons-material'
@@ -49,6 +49,24 @@ function Audiocall() {
 
 	const isFromTextbook = !!(location.state as LocationState)?.fromTextbook
 
+	const toggleAudio = () => {
+		const audio = new Audio(`${DOMAIN_URL}/${currentWord!.audio}`)
+		audio.play()
+	}
+
+	const handleKeyDown = (event: KeyboardEvent) => {
+		const { key } = event
+
+		if (key === ' ') {
+			toggleAudio()
+		}
+
+		// const
+		// const answerPressed = answers[key - 1]
+		// console.log('answerPressed', answerPressed)
+		console.log('answerPressed', key)
+	}
+
 	useEffect(() => {
 		dispatch(resetGame())
 
@@ -56,6 +74,12 @@ function Audiocall() {
 			dispatch(fetchAudiocallWords({ group: currentGroup, page: currentPage }))
 		} else {
 			dispatch(toggleLevelSelection(true))
+		}
+
+		window.addEventListener('keydown', handleKeyDown)
+
+		return () => {
+			window.removeEventListener('keydown', handleKeyDown)
 		}
 	}, [])
 
@@ -67,18 +91,12 @@ function Audiocall() {
 		return <div>loading...</div>
 	}
 
-	const correctAnswer = currentWord!.wordTranslate
-
-	const audio = new Audio(`${DOMAIN_URL}/${currentWord!.audio}`)
-
-	const toggleAudio = () => {
-		audio.play()
-	}
+	// const correctAnswer = currentWord!.wordTranslate
 
 	const checkAnswer = (answer: string) => {
 		setAnsweredWord(answer)
 
-		if (answer !== correctAnswer) {
+		if (answer !== currentWord!.wordTranslate) {
 			setIncorrectWords([...incorrectWords, currentWord!])
 		} else {
 			setCorrectWords([...correctWords, currentWord!])
@@ -98,6 +116,19 @@ function Audiocall() {
 	return (
 		<Container maxWidth="lg" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
 			<Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '20px' }}>
+				<Box
+					sx={{
+						visibility: answeredWord ? 'visible' : 'hidden',
+					}}
+				>
+					<IconButton aria-label="play audio" size="small" onClick={() => toggleAudio()}>
+						<VolumeUp fontSize="inherit" />
+					</IconButton>
+					<Typography variant="subtitle1" sx={{ fontWeight: '700' }}>
+						{currentWord!.word}
+					</Typography>
+				</Box>
+
 				{!answeredWord ? (
 					<Button
 						variant="outlined"
@@ -130,18 +161,6 @@ function Audiocall() {
 						/>
 					</Box>
 				)}
-				<Box
-					sx={{
-						display: answeredWord ? 'flex' : 'none',
-					}}
-				>
-					<IconButton aria-label="play audio" size="small" onClick={() => toggleAudio()}>
-						<VolumeUp fontSize="inherit" />
-					</IconButton>
-					<Typography variant="subtitle1" sx={{ fontWeight: '700' }}>
-						{currentWord!.word}
-					</Typography>
-				</Box>
 
 				<Grid container spacing={2}>
 					{answers.map(answer => (
@@ -149,7 +168,16 @@ function Audiocall() {
 							<Button
 								onClick={() => checkAnswer(answer)}
 								variant="contained"
-								color={answer === correctAnswer && answeredWord ? 'success' : answeredWord === answer ? (answer === correctAnswer ? 'success' : 'error') : 'primary'}
+								sx={{ pointerEvents: answeredWord ? 'none' : 'all' }}
+								color={
+									answer === currentWord!.wordTranslate && answeredWord
+										? 'success'
+										: answeredWord === answer
+										? answer === currentWord!.wordTranslate
+											? 'success'
+											: 'error'
+										: 'primary'
+								}
 							>
 								{answer}
 							</Button>
