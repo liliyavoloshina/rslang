@@ -11,7 +11,7 @@ import Select from '@mui/material/Select'
 import Typography from '@mui/material/Typography'
 
 import { useAppDispatch } from '~/app/hooks'
-import { fetchAudiocallWords, toggleLevelSelection } from '~/features/audiocall'
+import { toggleLevelSelection } from '~/features/audiocall'
 import { GameName } from '~/types/game'
 
 interface LevelSelectionProps {
@@ -33,7 +33,7 @@ function LevelSelection(props: LevelSelectionProps) {
 
 	const handlePlay = () => {
 		if (gameName === GameName.Audiocall) {
-			dispatch(fetchAudiocallWords({ group, page: 0 }))
+			onLevelSelected?.(group)
 		} else {
 			onLevelSelected?.(group)
 		}
@@ -48,7 +48,6 @@ function LevelSelection(props: LevelSelectionProps) {
 					{gameDesc}
 				</Typography>
 			</Box>
-			{/* <Box> */}
 			<FormControl>
 				<InputLabel>Select level</InputLabel>
 				<Select value={`${group}`} label="Select level" onChange={handleChange}>
@@ -60,7 +59,6 @@ function LevelSelection(props: LevelSelectionProps) {
 					<MenuItem value={5}>Group 6</MenuItem>
 				</Select>
 			</FormControl>
-			{/* </Box> */}
 			<Button variant="contained" onClick={handlePlay}>
 				Play
 			</Button>

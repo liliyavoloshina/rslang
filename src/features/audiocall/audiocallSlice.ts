@@ -33,7 +33,7 @@ const initialState: AudiocallState = {
 	status: 'idle',
 }
 
-export const fetchAudiocallWords = createAsyncThunk('audiocall/fetchWords', ({ group, page }: { group: number; page: number }) => apiClient.getAllWords(group, page))
+export const fetchAudiocallWords = createAsyncThunk('audiocall/fetchWords', ({ group, page }: { group: number; page?: number }) => apiClient.getAllWords(group, page))
 
 export const finishAudiocall = createAsyncThunk('audiocall/finishAudiocall', async ({ correctWords, incorrectWords }: { correctWords: number; incorrectWords: number }) => {
 	// const response = await apiClient.getAllWords(group, page)

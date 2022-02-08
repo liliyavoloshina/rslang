@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react'
-import { useLocation } from 'react-router-dom'
+import React, { useEffect, useMemo } from 'react'
+import { useMatch, useNavigate } from 'react-router-dom'
 
 import { VolumeUp } from '@mui/icons-material'
 import Box from '@mui/material/Box'
@@ -12,6 +12,7 @@ import Typography from '@mui/material/Typography'
 import { useAppDispatch, useAppSelector } from '~/app/hooks'
 import LevelSelection from '~/components/game/LevelSelection'
 import Popup from '~/components/layout/Popup'
+import { Path } from '~/components/router'
 import {
 	checkAnswer,
 	fetchAudiocallWords,
@@ -26,22 +27,15 @@ import {
 	selectAudiocallStatus,
 	showNextWord,
 	toggleAudiocallAudio,
-	toggleLevelSelection,
 } from '~/features/audiocall'
-import { selectTextbookGroup, selectTextbookPage } from '~/features/textbook'
 import { GameName } from '~/types/game'
 import { DOMAIN_URL } from '~/utils/constants'
 
-interface LocationState {
-	fromTextbook: boolean
-}
-
 function Audiocall() {
-	const location = useLocation()
 	const dispatch = useAppDispatch()
+	const navigate = useNavigate()
+
 	const status = useAppSelector(selectAudiocallStatus)
-	const currentPage = useAppSelector(selectTextbookPage)
-	const currentGroup = useAppSelector(selectTextbookGroup)
 	const currentWord = useAppSelector(selectAudiocallCurrentWord)
 	const answers = useAppSelector(selectAudiocallAnswers)
 	const isFinished = useAppSelector(selectAudiocallIsFinished)
@@ -50,7 +44,15 @@ function Audiocall() {
 	const correctWords = useAppSelector(selectAudiocallCorrectAnswers)
 	const answeredWord = useAppSelector(selectAudiocallAnsweredWord)
 
-	const isFromTextbook = !!(location.state as LocationState)?.fromTextbook
+	const groupMatch = useMatch(Path.AUDIOCALL_WITH_GROUP)
+	const pageMatch = useMatch(Path.AUDIOCALL_WITH_GROUP_AND_PAGE)
+
+	const group = useMemo(() => parseInt((groupMatch ?? pageMatch)?.params.group ?? '', 10), [groupMatch, pageMatch])
+	const page = useMemo(() => (pageMatch?.params.page ? parseInt(pageMatch.params.page, 10) : undefined), [pageMatch])
+
+	if (Number.isNaN(group)) {
+		navigate(Path.AUDIOCALL)
+	}
 
 	const handleKeyDown = (event: KeyboardEvent) => {
 		event.preventDefault()
@@ -66,11 +68,7 @@ function Audiocall() {
 	}
 
 	const fetchWords = async () => {
-		if (isFromTextbook) {
-			await dispatch(fetchAudiocallWords({ group: currentGroup, page: currentPage }))
-		} else {
-			dispatch(toggleLevelSelection(true))
-		}
+		await dispatch(fetchAudiocallWords({ group, page }))
 	}
 
 	useEffect(() => {
