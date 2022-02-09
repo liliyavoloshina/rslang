@@ -48,10 +48,16 @@ apiClient.getUserWords = (id: string, group: number, page: number) => {
 	return apiClient<GetUserWordsResponse[]>(`users/${id}/aggregatedWords?group=${group}&page=${page}&wordsPerPage=20`, ApiMethod.Get)
 }
 
+apiClient.getNotLearnedWord = (id: string, group: number, page: number) => {
+	return apiClient<GetUserWordsResponse[]>(
+		`users/${id}/aggregatedWords?filter={"$and":[{"$or":[{"userWord.optional.isLearned":false},{"userWord":null}]},{"group":${group},"page":${page}}]}&wordsPerPage=600`,
+		ApiMethod.Get
+	)
+}
+
 apiClient.getUserWord = (userId: string, wordId: string) => {
 	return apiClient<Word>(`users/${userId}/words/${wordId}`, ApiMethod.Get)
 }
-
 apiClient.getDifficultWords = (id: string) => {
 	return apiClient<GetUserWordsResponse[]>(`users/${id}/aggregatedWords?filter={"$and":[{"userWord.difficulty":"difficult"}]}`, ApiMethod.Get)
 }

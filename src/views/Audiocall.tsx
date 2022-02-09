@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo } from 'react'
-import { useMatch, useNavigate } from 'react-router-dom'
+import { useLocation, useMatch, useNavigate } from 'react-router-dom'
 
 import { VolumeUp } from '@mui/icons-material'
 import Box from '@mui/material/Box'
@@ -31,7 +31,12 @@ import {
 import { GameName } from '~/types/game'
 import { DOMAIN_URL, PAGES_PER_GROUP } from '~/utils/constants'
 
+interface LocationState {
+	fromTextbook: boolean
+}
+
 function Audiocall() {
+	const location = useLocation()
 	const dispatch = useAppDispatch()
 	const navigate = useNavigate()
 
@@ -49,6 +54,8 @@ function Audiocall() {
 
 	const group = useMemo(() => parseInt((groupMatch ?? pageMatch)?.params.group ?? '', 10), [groupMatch, pageMatch])
 	const page = useMemo(() => (pageMatch?.params.page ? parseInt(pageMatch.params.page, 10) : undefined), [pageMatch])
+
+	const isFromTextbook = !!(location.state as LocationState)?.fromTextbook
 
 	if (Number.isNaN(group)) {
 		navigate(Path.AUDIOCALL)
@@ -68,7 +75,7 @@ function Audiocall() {
 	}
 
 	const fetchWords = async () => {
-		await dispatch(fetchAudiocallWords({ group, page: page ?? Math.floor(Math.random() * PAGES_PER_GROUP) }))
+		await dispatch(fetchAudiocallWords({ group, page: page ?? Math.floor(Math.random() * PAGES_PER_GROUP), isFromTextbook }))
 	}
 
 	useEffect(() => {

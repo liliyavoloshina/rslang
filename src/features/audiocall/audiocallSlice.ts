@@ -1,5 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 
+import { RootState } from '~/app/store'
+import { GetUserWordsResponse } from '~/types/api'
 import { Word } from '~/types/word'
 import apiClient from '~/utils/api'
 import { DOMAIN_URL, MAX_AUDIOCALL_ANSWERS_AMOUNT, WORD_PER_PAGE_AMOUNT } from '~/utils/constants'
@@ -33,7 +35,37 @@ const initialState: AudiocallState = {
 	status: 'idle',
 }
 
-export const fetchAudiocallWords = createAsyncThunk('audiocall/fetchWords', ({ group, page }: { group: number; page?: number }) => apiClient.getAllWords(group, page))
+interface FetchWordsParams {
+	group: number
+	page: number
+	isFromTextbook: boolean
+}
+
+export const fetchAudiocallWords = createAsyncThunk<Word[], FetchWordsParams, { state: RootState }>(
+	'audiocall/fetchWords',
+	async ({ group, page, isFromTextbook }, { getState }) => {
+		const state = getState()
+		const { isLoggedIn, userInfo } = state.auth
+
+		// if there are possibly learned words
+		if (isFromTextbook && isLoggedIn) {
+			const res = await apiClient.getNotLearnedWord(userInfo!.userId, group, page)
+			let receivedWords = res[0].paginatedResults
+
+			while (receivedWords.length !== WORD_PER_PAGE_AMOUNT) {
+				if (page === 0) break
+				// eslint-disable-next-line no-await-in-loop
+				const resFromPrevPage = await apiClient.getNotLearnedWord(userInfo!.userId, group, page - 1)
+				const wordsFromPrevPage = resFromPrevPage[0].paginatedResults
+				receivedWords = [...receivedWords, ...wordsFromPrevPage].slice(0, 20)
+			}
+
+			return receivedWords
+		}
+
+		return apiClient.getAllWords(group, page)
+	}
+)
 
 const getRandomAnswers = (correctAnswer: string, answers: string[]) => {
 	shuffleArray(answers)
