@@ -76,11 +76,16 @@ export const authSlice = createSlice({
 				state.signUpError = ''
 				state.isSignUpInProcess = false
 
+				const currentTime = new Date()
+				currentTime.setHours(currentTime.getHours() + 4)
+				const expirationDate = currentTime.getTime()
+
 				const infoToStore = {
 					token,
 					userId,
 					name,
 					refreshToken,
+					expirationDate,
 				}
 				localStorageSetUser(infoToStore)
 			})

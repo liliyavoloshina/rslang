@@ -28,6 +28,7 @@ interface UserInfo {
 	refreshToken: string
 	userId: string
 	name: string
+	expirationDate?: number
 }
 
 export type { SignInResponse, SignInData, UserInfo, SignUpData, SignUpResponse }

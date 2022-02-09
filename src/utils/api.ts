@@ -19,7 +19,7 @@ const apiClient = async <T>(endpoint: string, method: ApiMethod, body?: ApiBody)
 		method,
 	}
 
-	let user = localStorageGetUser()
+	const user = localStorageGetUser()
 
 	if (user && user.token) {
 		config.headers.Authorization = `Bearer ${user.token}`
@@ -29,28 +29,7 @@ const apiClient = async <T>(endpoint: string, method: ApiMethod, body?: ApiBody)
 		config.body = JSON.stringify(body)
 	}
 
-	let response = await fetch(`${DOMAIN_URL}/${endpoint}`, config)
-
-	if (user && response.status === 401) {
-		const refreshConfig = {
-			headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${user.refreshToken}` } as ApiHeaders,
-			method: 'GET',
-		}
-
-		const tokenRes = await fetch(`${DOMAIN_URL}/${user?.userId}/tokens`, refreshConfig)
-		const token = (await tokenRes.json()) as TokenResponse
-
-		user = {
-			name: token.name,
-			refreshToken: token.refreshToken,
-			token: token.token,
-			userId: token.userId,
-		}
-
-		localStorageSetUser(user)
-
-		response = await fetch(`${DOMAIN_URL}/${endpoint}`, config)
-	}
+	const response = await fetch(`${DOMAIN_URL}/${endpoint}`, config)
 
 	if (!response.ok) {
 		const error = await response.text()
