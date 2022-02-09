@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import { useDispatch } from 'react-redux'
 import { useMatch, useNavigate } from 'react-router-dom'
 
@@ -44,7 +44,34 @@ const Sprint = () => {
 		[dispatch]
 	)
 
-	const selectOption = (option: boolean) => dispatch(answer(option))
+	const selectOption = useCallback((option: boolean) => dispatch(answer(option)), [dispatch])
+
+	// eslint-disable-next-line consistent-return
+	useEffect(() => {
+		if (!isFinished) {
+			const onKeyDown = (e: KeyboardEvent) => {
+				switch (e.key) {
+					case 'Left':
+					case 'ArrowLeft':
+					case 'a':
+						selectOption(false)
+						break
+
+					case 'Right':
+					case 'ArrowRight':
+					case 'd':
+						selectOption(true)
+						break
+
+					default: // no op
+				}
+			}
+
+			window.addEventListener('keydown', onKeyDown)
+
+			return () => window.removeEventListener('keydown', onKeyDown)
+		}
+	}, [isFinished, selectOption])
 
 	return (
 		<Container maxWidth="sm" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
