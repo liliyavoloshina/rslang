@@ -77,7 +77,7 @@ function Textbook() {
 					<Button component={RouterLink} to={`${Path.SPRINT}/${group}/${page}`} disabled={isPageCompleted}>
 						Sprint
 					</Button>
-					<Button component={RouterLink} to={`${Path.AUDIOCALL}/${group}/${page}`} disabled={isPageCompleted}>
+					<Button component={RouterLink} to={`${Path.AUDIOCALL}/${group}/${page}`} state={{ fromTextbook: true }} disabled={isPageCompleted}>
 						Audiocall
 					</Button>
 				</Stack>
