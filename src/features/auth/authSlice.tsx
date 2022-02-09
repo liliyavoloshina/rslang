@@ -77,7 +77,7 @@ export const authSlice = createSlice({
 				state.isSignUpInProcess = false
 
 				const currentTime = new Date()
-				currentTime.setHours(currentTime.getHours() + 4)
+				currentTime.setHours(currentTime.getHours() + 3)
 				const expirationDate = currentTime.getTime()
 
 				const infoToStore = {

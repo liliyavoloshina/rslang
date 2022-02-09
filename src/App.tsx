@@ -20,13 +20,6 @@ function App() {
 	const user = localStorageGetUser()
 
 	if (user && user.token) {
-		const singinDate = user.expirationDate!
-		const currentDate = new Date().getTime()
-		const isExpired = singinDate < currentDate
-
-		if (isExpired) {
-			dispatch(signOut())
-		}
 		dispatch(setUser(user))
 	}
 

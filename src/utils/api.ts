@@ -1,9 +1,9 @@
-import { ApiBody, ApiConfig, ApiHeaders, ApiMethod, GetUserWordsResponse, UserStatistic } from '~/types/api'
+import { ApiBody, ApiConfig, ApiHeaders, ApiMethod, GetUserWordsResponse, TokenResponse, UserStatistic } from '~/types/api'
 import { SignInData, SignInResponse, SignUpData, SignUpResponse } from '~/types/auth'
 import { UserWord, Word } from '~/types/word'
 
 import { DOMAIN_URL } from './constants'
-import { localStorageGetUser } from './localStorage'
+import { localStorageGetUser, localStorageSetUser } from './localStorage'
 
 const apiClient = async <T>(endpoint: string, method: ApiMethod, body?: ApiBody): Promise<T> => {
 	const config: ApiConfig = {
@@ -11,10 +11,33 @@ const apiClient = async <T>(endpoint: string, method: ApiMethod, body?: ApiBody)
 		method,
 	}
 
-	const user = localStorageGetUser()
+	const userInfo = localStorageGetUser()
 
-	if (user && user.token) {
-		config.headers.Authorization = `Bearer ${user.token}`
+	if (userInfo && userInfo.token) {
+		const singinDate = userInfo.expirationDate!
+		const currentDate = new Date().getTime()
+		const isExpired = singinDate < currentDate
+
+		if (isExpired) {
+			const refreshConfig = {
+				headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${userInfo.refreshToken}` } as ApiHeaders,
+				method: 'GET',
+			}
+			const tokenRes = await fetch(`${DOMAIN_URL}/${userInfo?.userId}/tokens`, refreshConfig)
+			const token = (await tokenRes.json()) as TokenResponse
+			const updatedUserInfo = {
+				name: token.name,
+				refreshToken: token.refreshToken,
+				token: token.token,
+				userId: token.userId,
+			}
+
+			localStorageSetUser(updatedUserInfo)
+
+			config.headers.Authorization = `Bearer ${updatedUserInfo.token}`
+		} else {
+			config.headers.Authorization = `Bearer ${userInfo.token}`
+		}
 	}
 
 	if (body) {

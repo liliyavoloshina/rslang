@@ -44,7 +44,15 @@ interface UserStatistic {
 	optional: StatisticOptional
 }
 
+interface TokenResponse {
+	message: string
+	token: string
+	refreshToken: string
+	userId: string
+	name: string
+}
+
 type ApiBody = unknown
 
 export { ApiMethod }
-export type { ApiConfig, ApiBody, ApiHeaders, GetUserWordsResponse, UserStatistic, CompletedPages, StatisticOptional }
+export type { ApiConfig, ApiBody, ApiHeaders, GetUserWordsResponse, UserStatistic, CompletedPages, StatisticOptional, TokenResponse }
