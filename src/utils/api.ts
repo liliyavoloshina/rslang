@@ -3,15 +3,7 @@ import { SignInData, SignInResponse, SignUpData, SignUpResponse } from '~/types/
 import { UserWord, Word } from '~/types/word'
 
 import { DOMAIN_URL } from './constants'
-import { localStorageGetUser, localStorageSetUser } from './localStorage'
-
-interface TokenResponse {
-	message: string
-	token: string
-	refreshToken: string
-	userId: string
-	name: string
-}
+import { localStorageGetUser } from './localStorage'
 
 const apiClient = async <T>(endpoint: string, method: ApiMethod, body?: ApiBody): Promise<T> => {
 	const config: ApiConfig = {
