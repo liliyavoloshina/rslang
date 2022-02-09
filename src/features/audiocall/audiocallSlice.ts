@@ -35,11 +35,6 @@ const initialState: AudiocallState = {
 
 export const fetchAudiocallWords = createAsyncThunk('audiocall/fetchWords', ({ group, page }: { group: number; page?: number }) => apiClient.getAllWords(group, page))
 
-export const finishAudiocall = createAsyncThunk('audiocall/finishAudiocall', async ({ correctWords, incorrectWords }: { correctWords: number; incorrectWords: number }) => {
-	// const response = await apiClient.getAllWords(group, page)
-	return { correctWords, incorrectWords }
-})
-
 const getRandomAnswers = (correctAnswer: string, answers: string[]) => {
 	shuffleArray(answers)
 
@@ -128,9 +123,6 @@ export const audiocallSlice = createSlice({
 				state.audioPath = `${DOMAIN_URL}/${state.currentWord!.audio}`
 				const newAudio = new Audio(state.audioPath)
 				newAudio.play()
-			})
-			.addCase(finishAudiocall.fulfilled, state => {
-				state.isFinished = false
 			})
 	},
 })

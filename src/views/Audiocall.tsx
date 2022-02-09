@@ -29,7 +29,7 @@ import {
 	toggleAudiocallAudio,
 } from '~/features/audiocall'
 import { GameName } from '~/types/game'
-import { DOMAIN_URL } from '~/utils/constants'
+import { DOMAIN_URL, PAGES_PER_GROUP } from '~/utils/constants'
 
 function Audiocall() {
 	const dispatch = useAppDispatch()
@@ -68,7 +68,7 @@ function Audiocall() {
 	}
 
 	const fetchWords = async () => {
-		await dispatch(fetchAudiocallWords({ group, page }))
+		await dispatch(fetchAudiocallWords({ group, page: page ?? Math.floor(Math.random() * PAGES_PER_GROUP) }))
 	}
 
 	useEffect(() => {
