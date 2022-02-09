@@ -32,11 +32,7 @@ function LevelSelection(props: LevelSelectionProps) {
 	}
 
 	const handlePlay = () => {
-		if (gameName === GameName.Audiocall) {
-			onLevelSelected?.(group)
-		} else {
-			onLevelSelected?.(group)
-		}
+		onLevelSelected?.(group)
 		dispatch(toggleLevelSelection(false))
 	}
 
