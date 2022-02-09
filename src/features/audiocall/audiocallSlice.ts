@@ -47,19 +47,19 @@ export const fetchAudiocallWords = createAsyncThunk<Word[], FetchWordsParams, { 
 		const { isLoggedIn, userInfo } = state.auth
 
 		// if there are possibly learned words
-		if (isFromTextbook && isLoggedIn) {
-			const res = await apiClient.getNotLearnedWord(userInfo!.userId, group, page)
-			let receivedWords = res[0].paginatedResults
+		if (isFromTextbook && isLoggedIn && userInfo) {
+			const addNotLearnedWordsFromPage = async (currentPage: number, words: Word[]): Promise<Word[]> => {
+				const response = await apiClient.getNotLearnedWord(userInfo.userId, group, currentPage)
+				const wordsFromPage = response[0].paginatedResults
+				words.unshift(...wordsFromPage)
 
-			while (receivedWords.length !== WORD_PER_PAGE_AMOUNT) {
-				if (page === 0) break
-				// eslint-disable-next-line no-await-in-loop
-				const resFromPrevPage = await apiClient.getNotLearnedWord(userInfo!.userId, group, page - 1)
-				const wordsFromPrevPage = resFromPrevPage[0].paginatedResults
-				receivedWords = [...receivedWords, ...wordsFromPrevPage].slice(0, 20)
+				if (words.length < WORD_PER_PAGE_AMOUNT && currentPage > 0) {
+					return addNotLearnedWordsFromPage(currentPage - 1, words)
+				}
+
+				return words.slice(0, WORD_PER_PAGE_AMOUNT)
 			}
-
-			return receivedWords
+			return addNotLearnedWordsFromPage(page, [])
 		}
 
 		return apiClient.getAllWords(group, page)
