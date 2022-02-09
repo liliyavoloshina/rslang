@@ -5,7 +5,7 @@ import { ThemeProvider } from '@mui/material/styles'
 import Footer from '~/components/layout/Footer'
 import Header from '~/components/layout/Header'
 import { Path, Router } from '~/components/router'
-import { setUser } from '~/features/auth'
+import { setUser, signOut } from '~/features/auth'
 import { localStorageGetUser } from '~/utils/localStorage'
 import theme from '~/utils/theme'
 
@@ -20,6 +20,13 @@ function App() {
 	const user = localStorageGetUser()
 
 	if (user && user.token) {
+		const singinDate = user.expirationDate!
+		const currentDate = new Date().getTime()
+		const isExpired = singinDate < currentDate
+
+		if (isExpired) {
+			dispatch(signOut())
+		}
 		dispatch(setUser(user))
 	}
 
