@@ -3,9 +3,9 @@ import { useState } from 'react'
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 
 import { Word } from '~/types/word'
-// TODO: uncomment and use this instead of hardcoded temp test value
-// import { MAX_WORD_GAME_AMOUNT } from '~/utils/constants'
 import apiClient from '~/utils/api'
+// TODO: uncomment and use this instead of hardcoded temp test value
+import { MAX_WORDS_GAME_AMOUNT } from '~/utils/constants'
 import { shuffleArray } from '~/utils/helpers'
 
 type SprintState = {
@@ -17,6 +17,7 @@ type SprintState = {
 	incorrectWords: Word[]
 	correctAnswersInRow: number
 	maxCorrectAnswersSequence: number
+	gameRound: number
 	status: 'idle' | 'loading' | 'failed' | 'game-running' | 'game-over'
 }
 
@@ -29,6 +30,7 @@ const initialState: SprintState = {
 	incorrectWords: [],
 	correctAnswersInRow: 0,
 	maxCorrectAnswersSequence: 0,
+	gameRound: 0,
 	status: 'idle',
 }
 
@@ -57,6 +59,9 @@ export const sprintSlice = createSlice({
 				if (action.payload === correctOption) {
 					state.correctWords.push(state.currentWord)
 					state.correctAnswersInRow += 1
+					if (state.gameRound < 4 && state.correctAnswersInRow % 4 === 0 && state.correctAnswersInRow !== 0) {
+						state.gameRound += 1
+					}
 				} else {
 					state.incorrectWords.push(state.currentWord)
 					state.maxCorrectAnswersSequence = Math.max(state.maxCorrectAnswersSequence, state.correctAnswersInRow)
@@ -65,8 +70,8 @@ export const sprintSlice = createSlice({
 			}
 
 			// TODO: uncomment me
-			// if (state.currentIdx < MAX_WORD_GAME_AMOUNT - 1) {
-			if (state.currentIdx < 7) {
+			if (state.currentIdx < MAX_WORDS_GAME_AMOUNT - 1) {
+				// if (state.currentIdx < 19) {
 				state.currentIdx += 1
 				state.currentWord = state.words[state.currentIdx]
 				state.suggestedTranslation = getSuggestedTranslation(state.currentWord!, state.words)
