@@ -7,4 +7,5 @@ export const selectSprintState = ({ sprint }: RootState) => ({
 	correctWords: sprint.correctWords,
 	incorrectWords: sprint.incorrectWords,
 	status: sprint.status,
+	correctAnswersInRow: sprint.correctAnswersInRow,
 })
