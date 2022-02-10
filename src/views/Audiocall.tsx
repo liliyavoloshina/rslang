@@ -16,6 +16,7 @@ import { Path } from '~/components/router'
 import {
 	checkAnswer,
 	fetchAudiocallWords,
+	finishAudiocall,
 	resetGame,
 	selectAudiocallAnsweredWord,
 	selectAudiocallAnswers,
@@ -92,6 +93,12 @@ function Audiocall() {
 			window.removeEventListener('keydown', handleKeyDown)
 		}
 	}, [dispatch, fetchWords, handleKeyDown])
+
+	useEffect(() => {
+		if (isFinished) {
+			dispatch(finishAudiocall())
+		}
+	}, [isFinished])
 
 	if (isLevelSelection) {
 		return <LevelSelection title={t('AUDIOCALL.TITLE')} description={t('AUDIOCALL.DESCRIPTION')} />

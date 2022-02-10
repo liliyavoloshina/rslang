@@ -33,5 +33,5 @@ enum WordDifficulty {
 	Normal = 'normal',
 }
 
-export type { Word, UserWord }
+export type { Word, UserWord, UserWordOptional }
 export { WordDifficulty }
