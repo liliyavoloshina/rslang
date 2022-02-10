@@ -54,18 +54,24 @@ export const sprintSlice = createSlice({
 	initialState,
 	reducers: {
 		answer: (state, action: PayloadAction<boolean>) => {
+			const correctAnswerAudio = new Audio('/assets/audio/correct_answer2.mp3')
+			const incorrectAnswerAudio = new Audio('/assets/audio/incorrect_answer2.mp3')
+			const newRoundAudio = new Audio('/assets/audio/new_round.mp3')
 			if (state.currentWord) {
 				const correctOption = state.suggestedTranslation === state.currentWord.wordTranslate
 				if (action.payload === correctOption) {
 					state.correctWords.push(state.currentWord)
 					state.correctAnswersInRow += 1
+					correctAnswerAudio.play()
 					if (state.gameRound < 4 && state.correctAnswersInRow % 4 === 0 && state.correctAnswersInRow !== 0) {
 						state.gameRound += 1
+						newRoundAudio.play()
 					}
 				} else {
 					state.incorrectWords.push(state.currentWord)
 					state.maxCorrectAnswersSequence = Math.max(state.maxCorrectAnswersSequence, state.correctAnswersInRow)
 					state.correctAnswersInRow = 0
+					incorrectAnswerAudio.play()
 				}
 			}
 
