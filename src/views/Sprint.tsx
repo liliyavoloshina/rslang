@@ -10,7 +10,6 @@ import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 
 import { useAppSelector } from '~/app/hooks'
-import { RootState } from '~/app/store'
 import Popup from '~/components/layout/Popup'
 import { Path } from '~/components/router'
 import { Timer, TimerContextProvider, useTimerContext } from '~/components/timer'
@@ -31,7 +30,7 @@ const useSprintGame = () => {
 		navigate(Path.SPRINT)
 	}
 
-	const { status, word, suggestedTranslation, correctWords, incorrectWords, correctAnswersInRow } = useAppSelector(selectSprintState)
+	const { status, word, suggestedTranslation, correctWords, incorrectWords, correctAnswersInRow, gameRound } = useAppSelector(selectSprintState)
 
 	const { start, stop } = useTimerContext()
 
@@ -90,11 +89,11 @@ const useSprintGame = () => {
 		dispatch(gameTimeout())
 	}, [dispatch])
 
-	return { status, word, suggestedTranslation, selectOption, correctWords, incorrectWords, correctAnswersInRow, onTimeout }
+	return { status, word, suggestedTranslation, selectOption, correctWords, incorrectWords, correctAnswersInRow, gameRound, onTimeout }
 }
 
 const SprintInner = () => {
-	const { status, word, suggestedTranslation, selectOption, correctWords, incorrectWords, correctAnswersInRow, onTimeout } = useSprintGame()
+	const { status, word, suggestedTranslation, selectOption, correctWords, incorrectWords, correctAnswersInRow, gameRound, onTimeout } = useSprintGame()
 
 	return (
 		<Container maxWidth="sm" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }} style={{ position: 'relative' }}>
@@ -111,6 +110,17 @@ const SprintInner = () => {
 							}}
 						/>
 						<Box sx={{ width: 15, height: 15, borderRadius: '50%', backgroundColor: (correctAnswersInRow - 3) % 4 === 0 ? '#00ff00' : '#cccccc' }} />
+					</Box>
+					<Box sx={{ width: '50%', height: 100, margin: '0 auto', padding: '10px 0' }}>
+						<img
+							style={{
+								width: '100%',
+								height: '100%',
+								objectFit: 'cover',
+							}}
+							src={`/assets/${gameRound}birds_sprint.png`}
+							alt=""
+						/>
 					</Box>
 					<Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
 						<Typography variant="h3" textTransform="capitalize">
