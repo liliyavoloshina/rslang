@@ -15,6 +15,8 @@ type SprintState = {
 	currentIdx: number
 	correctWords: Word[]
 	incorrectWords: Word[]
+	correctAnswersInRow: number
+	maxCorrectAnswersSequence: number
 	status: 'idle' | 'loading' | 'failed' | 'game-running' | 'game-over'
 }
 
@@ -25,6 +27,8 @@ const initialState: SprintState = {
 	suggestedTranslation: undefined,
 	correctWords: [],
 	incorrectWords: [],
+	correctAnswersInRow: 0,
+	maxCorrectAnswersSequence: 0,
 	status: 'idle',
 }
 
@@ -52,14 +56,17 @@ export const sprintSlice = createSlice({
 				const correctOption = state.suggestedTranslation === state.currentWord.wordTranslate
 				if (action.payload === correctOption) {
 					state.correctWords.push(state.currentWord)
+					state.correctAnswersInRow += 1
 				} else {
 					state.incorrectWords.push(state.currentWord)
+					state.maxCorrectAnswersSequence = Math.max(state.maxCorrectAnswersSequence, state.correctAnswersInRow)
+					state.correctAnswersInRow = 0
 				}
 			}
 
 			// TODO: uncomment me
 			// if (state.currentIdx < MAX_WORD_GAME_AMOUNT - 1) {
-			if (state.currentIdx < 2) {
+			if (state.currentIdx < 7) {
 				state.currentIdx += 1
 				state.currentWord = state.words[state.currentIdx]
 				state.suggestedTranslation = getSuggestedTranslation(state.currentWord!, state.words)
