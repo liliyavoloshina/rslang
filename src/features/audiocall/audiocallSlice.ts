@@ -15,6 +15,10 @@ export interface AudiocallState {
 	answeredWord: string | null
 	incorrectAnswers: Word[]
 	correctAnswers: Word[]
+	longestSeries: {
+		correctAnswers: number[]
+		stopped: boolean
+	}
 	isLevelSelection: boolean
 	isFinished: boolean
 	audioPath: string
@@ -29,6 +33,10 @@ const initialState: AudiocallState = {
 	answeredWord: null,
 	incorrectAnswers: [],
 	correctAnswers: [],
+	longestSeries: {
+		correctAnswers: [0],
+		stopped: false,
+	},
 	isLevelSelection: false,
 	isFinished: false,
 	audioPath: '',
@@ -105,6 +113,7 @@ export const audiocallSlice = createSlice({
 				// eslint-disable-next-line no-underscore-dangle
 				const updatedWord = { ...currectWord, id: currectWord._id! }
 				state.incorrectAnswers = [...state.incorrectAnswers, updatedWord]
+				state.longestSeries.stopped = true
 			}
 
 			if (state.currentIdx === WORD_PER_PAGE_AMOUNT - 1) {
@@ -155,7 +164,15 @@ export const audiocallSlice = createSlice({
 
 			if (actualWord !== currentWord!.wordTranslate) {
 				state.incorrectAnswers = [...state.incorrectAnswers, updatedWord]
+				state.longestSeries.stopped = true
 			} else {
+				if (state.longestSeries.stopped) {
+					state.longestSeries.correctAnswers = [...state.longestSeries.correctAnswers, 1]
+					state.longestSeries.stopped = false
+				} else {
+					state.longestSeries.correctAnswers[state.longestSeries.correctAnswers.length - 1] += 1
+				}
+
 				state.correctAnswers = [...state.correctAnswers, updatedWord]
 			}
 		},
