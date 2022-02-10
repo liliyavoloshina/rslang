@@ -3,66 +3,42 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { RootState } from '~/app/store'
 import { UserWord, UserWordOptional, WordDifficulty } from '~/types/word'
 import apiClient from '~/utils/api'
-import { CORRECT_ANSWERS_TO_LEARN } from '~/utils/constants'
 
-interface WordInfoToUpdate {
-	wordId: string
-	isCorrect: boolean
-}
+export const createNewStatistic = createAsyncThunk('textbook/createNewStatistic', async (arg, { getState }) => {
+	const state = getState() as RootState
+	const { userInfo } = state.auth
+	if (!userInfo) {
+		throw new Error('Not permitted')
+	}
 
-// export const updateWordStatistic = createAsyncThunk<any, WordInfoToUpdate, { state: RootState }>('statistic/updateWordStatistic', async ({ wordId, isCorrect }, { getState }) => {
-// 	const state = getState()
-// 	const { userInfo } = state.auth
-// 	const { userId } = userInfo!
+	const newStatistic = {
+		learnedWords: 0,
+		optional: {
+			completedPages: { 0: { 0: false } },
+			shortStat: {
+				games: {
+					audiocall: {
+						newWords: [],
+						correctWordsPercent: [],
+						longestSeries: 0,
+					},
+					sprint: {
+						newWords: [],
+						correctWordsPercent: [],
+						longestSeries: 0,
+					},
+				},
+				words: {
+					newWords: 0,
+					learnedWords: 0,
+					correctWordsPercent: [],
+				},
+			},
+		},
+	}
 
-// 	let wordDataToUpdate: UserWord
-// 	let isAlreadyExist = false
-
-// 	try {
-// 		const existingWord = await apiClient.getUserWord(userId, wordId)
-// 		wordDataToUpdate = existingWord.userWord as UserWord
-// 		isAlreadyExist = true
-// 	} catch (e) {
-// 		wordDataToUpdate = {
-// 			difficulty: WordDifficulty.Normal,
-// 			optional: {
-// 				correctAnswers: 0,
-// 				incorrectAnswers: 0,
-// 				isLearned: false,
-// 			},
-// 		}
-// 	}
-
-// 	const { correctAnswers, incorrectAnswers, isLearned } = wordDataToUpdate.optional! as UserWordOptional
-
-// 	if (isCorrect) {
-// 		if (correctAnswers === CORRECT_ANSWERS_TO_LEARN) {
-// 			wordDataToUpdate.optional!.isLearned = true
-// 			wordDataToUpdate.difficulty = WordDifficulty.Normal
-// 		} else {
-// 			wordDataToUpdate.optional!.correctAnswers = correctAnswers + 1
-// 		}
-// 	} else {
-// 		if (isLearned) {
-// 			wordDataToUpdate.optional!.isLearned = false
-// 		}
-
-// 		wordDataToUpdate.optional!.incorrectAnswers = incorrectAnswers + 1
-// 	}
-
-// 	let updatedWord
-
-// 	if (isAlreadyExist) {
-// 		updatedWord = await apiClient.updateWordStatistic(userId, wordId, wordDataToUpdate)
-// 	} else {
-// 		updatedWord = await apiClient.addWordStatistic(userId, wordId, wordDataToUpdate)
-// 	}
-
-// 	return updatedWord
-// })
-// export const saveGameResult = createAsyncThunk('statistic/saveGameResult', async (arg: UserWord) => {
-// 	const e
-// })
+	await apiClient.setNewStatistic(userInfo.userId, newStatistic)
+})
 
 interface StatisticState {
 	test: boolean

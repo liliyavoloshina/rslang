@@ -1,11 +1,12 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 
 import { RootState } from '~/app/store'
+import { GameName } from '~/types/game'
 import { Word } from '~/types/word'
 import { getAllWords, getNotLearnedWord } from '~/utils/api'
 import { DOMAIN_URL, MAX_AUDIOCALL_ANSWERS_AMOUNT, WORD_PER_PAGE_AMOUNT } from '~/utils/constants'
 import { shuffleArray } from '~/utils/helpers'
-import { updateWordStatistic } from '~/utils/statistic'
+import { updateGameStatistic, updateWordStatistic } from '~/utils/statistic'
 
 export interface AudiocallState {
 	words: Word[]
@@ -79,10 +80,23 @@ export const finishAudiocall = createAsyncThunk('audiocall/finishAudiocall', asy
 	const state = getState() as RootState
 	const { userInfo } = state.auth
 	const userId = userInfo!.userId as string
-	const { correctAnswers, incorrectAnswers } = state.audiocall
+	const { words, correctAnswers, incorrectAnswers, longestSeries } = state.audiocall
 
+	const newWords = words.filter(word => !word.userWord?.optional).length
+	const correctWordsPercent = correctAnswers.length / words.length
+
+	// update word statistic
 	if (correctAnswers.length > 0) correctAnswers.forEach(word => updateWordStatistic(userId, { wordId: word.id, isCorrect: true }))
 	if (incorrectAnswers.length > 0) incorrectAnswers.forEach(word => updateWordStatistic(userId, { wordId: word.id, isCorrect: false }))
+
+	const newStatistic = {
+		newWords,
+		correctWordsPercent,
+		longestSeries: longestSeries.correctAnswers,
+	}
+
+	// // update short game statistsic
+	// await updateGameStatistic(userId, GameName.Audiocall, newStatistic)
 })
 
 const getRandomAnswers = (correctAnswer: string, answers: string[]) => {
@@ -116,7 +130,7 @@ export const audiocallSlice = createSlice({
 				state.longestSeries.stopped = true
 			}
 
-			if (state.currentIdx === WORD_PER_PAGE_AMOUNT - 1) {
+			if (state.currentIdx === state.words.length - 1) {
 				state.isFinished = true
 				return
 			}

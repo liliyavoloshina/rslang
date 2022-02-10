@@ -14,7 +14,7 @@ import Typography from '@mui/material/Typography'
 import { useAppDispatch, useAppSelector } from '~/app/hooks'
 import { Path } from '~/components/router'
 import { clearError, selectAuthIsLoggedIn, selectAuthIsSignUpInProcess, selectAuthLoading, selectAuthSignUpError, signIn, signUp } from '~/features/auth'
-import { createNewStatistic } from '~/features/textbook/textbookSlice'
+import { createNewStatistic } from '~/features/statistic/statisticSlice'
 import { validateEmail } from '~/utils/helpers'
 
 function SignUp() {
