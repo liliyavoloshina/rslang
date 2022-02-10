@@ -6,6 +6,5 @@ export const selectSprintState = ({ sprint }: RootState) => ({
 	correctOption: sprint.currentWord && sprint.suggestedTranslation === sprint.currentWord?.word,
 	correctWords: sprint.correctWords,
 	incorrectWords: sprint.incorrectWords,
-	isFinished: sprint.isFinished,
-	isIdle: sprint.status === 'idle',
+	status: sprint.status,
 })

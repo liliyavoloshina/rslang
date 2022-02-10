@@ -12,10 +12,11 @@ import Typography from '@mui/material/Typography'
 import { useAppSelector } from '~/app/hooks'
 import Popup from '~/components/layout/Popup'
 import { Path } from '~/components/router'
-import { answer, reset, selectSprintState, startGame } from '~/features/sprint'
-import { PAGES_PER_GROUP } from '~/utils/constants'
+import { Timer, TimerContextProvider, useTimerContext } from '~/components/timer'
+import { answer, gameTimeout, reset, selectSprintState, startGame } from '~/features/sprint'
+import { GAME_TIME, PAGES_PER_GROUP } from '~/utils/constants'
 
-const Sprint = () => {
+const useSprintGame = () => {
 	const dispatch = useDispatch()
 	const navigate = useNavigate()
 	// HACK: react-router-dom@6 does not support optional params anymore
@@ -29,7 +30,18 @@ const Sprint = () => {
 		navigate(Path.SPRINT)
 	}
 
-	const { word, suggestedTranslation, isFinished, correctWords, incorrectWords } = useAppSelector(selectSprintState)
+	const { status, word, suggestedTranslation, correctWords, incorrectWords } = useAppSelector(selectSprintState)
+
+	const { start, stop } = useTimerContext()
+
+	useEffect(() => {
+		if (status === 'game-running') {
+			// TODO: extract `30` to config/constants file
+			start(GAME_TIME)
+		} else if (status === 'game-over') {
+			stop()
+		}
+	}, [status, start, stop])
 
 	// start on mount or when group/page changes
 	useEffect(() => {
@@ -48,7 +60,7 @@ const Sprint = () => {
 
 	// eslint-disable-next-line consistent-return
 	useEffect(() => {
-		if (!isFinished) {
+		if (status === 'game-running') {
 			const onKeyDown = (e: KeyboardEvent) => {
 				switch (e.key) {
 					case 'Left':
@@ -71,11 +83,21 @@ const Sprint = () => {
 
 			return () => window.removeEventListener('keydown', onKeyDown)
 		}
-	}, [isFinished, selectOption])
+	}, [status, selectOption])
+
+	const onTimeout = useCallback(() => {
+		dispatch(gameTimeout())
+	}, [dispatch])
+
+	return { status, word, suggestedTranslation, selectOption, correctWords, incorrectWords, onTimeout }
+}
+
+const SprintInner = () => {
+	const { status, word, suggestedTranslation, selectOption, correctWords, incorrectWords, onTimeout } = useSprintGame()
 
 	return (
-		<Container maxWidth="sm" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-			{!isFinished && word && (
+		<Container maxWidth="sm" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }} style={{ position: 'relative' }}>
+			{status === 'game-running' && word && (
 				<Box sx={{ width: '100%' }}>
 					<Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
 						<Typography variant="h3" textTransform="capitalize">
@@ -95,9 +117,16 @@ const Sprint = () => {
 					</Box>
 				</Box>
 			)}
-			<Popup isOpen={isFinished} incorrectWords={incorrectWords} correctWords={correctWords} />
+			<Timer onTimeout={onTimeout} sx={{ position: 'absolute', width: 100, top: 200, right: 0 }} />
+			<Popup isOpen={status === 'game-over'} incorrectWords={incorrectWords} correctWords={correctWords} />
 		</Container>
 	)
 }
+
+const Sprint = () => (
+	<TimerContextProvider>
+		<SprintInner />
+	</TimerContextProvider>
+)
 
 export default Sprint
