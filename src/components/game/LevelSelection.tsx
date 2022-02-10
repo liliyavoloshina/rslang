@@ -23,7 +23,7 @@ function LevelSelection(props: LevelSelectionProps) {
 	const [group, setGroup] = useState(0)
 
 	const { gameName, onLevelSelected } = props
-	const gameDesc = gameName === GameName.Audiocall ? 'Улучши восприятие слов нас слух' : 'Сколько слов ты сможешь угадать за 30 секунд?'
+	const gameDesc = gameName === GameName.Audiocall ? 'Улучши восприятие слов нас слух' : 'Сколько слов ты сможешь угадать за 60 секунд?'
 	const dispatch = useAppDispatch()
 
 	const handleChange = (event: SelectChangeEvent) => {

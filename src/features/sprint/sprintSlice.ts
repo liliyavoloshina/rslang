@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 
 import { Word } from '~/types/word'
@@ -11,16 +13,14 @@ type SprintState = {
 	currentWord: Word | undefined
 	suggestedTranslation: string | undefined
 	currentIdx: number
-	isFinished: boolean
 	correctWords: Word[]
 	incorrectWords: Word[]
-	status: 'idle' | 'loading' | 'failed' | 'success'
+	status: 'idle' | 'loading' | 'failed' | 'game-running' | 'game-over'
 }
 
 const initialState: SprintState = {
 	words: [],
 	currentIdx: 0,
-	isFinished: false,
 	currentWord: undefined,
 	suggestedTranslation: undefined,
 	correctWords: [],
@@ -64,11 +64,19 @@ export const sprintSlice = createSlice({
 				state.currentWord = state.words[state.currentIdx]
 				state.suggestedTranslation = getSuggestedTranslation(state.currentWord!, state.words)
 			} else {
-				state.isFinished = true
+				state.status = 'game-over'
+				// TODO: для всех слов - проверить word.userWord?, если нет, то добавить в статистику +1 новое слово с таймстемпом
+				// TODO: для всех неугаданных слов - сделать неизученными, сбросить на ноль количество правильных ответов для этого слова (и в сложных и в обычных)
+				// TODO: для всех угаданных слов - если слово было обычным/сложным и 3/5 раз подряд угаданно, То сделать изученным
+
+				// state.incorrectWords.map(word => word.userWord?.optional?.isLearned === false)
 			}
 		},
 		reset: state => {
 			Object.assign(state, initialState)
+		},
+		gameTimeout: state => {
+			state.status = 'game-over'
 		},
 	},
 	extraReducers: builder => {
@@ -77,7 +85,7 @@ export const sprintSlice = createSlice({
 				state.status = 'loading'
 			})
 			.addCase(startGame.fulfilled, (state, action) => {
-				state.status = 'success'
+				state.status = 'game-running'
 				state.words = action.payload
 				shuffleArray(state.words)
 				state.currentWord = state.words[state.currentIdx]
@@ -86,6 +94,6 @@ export const sprintSlice = createSlice({
 	},
 })
 
-export const { answer, reset } = sprintSlice.actions
+export const { answer, reset, gameTimeout } = sprintSlice.actions
 
 export default sprintSlice.reducer
