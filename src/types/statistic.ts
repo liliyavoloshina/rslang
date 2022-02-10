@@ -1,7 +1,38 @@
-interface GameStatistic {
+interface CompletedPages {
+	[key: number]: {
+		[key: number]: boolean
+	}
+}
+
+interface ShortStatGame {
 	newWords: number
-	correctWordsPercent: string[]
+	correctWordsPercent: number[]
 	longestSeries: number
 }
 
-export type { GameStatistic }
+interface ShortStatWords {
+	newWords: number
+	learnedWords: number
+	correctWordsPercent: number[]
+}
+
+interface ShortStat {
+	date: number
+	games: {
+		audiocall: ShortStatGame
+		sprint: ShortStatGame
+	}
+	words: ShortStatWords
+}
+
+interface StatisticOptional {
+	completedPages: CompletedPages
+	shortStat: ShortStat
+}
+
+interface UserStatistic {
+	learnedWords: number
+	optional: StatisticOptional
+}
+
+export type { UserStatistic, CompletedPages, ShortStatGame }

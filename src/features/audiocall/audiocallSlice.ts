@@ -80,10 +80,11 @@ export const finishAudiocall = createAsyncThunk('audiocall/finishAudiocall', asy
 	const state = getState() as RootState
 	const { userInfo } = state.auth
 	const userId = userInfo!.userId as string
-	const { words, correctAnswers, incorrectAnswers, longestSeries } = state.audiocall
+	const { words, correctAnswers, incorrectAnswers, longestSeries: bestSeries } = state.audiocall
 
 	const newWords = words.filter(word => !word.userWord?.optional).length
-	const correctWordsPercent = correctAnswers.length / words.length
+	const correctWordsPercent = (correctAnswers.length / words.length) * 100
+	const longestSeries = Math.max(...bestSeries.correctAnswers)
 
 	// update word statistic
 	if (correctAnswers.length > 0) correctAnswers.forEach(word => updateWordStatistic(userId, { wordId: word.id, isCorrect: true }))
@@ -91,12 +92,12 @@ export const finishAudiocall = createAsyncThunk('audiocall/finishAudiocall', asy
 
 	const newStatistic = {
 		newWords,
-		correctWordsPercent,
-		longestSeries: longestSeries.correctAnswers,
+		correctWordsPercent: [correctWordsPercent],
+		longestSeries,
 	}
 
-	// // update short game statistsic
-	// await updateGameStatistic(userId, GameName.Audiocall, newStatistic)
+	// update short game statistsic
+	await updateGameStatistic(userId, GameName.Audiocall, newStatistic)
 })
 
 const getRandomAnswers = (correctAnswer: string, answers: string[]) => {
