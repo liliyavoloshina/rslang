@@ -1,7 +1,9 @@
+import { GameName } from '~/types/game'
+import { GameStatistic } from '~/types/statistic'
 import { UserWord, UserWordOptional, WordDifficulty } from '~/types/word'
 
 import apiClient from './api'
-import { CORRECT_ANSWERS_TO_LEARN } from './constants'
+import { CORRECT_ANSWERS_TO_LEARN_DIFFICULT, CORRECT_ANSWERS_TO_LEARN_NORMAL } from './constants'
 
 const updateWordStatistic = async (userId: string, { wordId, isCorrect }: { wordId: string; isCorrect: boolean }) => {
 	let wordDataToUpdate: UserWord
@@ -12,7 +14,7 @@ const updateWordStatistic = async (userId: string, { wordId, isCorrect }: { word
 		isAlreadyExist = true
 		wordDataToUpdate = {
 			difficulty: existingStatistic.difficulty,
-			optional: existingStatistic.optional,
+			optional: existingStatistic.optional || { correctAnswers: 0, incorrectAnswers: 0, correctStrike: 0, isLearned: false },
 		}
 	} catch (e) {
 		wordDataToUpdate = {
@@ -20,26 +22,40 @@ const updateWordStatistic = async (userId: string, { wordId, isCorrect }: { word
 			optional: {
 				correctAnswers: 0,
 				incorrectAnswers: 0,
+				correctStrike: 0,
 				isLearned: false,
 			},
 		}
 	}
 
-	const { correctAnswers, incorrectAnswers, isLearned } = wordDataToUpdate.optional! as UserWordOptional
+	const { correctAnswers, incorrectAnswers, correctStrike, isLearned } = wordDataToUpdate.optional! as UserWordOptional
 
 	if (isCorrect) {
-		if (correctAnswers === CORRECT_ANSWERS_TO_LEARN) {
-			wordDataToUpdate.optional!.isLearned = true
-			wordDataToUpdate.difficulty = WordDifficulty.Normal
-		} else {
-			wordDataToUpdate.optional!.correctAnswers = correctAnswers + 1
+		if (wordDataToUpdate.difficulty === WordDifficulty.Normal) {
+			if (correctStrike === CORRECT_ANSWERS_TO_LEARN_NORMAL - 1) {
+				wordDataToUpdate.optional!.isLearned = true
+			} else {
+				wordDataToUpdate.optional!.correctAnswers = correctAnswers + 1
+			}
 		}
+
+		if (wordDataToUpdate.difficulty === WordDifficulty.Difficult) {
+			if (correctStrike === CORRECT_ANSWERS_TO_LEARN_DIFFICULT - 1) {
+				wordDataToUpdate.optional!.isLearned = true
+			} else {
+				wordDataToUpdate.optional!.correctAnswers = correctAnswers + 1
+			}
+		}
+
+		wordDataToUpdate.optional!.correctAnswers = correctAnswers + 1
+		wordDataToUpdate.optional!.correctStrike = correctStrike + 1
 	} else {
 		if (isLearned) {
 			wordDataToUpdate.optional!.isLearned = false
 		}
 
 		wordDataToUpdate.optional!.incorrectAnswers = incorrectAnswers + 1
+		wordDataToUpdate.optional!.correctStrike = 0
 	}
 
 	let updatedWord
@@ -53,4 +69,9 @@ const updateWordStatistic = async (userId: string, { wordId, isCorrect }: { word
 	return updatedWord
 }
 
-export { updateWordStatistic }
+const updateGameStatistic = async (userId: string, gameName: GameName, gameStatistic: GameStatistic) => {
+	const existingStat = await apiClient.getUserStatistic(userId)
+	console.log(existingStat)
+}
+
+export { updateWordStatistic, updateGameStatistic }
