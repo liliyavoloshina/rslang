@@ -1,9 +1,10 @@
 import { GameName } from '~/types/game'
-import { GameStatistic } from '~/types/statistic'
+import { ShortStatGame } from '~/types/statistic'
 import { UserWord, UserWordOptional, WordDifficulty } from '~/types/word'
 
 import apiClient from './api'
 import { CORRECT_ANSWERS_TO_LEARN_DIFFICULT, CORRECT_ANSWERS_TO_LEARN_NORMAL } from './constants'
+import { isTheSameDay } from './helpers'
 
 const updateWordStatistic = async (userId: string, { wordId, isCorrect }: { wordId: string; isCorrect: boolean }) => {
 	let wordDataToUpdate: UserWord
@@ -69,9 +70,30 @@ const updateWordStatistic = async (userId: string, { wordId, isCorrect }: { word
 	return updatedWord
 }
 
-const updateGameStatistic = async (userId: string, gameName: GameName, gameStatistic: GameStatistic) => {
+const updateGameStatistic = async (userId: string, gameName: GameName, gameStatistic: ShortStatGame) => {
 	const existingStat = await apiClient.getUserStatistic(userId)
-	console.log(existingStat)
+	const oldStat = existingStat.optional.shortStat
+	const oldDate = new Date(oldStat.date)
+	const curDate = new Date()
+
+	if (isTheSameDay(oldDate, curDate)) {
+		oldStat.games[gameName].newWords += gameStatistic.newWords
+		oldStat.games[gameName].correctWordsPercent.push(...gameStatistic.correctWordsPercent)
+
+		if (oldStat.games[gameName].longestSeries < gameStatistic.longestSeries) {
+			oldStat.games[gameName].longestSeries = gameStatistic.longestSeries
+		}
+	} else {
+		oldStat.date = curDate.getTime()
+		oldStat.games[gameName] = gameStatistic
+	}
+
+	const statToUpdate = {
+		learnedWords: existingStat.learnedWords,
+		optional: existingStat.optional,
+	}
+
+	await apiClient.setNewStatistic(userId, statToUpdate)
 }
 
 export { updateWordStatistic, updateGameStatistic }

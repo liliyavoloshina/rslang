@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 
 import { RootState } from '~/app/store'
-import { UserWord, UserWordOptional, WordDifficulty } from '~/types/word'
+import { UserStatistic } from '~/types/statistic'
 import apiClient from '~/utils/api'
 
 export const createNewStatistic = createAsyncThunk('textbook/createNewStatistic', async (arg, { getState }) => {
@@ -11,19 +11,22 @@ export const createNewStatistic = createAsyncThunk('textbook/createNewStatistic'
 		throw new Error('Not permitted')
 	}
 
-	const newStatistic = {
+	const date = new Date().getTime()
+
+	const newStatistic: UserStatistic = {
 		learnedWords: 0,
 		optional: {
 			completedPages: { 0: { 0: false } },
 			shortStat: {
+				date,
 				games: {
 					audiocall: {
-						newWords: [],
+						newWords: 0,
 						correctWordsPercent: [],
 						longestSeries: 0,
 					},
 					sprint: {
-						newWords: [],
+						newWords: 0,
 						correctWordsPercent: [],
 						longestSeries: 0,
 					},

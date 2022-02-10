@@ -9,21 +9,6 @@ interface GetUserWordsResponse {
 	]
 }
 
-interface CompletedPages {
-	[key: number]: {
-		[key: number]: boolean
-	}
-}
-
-interface StatisticOptional {
-	completedPages: CompletedPages
-}
-
-interface UserStatistic {
-	learnedWords: number
-	optional: StatisticOptional
-}
-
 interface TokenResponse {
 	message: string
 	token: string
@@ -32,4 +17,4 @@ interface TokenResponse {
 	name: string
 }
 
-export type { GetUserWordsResponse, UserStatistic, CompletedPages, StatisticOptional, TokenResponse }
+export type { GetUserWordsResponse, TokenResponse }
