@@ -16,6 +16,7 @@ import {
 } from '~/utils/api'
 import { WORD_PER_PAGE_AMOUNT } from '~/utils/constants'
 import { localStorageSetPagination } from '~/utils/localStorage'
+import { updateShortLearnedAmount } from '~/utils/statistic'
 
 export interface TextbookState {
 	words: Word[]

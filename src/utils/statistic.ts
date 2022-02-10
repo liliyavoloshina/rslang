@@ -6,10 +6,6 @@ import apiClient from './api'
 import { CORRECT_ANSWERS_TO_LEARN_DIFFICULT, CORRECT_ANSWERS_TO_LEARN_NORMAL } from './constants'
 import { isTheSameDay } from './helpers'
 
-// const getShortStatistic = (userId: string) => {
-
-// }
-
 const updateShortLearnedAmount = async (userId: string, amount: number) => {
 	const existingStat = await apiClient.getUserStatistic(userId)
 	const oldStat = existingStat.optional.shortStat
@@ -123,4 +119,4 @@ const updateGameStatistic = async (userId: string, gameName: GameName, gameStati
 	await apiClient.setNewStatistic(userId, statToUpdate)
 }
 
-export { updateWordStatistic, updateGameStatistic }
+export { updateWordStatistic, updateGameStatistic, updateShortLearnedAmount }
