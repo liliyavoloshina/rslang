@@ -10,19 +10,13 @@ interface ShortStatGame {
 	longestSeries: number
 }
 
-interface ShortStatWords {
-	newWords: number
-	learnedWords: number
-	correctWordsPercent: number[]
-}
-
 interface ShortStat {
 	date: number
 	games: {
 		audiocall: ShortStatGame
 		sprint: ShortStatGame
 	}
-	words: ShortStatWords
+	learnedWords: number
 }
 
 interface StatisticOptional {

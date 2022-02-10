@@ -31,11 +31,7 @@ export const createNewStatistic = createAsyncThunk('textbook/createNewStatistic'
 						longestSeries: 0,
 					},
 				},
-				words: {
-					newWords: 0,
-					learnedWords: 0,
-					correctWordsPercent: [],
-				},
+				learnedWords: 0,
 			},
 		},
 	}
