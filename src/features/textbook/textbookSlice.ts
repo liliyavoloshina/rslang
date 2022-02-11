@@ -25,7 +25,6 @@ export interface TextbookState {
 	page: number
 	group: number
 	status: 'idle' | 'loading' | 'failed' | 'success'
-	completedPages: CompletedPages
 }
 
 const initialState: TextbookState = {
@@ -109,7 +108,7 @@ export const changeWordDifficulty = createAsyncThunk('textbook/changeWordDifficu
 	const { userId } = userInfo
 	const wordId = word.id
 
-	let isPageCompleted = false
+	// let isPageCompleted = false
 
 	if (difficulty === WordDifficulty.Normal) {
 		await removeWordFromDifficult(userId, wordId, difficulty)
@@ -118,10 +117,10 @@ export const changeWordDifficulty = createAsyncThunk('textbook/changeWordDifficu
 		isPageCompleted = await updateCompletedPages(words, group, page, userId)
 	}
 
-	return { wordId, difficulty, isPageCompleted }
+	return { wordId, difficulty, isPageCompleted: false }
 })
 
-export const addWordToLearned = createAsyncThunk('textbook/addWordToLearned', async (arg: { word: Word; wordLearnedStatus: boolean }, { getState }) => {
+export const addWordToLearned = createAsyncThunk('textbook/addWordToLearned', async (word: Word, { getState }) => {
 	const state = getState() as RootState
 	const { userInfo } = state.auth
 
@@ -129,8 +128,6 @@ export const addWordToLearned = createAsyncThunk('textbook/addWordToLearned', as
 		throw new Error('Not permitted')
 	}
 
-	const { words, page, group } = state.textbook
-	const { word, wordLearnedStatus } = arg
 	const { userId } = userInfo
 	const { id: wordId } = word
 
@@ -149,7 +146,7 @@ export const addWordToLearned = createAsyncThunk('textbook/addWordToLearned', as
 
 	await updateWordStatistic(userId, word, fieldToUpdate)
 
-	return { wordId, wordLearnedStatus, isPageCompleted }
+	return { wordId }
 })
 
 export const createNewStatistic = createAsyncThunk('textbook/createNewStatistic', async (arg, { getState }) => {
@@ -201,15 +198,15 @@ export const textbookSlice = createSlice({
 				state.words = action.payload
 			})
 			.addCase(changeWordDifficulty.fulfilled, (state, action) => {
-				const { wordId, difficulty, isPageCompleted } = action.payload!
+				const { wordId, difficulty } = action.payload!
 
-				if (isPageCompleted) {
-					if (state.completedPages[state.group]) {
-						state.completedPages[state.group][state.page] = true
-					} else {
-						state.completedPages[state.group] = { [state.page]: true }
-					}
-				}
+				// if (isPageCompleted) {
+				// 	if (state.completedPages[state.group]) {
+				// 		state.completedPages[state.group][state.page] = true
+				// 	} else {
+				// 		state.completedPages[state.group] = { [state.page]: true }
+				// 	}
+				// }
 
 				state.words = state.words.map(word => {
 					if (word.id === wordId) {
@@ -237,7 +234,7 @@ export const textbookSlice = createSlice({
 				}
 			})
 			.addCase(addWordToLearned.fulfilled, (state, action) => {
-				const { wordId, wordLearnedStatus, isPageCompleted } = action.payload!
+				const { wordId } = action.payload!
 
 				state.words = state.words.map(word => {
 					if (word.id === wordId) {
@@ -246,12 +243,12 @@ export const textbookSlice = createSlice({
 						if (updatedWord.userWord) {
 							updatedWord.userWord = {
 								...updatedWord.userWord,
-								optional: { ...updatedWord.userWord.optional!, isLearned: wordLearnedStatus },
+								optional: { ...updatedWord.userWord.optional!, isLearned: true },
 							}
 						} else {
 							updatedWord.userWord = {
 								difficulty: WordDifficulty.Normal,
-								optional: { correctAnswers: 0, incorrectAnswers: 0, correctStrike: 0, isLearned: wordLearnedStatus },
+								optional: { correctAnswers: 0, incorrectAnswers: 0, correctStrike: 0, isLearned: true },
 							}
 						}
 						return updatedWord
@@ -260,34 +257,32 @@ export const textbookSlice = createSlice({
 					return word
 				})
 
-				if (wordLearnedStatus === true && state.group === 6) {
+				if (state.group === 6) {
 					state.words = state.words.filter(word => word.id !== wordId)
 				}
 
-				if (isPageCompleted) {
-					if (state.completedPages[state.group]) {
-						state.completedPages[state.group][state.page] = true
-					} else {
-						state.completedPages[state.group] = { [state.page]: true }
-					}
-				}
+				// if (isPageCompleted) {
+				// 	if (state.completedPages[state.group]) {
+				// 		state.completedPages[state.group][state.page] = true
+				// 	} else {
+				// 		state.completedPages[state.group] = { [state.page]: true }
+				// 	}
+				// }
 
-				if (wordLearnedStatus === true) {
-					state.words = state.words.map(word => {
-						if (word.id === wordId) {
-							word.userWord = {
-								optional: word.userWord!.optional,
-								difficulty: WordDifficulty.Normal,
-							}
+				state.words = state.words.map(word => {
+					if (word.id === wordId) {
+						word.userWord = {
+							optional: word.userWord!.optional,
+							difficulty: WordDifficulty.Normal,
 						}
+					}
 
-						return word
-					})
-				}
+					return word
+				})
 			})
-			.addCase(getCompletedPages.fulfilled, (state, action) => {
-				state.completedPages = action.payload
-			})
+		// .addCase(getCompletedPages.fulfilled, (state, action) => {
+		// 	state.completedPages = action.payload
+		// })
 	},
 })
 

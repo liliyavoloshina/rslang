@@ -1,10 +1,33 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 
 import { RootState } from '~/app/store'
-import { UserStatistic, WordFieldsToUpdate } from '~/types/statistic'
+import { CompletedPages, UserStatistic, WordFieldsToUpdate } from '~/types/statistic'
 import { UserWord, Word, WordDifficulty } from '~/types/word'
 import apiClient from '~/utils/api'
-import { CORRECT_ANSWERS_TO_LEARN_DIFFICULT, CORRECT_ANSWERS_TO_LEARN_NORMAL } from '~/utils/constants'
+import { CORRECT_ANSWERS_TO_LEARN_DIFFICULT, CORRECT_ANSWERS_TO_LEARN_NORMAL, WORD_PER_PAGE_AMOUNT } from '~/utils/constants'
+
+const initialState: UserStatistic = {
+	learnedWords: 0,
+	optional: {
+		completedPages: { 0: { 0: false, 1: false } },
+		shortStat: {
+			date: 0,
+			games: {
+				audiocall: {
+					newWords: 0,
+					correctWordsPercent: [],
+					longestSeries: 0,
+				},
+				sprint: {
+					newWords: 0,
+					correctWordsPercent: [],
+					longestSeries: 0,
+				},
+			},
+			learnedWords: 0,
+		},
+	},
+}
 
 const updateWordCorrectAnswers = (difficulty: WordDifficulty, oldAnswers: number, correctStrike: number) => {
 	let isLearned = false
@@ -31,6 +54,46 @@ const updateWordIncorrectAnswers = (oldAnswers: number) => {
 	oldAnswers += 1
 	return { incorrectAnswers: oldAnswers, isLearned, correctStrike }
 }
+
+export const fetchUserStatistic = createAsyncThunk<UserStatistic, void, { state: RootState }>('statistic/fetchUserStatistic', async (arg, { getState }) => {
+	const state = getState()
+	const { userInfo } = state.auth
+
+	if (!userInfo) {
+		throw new Error('Not permitted')
+	}
+
+	const res = await apiClient.getUserStatistic(userInfo.userId)
+	return res
+})
+
+export const updateCompletedPages = createAsyncThunk<{ isPageCompleted: boolean; page: number; group: number }, { page: number; group: number }, { state: RootState }>(
+	'statistic/updateCompletedPages',
+	async ({ page, group }, { getState }) => {
+		const state = getState()
+		const { words } = state.textbook
+		const currentStatistic = state.statistic
+		const userId = state.auth.userInfo?.userId as string
+
+		let isPageCompleted = false
+
+		const learnedOrDifficultWord = words.filter(word => word.userWord?.difficulty === WordDifficulty.Difficult || !!word.userWord?.optional?.isLearned)
+		isPageCompleted = learnedOrDifficultWord.length + 1 === WORD_PER_PAGE_AMOUNT
+
+		const newGroupField = {
+			...currentStatistic.optional.completedPages[group],
+		}
+		newGroupField[page] = isPageCompleted
+
+		const updatedOptional = JSON.parse(JSON.stringify(currentStatistic.optional))
+
+		updatedOptional.completedPages[group] = newGroupField
+
+		await apiClient.updateCompletedPages(userId, updatedOptional)
+
+		return { isPageCompleted, page, group }
+	}
+)
 
 export const updateWordStatistic = async (userId: string, wordToUpdate: Word, newFields: WordFieldsToUpdate) => {
 	const word = JSON.parse(JSON.stringify(wordToUpdate))
@@ -132,18 +195,25 @@ export const createNewStatistic = createAsyncThunk('textbook/createNewStatistic'
 	await apiClient.setNewStatistic(userInfo.userId, newStatistic)
 })
 
-interface StatisticState {
-	test: boolean
-}
-
-const initialState: StatisticState = {
-	test: false,
-}
-
 export const statisticSlice = createSlice({
 	name: 'statistic',
 	initialState,
 	reducers: {},
+	extraReducers: builder => {
+		builder
+			.addCase(fetchUserStatistic.fulfilled, (state, action) => {
+				state.optional = { ...action.payload.optional }
+			})
+			.addCase(updateCompletedPages.fulfilled, (state, action) => {
+				const { isPageCompleted, page, group } = action.payload
+
+				if (state.optional.completedPages[group]) {
+					state.optional.completedPages[group][page] = isPageCompleted
+				} else {
+					state.optional.completedPages[group] = { [page]: isPageCompleted }
+				}
+			})
+	},
 })
 
 export default statisticSlice.reducer

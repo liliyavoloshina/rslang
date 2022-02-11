@@ -14,13 +14,13 @@ import TextbookCard from '~/components/textbook/TextbookCard'
 import TextbookGroupDropdown from '~/components/textbook/TextbookGroupDropdown'
 import TextbookPagination from '~/components/textbook/TextbookPagination'
 import { selectAuthIsLoggedIn } from '~/features/auth'
+import { fetchUserStatistic } from '~/features/statistic'
+import { selectStatisticCompletedPages } from '~/features/statistic/statisticSlice.selectors'
 import {
 	changeGroup,
 	changePage,
 	fetchDifficultWords,
 	fetchTextbookWords,
-	getCompletedPages,
-	selectTextbookCompletedPages,
 	selectTextbookGroup,
 	selectTextbookPage,
 	selectTextbookStatus,
@@ -37,7 +37,7 @@ function Textbook() {
 	const page = useAppSelector(selectTextbookPage)
 	const isLoggedIn = useAppSelector(selectAuthIsLoggedIn)
 	const status = useAppSelector(selectTextbookStatus)
-	const completedPages = useAppSelector(selectTextbookCompletedPages)
+	const completedPages = useAppSelector(selectStatisticCompletedPages)
 
 	const groupColors = [pink[500], orange[500], lightGreen[500], lightBlue[500], cyan[500], deepPurple[500]]
 	const activeColor = groupColors[group]
@@ -57,7 +57,8 @@ function Textbook() {
 			dispatch(fetchTextbookWords())
 		}
 
-		dispatch(getCompletedPages())
+		// dispatch(getCompletedPages())
+		dispatch(fetchUserStatistic())
 	}, [dispatch])
 
 	return (
