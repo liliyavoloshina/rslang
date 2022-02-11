@@ -17,7 +17,7 @@ import { blue, lightGreen } from '@mui/material/colors'
 
 import { useAppDispatch, useAppSelector } from '~/app/hooks'
 import { selectAuthUserInfo } from '~/features/auth'
-import { updateWordStatistic } from '~/features/statistic'
+import { updateCompletedPages } from '~/features/statistic'
 import { addWordToLearned, changeWordDifficulty, selectTextbookGroup } from '~/features/textbook'
 import { Word, WordDifficulty } from '~/types/word'
 import { DOMAIN_URL } from '~/utils/constants'
@@ -35,14 +35,27 @@ export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: Te
 
 	const dispatch = useAppDispatch()
 
-	const group = useAppSelector(selectTextbookGroup)
-	const userInfo = useAppSelector(selectAuthUserInfo)
-	const { id, image, word, transcription, wordTranslate, textMeaning, textMeaningTranslate, textExample, textExampleTranslate, audio, audioExample, audioMeaning, userWord } =
-		passedWord
+	const currentGroup = useAppSelector(selectTextbookGroup)
+	const {
+		page,
+		group,
+		image,
+		word,
+		transcription,
+		wordTranslate,
+		textMeaning,
+		textMeaningTranslate,
+		textExample,
+		textExampleTranslate,
+		audio,
+		audioExample,
+		audioMeaning,
+		userWord,
+	} = passedWord
 
 	const isLearned = !!userWord?.optional?.isLearned
 	const isDifficult = userWord?.difficulty === WordDifficulty.Difficult
-	const isDifficultDisable = (isDifficult && group !== 6) || isLearned
+	const isDifficultDisable = (isDifficult && currentGroup !== 6) || isLearned
 	const difficultBtnColor = blue.A200
 	const learnedBtnColor = lightGreen[500]
 
@@ -67,10 +80,13 @@ export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: Te
 		const difficulty = userWord?.difficulty === WordDifficulty.Difficult ? WordDifficulty.Normal : WordDifficulty.Difficult
 
 		dispatch(changeWordDifficulty({ word: passedWord, difficulty }))
+
+		dispatch(updateCompletedPages({ page, group }))
 	}
 
 	const addToLearned = () => {
-		dispatch(addWordToLearned({ word: passedWord, wordLearnedStatus: true }))
+		dispatch(addWordToLearned(passedWord))
+		dispatch(updateCompletedPages({ page, group }))
 	}
 
 	return (

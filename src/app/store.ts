@@ -3,6 +3,7 @@ import { Action, ThunkAction, configureStore } from '@reduxjs/toolkit'
 import audiocallReducer from '~/features/audiocall/audiocallSlice'
 import authReducer from '~/features/auth/authSlice'
 import sprintReducer from '~/features/sprint/sprintSlice'
+import statisticReducer from '~/features/statistic/statisticSlice'
 import textbookReducer from '~/features/textbook/textbookSlice'
 
 export const store = configureStore({
@@ -11,6 +12,7 @@ export const store = configureStore({
 		sprint: sprintReducer,
 		textbook: textbookReducer,
 		auth: authReducer,
+		statistic: statisticReducer,
 	},
 })
 

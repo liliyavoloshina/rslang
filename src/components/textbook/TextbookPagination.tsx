@@ -6,14 +6,15 @@ import Stack from '@mui/material/Stack'
 import { lightGreen } from '@mui/material/colors'
 
 import { useAppDispatch, useAppSelector } from '~/app/hooks'
-import { changePage, fetchTextbookWords, selectTextbookCompletedPages, selectTextbookGroup, selectTextbookPage } from '~/features/textbook'
+import { selectStatisticCompletedPages } from '~/features/statistic/statisticSlice.selectors'
+import { changePage, fetchTextbookWords, selectTextbookGroup, selectTextbookPage } from '~/features/textbook'
 import { PAGES_PER_GROUP } from '~/utils/constants'
 
 export default function TextbookPagination() {
 	const dispatch = useAppDispatch()
 	const page = useAppSelector(selectTextbookPage) + 1
 	const group = useAppSelector(selectTextbookGroup)
-	const completedPages = useAppSelector(selectTextbookCompletedPages)
+	const completedPages = useAppSelector(selectStatisticCompletedPages)
 
 	const handleChange = (event: ChangeEvent<unknown>, value: number) => {
 		dispatch(changePage(value - 1))
