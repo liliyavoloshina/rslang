@@ -121,7 +121,7 @@ export const changeWordDifficulty = createAsyncThunk('textbook/changeWordDifficu
 	return { wordId, difficulty, isPageCompleted }
 })
 
-export const changeWordLearnedStatus = createAsyncThunk('textbook/changeWordLearnedStatus', async (arg: { word: Word; wordLearnedStatus: boolean }, { getState }) => {
+export const addWordToLearned = createAsyncThunk('textbook/addWordToLearned', async (arg: { word: Word; wordLearnedStatus: boolean }, { getState }) => {
 	const state = getState() as RootState
 	const { userInfo } = state.auth
 
@@ -146,6 +146,8 @@ export const changeWordLearnedStatus = createAsyncThunk('textbook/changeWordLear
 		isPageCompleted = await updateCompletedPages(words, group, page, userId)
 		await removeWordFromDifficult(userId, wordId, WordDifficulty.Normal)
 	}
+
+	await updateWordStatistic(userId, word, fieldToUpdate)
 
 	return { wordId, wordLearnedStatus, isPageCompleted }
 })
@@ -234,7 +236,7 @@ export const textbookSlice = createSlice({
 					state.words = state.words.filter(word => word.id !== wordId)
 				}
 			})
-			.addCase(changeWordLearnedStatus.fulfilled, (state, action) => {
+			.addCase(addWordToLearned.fulfilled, (state, action) => {
 				const { wordId, wordLearnedStatus, isPageCompleted } = action.payload!
 
 				state.words = state.words.map(word => {

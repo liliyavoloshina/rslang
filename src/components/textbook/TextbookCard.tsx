@@ -18,7 +18,7 @@ import { blue, lightGreen } from '@mui/material/colors'
 import { useAppDispatch, useAppSelector } from '~/app/hooks'
 import { selectAuthUserInfo } from '~/features/auth'
 import { updateWordStatistic } from '~/features/statistic'
-import { changeWordDifficulty, changeWordLearnedStatus, selectTextbookGroup } from '~/features/textbook'
+import { addWordToLearned, changeWordDifficulty, selectTextbookGroup } from '~/features/textbook'
 import { Word, WordDifficulty } from '~/types/word'
 import { DOMAIN_URL } from '~/utils/constants'
 
@@ -70,7 +70,7 @@ export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: Te
 	}
 
 	const addToLearned = () => {
-		dispatch(changeWordLearnedStatus({ word: passedWord, wordLearnedStatus: true }))
+		dispatch(addWordToLearned({ word: passedWord, wordLearnedStatus: true }))
 	}
 
 	return (
