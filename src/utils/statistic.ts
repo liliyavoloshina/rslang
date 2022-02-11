@@ -27,6 +27,82 @@ const updateShortLearnedAmount = async (userId: string, amount: number) => {
 	await apiClient.setNewStatistic(userId, statToUpdate)
 }
 
+const updateWordCorrectAnswers = (difficulty: WordDifficulty, newAnswers: number, correctStrike: number) => {
+	let isLearned = false
+	let correctAnswers = newAnswers
+
+	if (difficulty === WordDifficulty.Normal) {
+		if (correctStrike === CORRECT_ANSWERS_TO_LEARN_NORMAL - 1) {
+			isLearned = true
+			// TODO: update short statictic learnedWords
+		} else {
+			correctAnswers += 1
+		}
+	}
+
+	if (difficulty === WordDifficulty.Difficult) {
+		if (correctStrike === CORRECT_ANSWERS_TO_LEARN_DIFFICULT - 1) {
+			isLearned = true
+			// TODO: update short statictic learnedWords
+		} else {
+			correctAnswers += 1
+		}
+	}
+
+	return { correctAnswers, isLearned }
+}
+
+const updateWordLearnedStatus = () => {}
+
+export const updateWordStat = (isExist: boolean, newStatistic: UserWord, oldStatistic?: UserWord) => {
+	let statisticToUpdate
+
+	if (isExist) {
+		statisticToUpdate = oldStatistic!
+	} else {
+		statisticToUpdate = {
+			difficulty: WordDifficulty.Normal,
+			optional: {
+				correctAnswers: 0,
+				incorrectAnswers: 0,
+				correctStrike: 0,
+				isLearned: false,
+			},
+		}
+	}
+
+	const newCorrectAnswers = newStatistic.optional?.correctAnswers
+	const newLearned = newStatistic.optional?.isLearned
+	const correctStrike = newStatistic.optional?.correctStrike || 0
+	const difficulty = statisticToUpdate.difficulty || WordDifficulty.Normal
+
+	// if (newLearned) {
+	// }
+
+	// if (newCorrectAnswers) {
+	// 	const newFileds = updateWordCorrectAnswers(difficulty, newCorrectAnswers, correctStrike)
+	// }
+}
+
+const changeWordLearnedStatus = (isExist: boolean, status: boolean, wordStatistic?: UserWord) => {
+	let statisticToUpdate: UserWordOptional
+	if (isExist) {
+		statisticToUpdate = wordStatistic!.optional!
+	} else {
+		statisticToUpdate = {
+			correctAnswers: 0,
+			incorrectAnswers: 0,
+			correctStrike: 0,
+			isLearned: false,
+		}
+	}
+	// try {
+	// 	await apiClient.addWordToLearned(userId, wordId, wordLearnedStatus, ApiMethod.Put)
+	// } catch (e) {
+	// 	await apiClient.addWordToLearned(userId, wordId, wordLearnedStatus, ApiMethod.Post)
+	// }
+}
+
 const updateWordStatistic = async (userId: string, { wordId, isCorrect }: { wordId: string; isCorrect: boolean }) => {
 	let wordDataToUpdate: UserWord
 	let isAlreadyExist = false

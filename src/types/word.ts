@@ -25,8 +25,8 @@ interface UserWordOptional {
 }
 
 interface UserWord {
-	difficulty?: string
-	optional?: Record<string, unknown> | UserWordOptional
+	difficulty?: WordDifficulty
+	optional?: UserWordOptional
 }
 
 enum WordDifficulty {

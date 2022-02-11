@@ -16,7 +16,7 @@ import {
 } from '~/utils/api'
 import { WORD_PER_PAGE_AMOUNT } from '~/utils/constants'
 import { localStorageSetPagination } from '~/utils/localStorage'
-import { updateShortLearnedAmount } from '~/utils/statistic'
+import { updateShortLearnedAmount, updateWordStat } from '~/utils/statistic'
 
 export interface TextbookState {
 	words: Word[]
@@ -94,7 +94,7 @@ export const fetchDifficultWords = createAsyncThunk<Word[], void, { state: RootS
 	return response[0].paginatedResults.map(word => ({ ...word, id: word._id! }))
 })
 
-export const changeWordDifficulty = createAsyncThunk('textbook/changeWordDifficulty', async (arg: { wordId: string; difficulty: string }, { getState }) => {
+export const changeWordDifficulty = createAsyncThunk('textbook/changeWordDifficulty', async (arg: { wordId: string; difficulty: WordDifficulty }, { getState }) => {
 	const state = getState() as RootState
 	const { userInfo } = state.auth
 	if (!userInfo) {
@@ -120,6 +120,7 @@ export const changeWordDifficulty = createAsyncThunk('textbook/changeWordDifficu
 export const changeWordLearnedStatus = createAsyncThunk('textbook/changeWordLearnedStatus', async (arg: { wordId: string; wordLearnedStatus: boolean }, { getState }) => {
 	const state = getState() as RootState
 	const { userInfo } = state.auth
+
 	if (!userInfo) {
 		throw new Error('Not permitted')
 	}
@@ -134,14 +135,32 @@ export const changeWordLearnedStatus = createAsyncThunk('textbook/changeWordLear
 		await addWordToLearned(userId, wordId, wordLearnedStatus, false)
 	}
 
-	let isPageCompleted = false
+	console.log(isUserWordExist)
 
 	if (wordLearnedStatus) {
 		isPageCompleted = await updateCompletedPages(words, group, page, userId)
 		await removeWordFromDifficult(userId, wordId, WordDifficulty.Normal)
 	}
 
-	return { wordId, wordLearnedStatus, isPageCompleted }
+	// }
+
+	// updateWordStat(isUserWordExist, { isLearned: true })
+
+	// try {
+	// 	await apiClient.addWordToLearned(userId, wordId, wordLearnedStatus, ApiMethod.Put)
+	// } catch (e) {
+	// 	await apiClient.addWordToLearned(userId, wordId, wordLearnedStatus, ApiMethod.Post)
+	// }
+
+	// let isPageCompleted = false
+
+	// if (wordLearnedStatus) {
+	// 	isPageCompleted = await updateCompletedPages(words, group, page, userId)
+	// 	await apiClient.updateWordDifficulty(userId, wordId, WordDifficulty.Normal)
+	// 	updateShortLearnedAmount(userId, 1)
+	// }
+
+	// return { wordId, wordLearnedStatus, isPageCompleted }
 })
 
 export const createNewStatistic = createAsyncThunk('textbook/createNewStatistic', async (arg, { getState }) => {
@@ -227,54 +246,54 @@ export const textbookSlice = createSlice({
 					state.words = state.words.filter(word => word.id !== wordId)
 				}
 			})
-			.addCase(changeWordLearnedStatus.fulfilled, (state, action) => {
-				const { wordId, wordLearnedStatus, isPageCompleted } = action.payload!
+			// .addCase(changeWordLearnedStatus.fulfilled, (state, action) => {
+			// 	const { wordId, wordLearnedStatus, isPageCompleted } = action.payload!
 
-				state.words = state.words.map(word => {
-					if (word.id === wordId) {
-						const updatedWord = word
+			// 	state.words = state.words.map(word => {
+			// 		if (word.id === wordId) {
+			// 			const updatedWord = word
 
-						if (updatedWord.userWord) {
-							updatedWord.userWord = {
-								...updatedWord.userWord,
-								optional: { ...updatedWord.userWord.optional, isLearned: wordLearnedStatus },
-							}
-						} else {
-							updatedWord.userWord = {
-								optional: { isLearned: wordLearnedStatus },
-							}
-						}
-						return updatedWord
-					}
+			// 			if (updatedWord.userWord) {
+			// 				updatedWord.userWord = {
+			// 					...updatedWord.userWord,
+			// 					optional: { ...updatedWord.userWord.optional!, isLearned: wordLearnedStatus },
+			// 				}
+			// 			} else {
+			// 				updatedWord.userWord = {
+			// 					optional: { correctAnswers: 0, incorrectAnswers: 0, correctStrike: 0, isLearned: wordLearnedStatus },
+			// 				}
+			// 			}
+			// 			return updatedWord
+			// 		}
 
-					return word
-				})
+			// 		return word
+			// 	})
 
-				if (wordLearnedStatus === true && state.group === 6) {
-					state.words = state.words.filter(word => word.id !== wordId)
-				}
+			// 	if (wordLearnedStatus === true && state.group === 6) {
+			// 		state.words = state.words.filter(word => word.id !== wordId)
+			// 	}
 
-				if (isPageCompleted) {
-					if (state.completedPages[state.group]) {
-						state.completedPages[state.group][state.page] = true
-					} else {
-						state.completedPages[state.group] = { [state.page]: true }
-					}
-				}
+			// 	if (isPageCompleted) {
+			// 		if (state.completedPages[state.group]) {
+			// 			state.completedPages[state.group][state.page] = true
+			// 		} else {
+			// 			state.completedPages[state.group] = { [state.page]: true }
+			// 		}
+			// 	}
 
-				if (wordLearnedStatus === true) {
-					state.words = state.words.map(word => {
-						if (word.id === wordId) {
-							word.userWord = {
-								...word.userWord,
-								difficulty: WordDifficulty.Normal,
-							}
-						}
+			// 	if (wordLearnedStatus === true) {
+			// 		state.words = state.words.map(word => {
+			// 			if (word.id === wordId) {
+			// 				word.userWord = {
+			// 					...word.userWord,
+			// 					difficulty: WordDifficulty.Normal,
+			// 				}
+			// 			}
 
-						return word
-					})
-				}
-			})
+			// 			return word
+			// 		})
+			// 	}
+			// })
 			.addCase(getCompletedPages.fulfilled, (state, action) => {
 				state.completedPages = action.payload
 			})
