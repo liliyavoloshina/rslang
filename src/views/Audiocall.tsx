@@ -97,6 +97,8 @@ function Audiocall() {
 	useEffect(() => {
 		if (isFinished) {
 			dispatch(finishAudiocall())
+			// TODO: update completed pages after game
+			// dispatch(updateComletedPagesAfterGame())
 		}
 	}, [isFinished])
 

@@ -103,7 +103,6 @@ export const changeWordDifficulty = createAsyncThunk('textbook/changeWordDifficu
 		throw new Error('Not permitted')
 	}
 
-	const { words, group, page } = state.textbook
 	const { word, difficulty } = arg
 	const { userId } = userInfo
 	const wordId = word.id
@@ -200,14 +199,6 @@ export const textbookSlice = createSlice({
 			.addCase(changeWordDifficulty.fulfilled, (state, action) => {
 				const { wordId, difficulty } = action.payload!
 
-				// if (isPageCompleted) {
-				// 	if (state.completedPages[state.group]) {
-				// 		state.completedPages[state.group][state.page] = true
-				// 	} else {
-				// 		state.completedPages[state.group] = { [state.page]: true }
-				// 	}
-				// }
-
 				state.words = state.words.map(word => {
 					if (word.id === wordId) {
 						const updatedWord = word
@@ -261,14 +252,6 @@ export const textbookSlice = createSlice({
 					state.words = state.words.filter(word => word.id !== wordId)
 				}
 
-				// if (isPageCompleted) {
-				// 	if (state.completedPages[state.group]) {
-				// 		state.completedPages[state.group][state.page] = true
-				// 	} else {
-				// 		state.completedPages[state.group] = { [state.page]: true }
-				// 	}
-				// }
-
 				state.words = state.words.map(word => {
 					if (word.id === wordId) {
 						word.userWord = {
@@ -280,9 +263,6 @@ export const textbookSlice = createSlice({
 					return word
 				})
 			})
-		// .addCase(getCompletedPages.fulfilled, (state, action) => {
-		// 	state.completedPages = action.payload
-		// })
 	},
 })
 
