@@ -16,7 +16,7 @@ import {
 } from '~/utils/api'
 import { WORD_PER_PAGE_AMOUNT } from '~/utils/constants'
 import { localStorageSetPagination } from '~/utils/localStorage'
-import { updateShortLearnedAmount, updateWordStat } from '~/utils/statistic'
+import { updateShortLearnedAmount } from '~/utils/statistic'
 
 import { updateWordStatistic } from '../statistic/statisticSlice'
 
