@@ -9,18 +9,14 @@ import { CORRECT_ANSWERS_TO_LEARN_DIFFICULT, CORRECT_ANSWERS_TO_LEARN_NORMAL } f
 const updateWordCorrectAnswers = (difficulty: WordDifficulty, oldAnswers: number, correctStrike: number) => {
 	let isLearned = false
 
-	if (difficulty === WordDifficulty.Normal) {
-		if (correctStrike === CORRECT_ANSWERS_TO_LEARN_NORMAL - 1) {
-			isLearned = true
-			// TODO: update short statictic learnedWords
-		}
+	if (difficulty === WordDifficulty.Normal && correctStrike === CORRECT_ANSWERS_TO_LEARN_NORMAL - 1) {
+		isLearned = true
+		// TODO: update short statictic learnedWords
 	}
 
-	if (difficulty === WordDifficulty.Difficult) {
-		if (correctStrike === CORRECT_ANSWERS_TO_LEARN_DIFFICULT - 1) {
-			isLearned = true
-			// TODO: update short statictic learnedWords
-		}
+	if (difficulty === WordDifficulty.Difficult && correctStrike === CORRECT_ANSWERS_TO_LEARN_DIFFICULT - 1) {
+		isLearned = true
+		// TODO: update short statictic learnedWords
 	}
 
 	oldAnswers += 1
@@ -29,12 +25,12 @@ const updateWordCorrectAnswers = (difficulty: WordDifficulty, oldAnswers: number
 	return { correctAnswers: oldAnswers, isLearned, correctStrike }
 }
 
-// const updateWordInCorrectAnswers = (difficulty: WordDifficulty, newAnswers: number, correctStrike: number) => {
-// 	let isLearned = false
-// 	let incorrectAnswers =
-
-// 	return { correctAnswers, isLearned }
-// }
+const updateWordIncorrectAnswers = (oldAnswers: number) => {
+	const correctStrike = 0
+	const isLearned = false
+	oldAnswers += 1
+	return { incorrectAnswers: oldAnswers, isLearned, correctStrike }
+}
 
 export const updateWordStatistic = async (userId: string, wordToUpdate: Word, newFields: WordFieldsToUpdate) => {
 	const word = JSON.parse(JSON.stringify(wordToUpdate))
@@ -59,7 +55,7 @@ export const updateWordStatistic = async (userId: string, wordToUpdate: Word, ne
 
 	const { difficulty } = statisticToUpdate
 	const { correctAnswers, correctStrike, incorrectAnswers } = statisticToUpdate.optional
-	const { isLearned, difficulty: newDifficulty, correctAnswers: newCorrectAnswers } = newFields
+	const { isLearned, difficulty: newDifficulty, correctAnswers: newCorrectAnswers, incorrectAnswers: newIncorrectAnswers } = newFields
 
 	if (isLearned) {
 		statisticToUpdate.optional.isLearned = isLearned
@@ -76,16 +72,20 @@ export const updateWordStatistic = async (userId: string, wordToUpdate: Word, ne
 			...statisticToUpdate.optional,
 			...updatedFields,
 		}
+
+		if (updatedFields.isLearned) {
+			statisticToUpdate.difficulty = WordDifficulty.Normal
+		}
 	}
 
-	// if (incorrectAnswers && difficulty && correctStrike) {
-	// 	const updatedFields = updateWordCorrectAnswers(difficulty, correctAnswers, correctStrike)
+	if (newIncorrectAnswers) {
+		const updatedFields = updateWordIncorrectAnswers(incorrectAnswers)
 
-	// 	statisticToUpdate = {
-	// 		...statisticToUpdate,
-	// 		...updatedFields,
-	// 	}
-	// }
+		statisticToUpdate.optional = {
+			...statisticToUpdate.optional,
+			...updatedFields,
+		}
+	}
 
 	if (isStatisticExist) {
 		// update existing stat
