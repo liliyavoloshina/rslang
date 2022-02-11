@@ -91,8 +91,6 @@ export const finishAudiocall = createAsyncThunk('audiocall/finishAudiocall', asy
 	// update word statistic
 	if (correctAnswers.length > 0) correctAnswers.forEach(word => updateWordStatistic(userId, word, { correctAnswers: 1 }))
 	if (incorrectAnswers.length > 0) incorrectAnswers.forEach(word => updateWordStatistic(userId, word, { incorrectAnswers: 1 }))
-	// if (correctAnswers.length > 0) correctAnswers.forEach(word => updateWordStatistic(userId, { wordId: word.id, isCorrect: true }))
-	// if (incorrectAnswers.length > 0) incorrectAnswers.forEach(word => updateWordStatistic(userId, { wordId: word.id, isCorrect: false }))
 
 	const newStatistic = {
 		newWords,

@@ -59,6 +59,7 @@ export const updateWordStatistic = async (userId: string, wordToUpdate: Word, ne
 
 	if (isLearned) {
 		statisticToUpdate.optional.isLearned = isLearned
+		statisticToUpdate.difficulty = WordDifficulty.Normal
 	}
 
 	if (newDifficulty) {
@@ -95,9 +96,6 @@ export const updateWordStatistic = async (userId: string, wordToUpdate: Word, ne
 		await apiClient.addWordStatistic(userId, wordId, statisticToUpdate)
 	}
 }
-
-// export const updateWordStatisticAfterGame = async (userId: string, wordToUpdate: Word, newStatistic: WordFieldsToUpdate) => {
-// }
 
 export const createNewStatistic = createAsyncThunk('textbook/createNewStatistic', async (arg, { getState }) => {
 	const state = getState() as RootState
