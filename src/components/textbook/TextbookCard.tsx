@@ -16,6 +16,8 @@ import Typography from '@mui/material/Typography'
 import { blue, lightGreen } from '@mui/material/colors'
 
 import { useAppDispatch, useAppSelector } from '~/app/hooks'
+import { selectAuthUserInfo } from '~/features/auth'
+import { updateWordStatistic } from '~/features/statistic'
 import { changeWordDifficulty, changeWordLearnedStatus, selectTextbookGroup } from '~/features/textbook'
 import { Word, WordDifficulty } from '~/types/word'
 import { DOMAIN_URL } from '~/utils/constants'
@@ -34,6 +36,7 @@ export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: Te
 	const dispatch = useAppDispatch()
 
 	const group = useAppSelector(selectTextbookGroup)
+	const userInfo = useAppSelector(selectAuthUserInfo)
 	const { id, image, word, transcription, wordTranslate, textMeaning, textMeaningTranslate, textExample, textExampleTranslate, audio, audioExample, audioMeaning, userWord } =
 		passedWord
 
@@ -63,11 +66,11 @@ export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: Te
 	const toggleWordDifficulty = () => {
 		const difficulty = userWord?.difficulty === WordDifficulty.Difficult ? WordDifficulty.Normal : WordDifficulty.Difficult
 
-		dispatch(changeWordDifficulty({ wordId: id, difficulty }))
+		dispatch(changeWordDifficulty({ word: passedWord, difficulty }))
 	}
 
 	const addToLearned = () => {
-		dispatch(changeWordLearnedStatus({ wordId: id, wordLearnedStatus: true }))
+		dispatch(changeWordLearnedStatus({ word: passedWord, wordLearnedStatus: true }))
 	}
 
 	return (

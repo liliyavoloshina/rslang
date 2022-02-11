@@ -1,3 +1,5 @@
+import { WordDifficulty } from './word'
+
 interface CompletedPages {
 	[key: number]: {
 		[key: number]: boolean
@@ -29,4 +31,12 @@ interface UserStatistic {
 	optional: StatisticOptional
 }
 
-export type { UserStatistic, CompletedPages, ShortStatGame }
+interface WordFieldsToUpdate {
+	difficulty?: WordDifficulty
+	correctAnswers?: number
+	incorrectAnswers?: number
+	correctStrike?: number
+	isLearned?: boolean
+}
+
+export type { UserStatistic, CompletedPages, ShortStatGame, WordFieldsToUpdate }

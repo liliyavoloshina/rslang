@@ -25,8 +25,8 @@ interface UserWordOptional {
 }
 
 interface UserWord {
-	difficulty?: WordDifficulty
-	optional?: UserWordOptional
+	difficulty: WordDifficulty
+	optional: UserWordOptional
 }
 
 enum WordDifficulty {
