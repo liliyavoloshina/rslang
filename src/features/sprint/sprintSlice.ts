@@ -4,7 +4,7 @@ import { RootState } from '~/app/store'
 import { Word } from '~/types/word'
 import { getAllWords, getNotLearnedWord, getUserWords } from '~/utils/api'
 // TODO: uncomment and use this instead of hardcoded temp test value
-import { MAX_WORDS_GAME_AMOUNT, WORD_PER_PAGE_AMOUNT } from '~/utils/constants'
+import { BASE_CORRECT_ANSWER_POINTS, MAX_WORDS_GAME_AMOUNT, WORD_PER_PAGE_AMOUNT } from '~/utils/constants'
 import { shuffleArray } from '~/utils/helpers'
 
 type SprintState = {
@@ -17,6 +17,7 @@ type SprintState = {
 	correctAnswersInRow: number
 	maxCorrectAnswersSequence: number
 	gameRound: number
+	totalPoints: number
 	status: 'idle' | 'loading' | 'failed' | 'game-running' | 'game-over'
 }
 
@@ -29,7 +30,8 @@ const initialState: SprintState = {
 	incorrectWords: [],
 	correctAnswersInRow: 0,
 	maxCorrectAnswersSequence: 0,
-	gameRound: 0,
+	gameRound: 1,
+	totalPoints: 0,
 	status: 'idle',
 }
 
@@ -100,6 +102,7 @@ export const sprintSlice = createSlice({
 				if (action.payload === correctOption) {
 					state.correctWords.push(state.currentWord)
 					state.correctAnswersInRow += 1
+					state.totalPoints += BASE_CORRECT_ANSWER_POINTS * state.gameRound
 					correctAnswerAudio.play()
 					if (state.gameRound < 4 && state.correctAnswersInRow % 4 === 0 && state.correctAnswersInRow !== 0) {
 						state.gameRound += 1
@@ -109,6 +112,7 @@ export const sprintSlice = createSlice({
 					state.incorrectWords.push(state.currentWord)
 					state.maxCorrectAnswersSequence = Math.max(state.maxCorrectAnswersSequence, state.correctAnswersInRow)
 					state.correctAnswersInRow = 0
+					state.gameRound = 1
 					incorrectAnswerAudio.play()
 				}
 			}
