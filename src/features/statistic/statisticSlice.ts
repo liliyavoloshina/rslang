@@ -1,7 +1,8 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 
 import { RootState } from '~/app/store'
-import { CompletedPages, UserStatistic, WordFieldsToUpdate } from '~/types/statistic'
+import { GameName } from '~/types/game'
+import { UserStatistic, WordFieldsToUpdate } from '~/types/statistic'
 import { UserWord, Word, WordDifficulty } from '~/types/word'
 import apiClient from '~/utils/api'
 import { CORRECT_ANSWERS_TO_LEARN_DIFFICULT, CORRECT_ANSWERS_TO_LEARN_NORMAL, WORD_PER_PAGE_AMOUNT } from '~/utils/constants'
@@ -9,7 +10,7 @@ import { CORRECT_ANSWERS_TO_LEARN_DIFFICULT, CORRECT_ANSWERS_TO_LEARN_NORMAL, WO
 const initialState: UserStatistic = {
 	learnedWords: 0,
 	optional: {
-		completedPages: { 0: { 0: false, 1: false } },
+		completedPages: { 0: { 0: false } },
 		shortStat: {
 			date: 0,
 			games: {
@@ -67,6 +68,10 @@ export const fetchUserStatistic = createAsyncThunk<UserStatistic, void, { state:
 	return res
 })
 
+export const updateComletedPagesAfterGame = createAsyncThunk<void, GameName, { state: RootState }>('statistic/updateComletedPagesAfterGame', async (gameName, { getState }) => {
+	const state = getState()
+	// const { words } = state[gameName].
+})
 export const updateCompletedPages = createAsyncThunk<{ isPageCompleted: boolean; page: number; group: number }, { page: number; group: number }, { state: RootState }>(
 	'statistic/updateCompletedPages',
 	async ({ page, group }, { getState }) => {
