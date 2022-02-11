@@ -80,7 +80,8 @@
 
 	"SPRINT": {
 		"TITLE": "Спринт",
-		"DESCRIPTION": "Сколько слов ты сможешь угадать за {{count}} секунд?"
+		"DESCRIPTION": "Сколько слов ты сможешь угадать за {{count}} секунд?",
+		"SCORE_PER_WORD": "очков за слово {{count}}"
 	},
 
 	"LEVEL_SELECTION": {

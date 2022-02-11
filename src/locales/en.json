@@ -80,7 +80,8 @@
 
 	"SPRINT": {
 		"TITLE": "Sprint",
-		"DESCRIPTION": "How many words you can guess in {{count}} seconds?"
+		"DESCRIPTION": "How many words you can guess in {{count}} seconds?",
+    "SCORE_PER_WORD": "Score points per correct answer {{count}}"
 	},
 
 	"LEVEL_SELECTION": {

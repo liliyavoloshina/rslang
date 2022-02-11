@@ -18,7 +18,7 @@ import { selectAuthIsLoggedIn } from '~/features/auth'
 import { answer, gameTimeout, reset, selectSprintState, startGame } from '~/features/sprint'
 import { sendUpdatedStatistic, updateCompletedPagesAfterGame, updateGameStatistic, updateWordStatistic } from '~/features/statistic'
 import { Word } from '~/types/word'
-import { GAME_TIME, PAGES_PER_GROUP } from '~/utils/constants'
+import { BASE_CORRECT_ANSWER_POINTS, GAME_TIME, PAGES_PER_GROUP } from '~/utils/constants'
 
 interface LocationState {
 	fromTextbook: boolean
@@ -39,7 +39,7 @@ const useSprintGame = () => {
 		navigate(Path.SPRINT)
 	}
 
-	const { words, status, word, suggestedTranslation, correctWords, incorrectWords, correctAnswersInRow, gameRound, bestSeries } = useAppSelector(selectSprintState)
+	const { words, status, word, suggestedTranslation, correctWords, incorrectWords, correctAnswersInRow, gameRound, totalPoints, bestSeries } = useAppSelector(selectSprintState)
 	const isLoggedIn = useAppSelector(selectAuthIsLoggedIn)
 
 	const isFromTextbook = !!(location.state as LocationState)?.fromTextbook
@@ -139,56 +139,68 @@ const useSprintGame = () => {
 		dispatch(gameTimeout())
 	}, [dispatch])
 
-	return { status, word, suggestedTranslation, selectOption, correctWords, incorrectWords, correctAnswersInRow, gameRound, onTimeout }
+	return { status, word, suggestedTranslation, selectOption, correctWords, incorrectWords, correctAnswersInRow, gameRound, totalPoints, onTimeout }
 }
 
 const SprintInner = () => {
 	const { t } = useTranslation()
 
-	const { status, word, suggestedTranslation, selectOption, correctWords, incorrectWords, correctAnswersInRow, gameRound, onTimeout } = useSprintGame()
+	const { status, word, suggestedTranslation, selectOption, correctWords, incorrectWords, correctAnswersInRow, gameRound, totalPoints, onTimeout } = useSprintGame()
 
 	return (
 		<Container maxWidth="sm" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }} style={{ position: 'relative' }}>
 			{status === 'game-running' && word && (
 				<Box sx={{ width: '100%' }}>
-					<Box sx={{ display: 'flex', justifyContent: 'center', gap: 2 }}>
-						<Box sx={{ width: 15, height: 15, borderRadius: '50%', backgroundColor: !(correctAnswersInRow % 4 === 0) ? '#00ff00' : '#cccccc' }} />
-						<Box
-							sx={{
-								width: 15,
-								height: 15,
-								borderRadius: '50%',
-								backgroundColor: (correctAnswersInRow - 2) % 4 === 0 || (correctAnswersInRow - 3) % 4 === 0 ? '#00ff00' : '#cccccc',
-							}}
-						/>
-						<Box sx={{ width: 15, height: 15, borderRadius: '50%', backgroundColor: (correctAnswersInRow - 3) % 4 === 0 ? '#00ff00' : '#cccccc' }} />
-					</Box>
-					<Box sx={{ width: '50%', height: 100, margin: '0 auto', padding: '10px 0' }}>
-						<img
-							style={{
-								width: '100%',
-								height: '100%',
-								objectFit: 'cover',
-							}}
-							src={`/assets/${gameRound}birds_sprint.png`}
-							alt=""
-						/>
-					</Box>
-					<Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
-						<Typography variant="h3" textTransform="capitalize">
-							{word}
+					<Typography variant="h3" style={{ textAlign: 'center', padding: 20 }}>
+						{totalPoints}
+					</Typography>
+					<Box sx={{ width: '100%', height: 500, border: '2px solid #283593', borderRadius: 5 }}>
+						<Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, padding: 2 }}>
+							<Box sx={{ width: 15, height: 15, borderRadius: '50%', backgroundColor: !(correctAnswersInRow % 4 === 0) ? '#00ff00' : '#cccccc' }} />
+							<Box
+								sx={{
+									width: 15,
+									height: 15,
+									borderRadius: '50%',
+									backgroundColor: (correctAnswersInRow - 2) % 4 === 0 || (correctAnswersInRow - 3) % 4 === 0 ? '#00ff00' : '#cccccc',
+								}}
+							/>
+							<Box sx={{ width: 15, height: 15, borderRadius: '50%', backgroundColor: (correctAnswersInRow - 3) % 4 === 0 ? '#00ff00' : '#cccccc' }} />
+						</Box>
+						<Typography variant="subtitle1" color="GrayText" style={{ textAlign: 'center' }}>
+							{t('SPRINT.SCORE_PER_WORD', { count: gameRound * BASE_CORRECT_ANSWER_POINTS })}
 						</Typography>
-						<Typography variant="h4" textTransform="capitalize">
-							{suggestedTranslation}
-						</Typography>
-					</Box>
-					<Box sx={{ display: 'flex', justifyContent: 'center', gap: 3, mt: 2 }}>
-						<IconButton color="error" size="large" onClick={() => selectOption(false)}>
-							<NoIcon /> {t('COMMON.BUTTON.NO')}
-						</IconButton>
-						<IconButton color="success" size="large" onClick={() => selectOption(true)}>
-							<YesIcon /> {t('COMMON.BUTTON.YES')}
-						</IconButton>
+						<Box sx={{ width: '50%', height: 100, margin: '0 auto', padding: '10px 0' }}>
+							<img
+								style={{
+									width: '100%',
+									height: '100%',
+									objectFit: 'cover',
+								}}
+								src={`/assets/${gameRound}birds_sprint.png`}
+								alt=""
+							/>
+						</Box>
+						<Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
+							<Typography variant="h3" textTransform="capitalize">
+								{word}
+							</Typography>
+							<Typography variant="h4" textTransform="capitalize">
+								{suggestedTranslation}
+							</Typography>
+						</Box>
+						<Box sx={{ display: 'flex', justifyContent: 'center', gap: 3, mt: 2 }}>
+							<IconButton color="error" size="large" onClick={() => selectOption(false)}>
+								<NoIcon /> {t('COMMON.BUTTON.NO')}
+							</IconButton>
+							<IconButton color="success" size="large" onClick={() => selectOption(true)}>
+								<YesIcon /> {t('COMMON.BUTTON.YES')}
+							</IconButton>
+						</Box>
+						<Box sx={{ display: 'flex', justifyContent: 'center', gap: 15, mt: 2 }}>
+							<img style={{ width: 30, height: 10, objectFit: 'contain', transform: 'rotate(180deg)' }} src="/assets/svg/arrow.png" alt="" />
+							<img style={{ width: 30, height: 10, objectFit: 'contain' }} src="/assets/svg/arrow.png" alt="" />
+						</Box>
 					</Box>
 				</Box>
 			)}

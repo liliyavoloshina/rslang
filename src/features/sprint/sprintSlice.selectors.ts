@@ -11,4 +11,5 @@ export const selectSprintState = ({ sprint }: RootState) => ({
 	correctAnswersInRow: sprint.correctAnswersInRow,
 	gameRound: sprint.gameRound,
 	bestSeries: sprint.maxCorrectAnswersSequence,
+	totalPoints: sprint.totalPoints,
 })
