@@ -124,11 +124,11 @@ export const audiocallSlice = createSlice({
 	initialState,
 	reducers: {
 		showNextWord: state => {
-			const currectWord = state.currentWord!
+			const currentWord = state.currentWord!
 
 			if (!state.answeredWord) {
 				// eslint-disable-next-line no-underscore-dangle
-				const updatedWord = { ...currectWord, id: currectWord._id! }
+				const updatedWord = { ...currentWord, id: currentWord._id! }
 				state.incorrectAnswers = [...state.incorrectAnswers, updatedWord]
 				state.longestSeries.stopped = true
 			}
