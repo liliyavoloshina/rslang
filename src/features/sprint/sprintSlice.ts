@@ -4,7 +4,7 @@ import { RootState } from '~/app/store'
 import { Word } from '~/types/word'
 import { getAllWords, getNotLearnedWord, getUserWords } from '~/utils/api'
 // TODO: uncomment and use this instead of hardcoded temp test value
-import { BASE_CORRECT_ANSWER_POINTS, MAX_WORDS_GAME_AMOUNT, WORD_PER_PAGE_AMOUNT } from '~/utils/constants'
+import { BASE_CORRECT_ANSWER_POINTS, DOMAIN_URL, MAX_WORDS_GAME_AMOUNT, WORD_PER_PAGE_AMOUNT } from '~/utils/constants'
 import { shuffleArray } from '~/utils/helpers'
 
 type SprintState = {
@@ -18,6 +18,8 @@ type SprintState = {
 	maxCorrectAnswersSequence: number
 	gameRound: number
 	totalPoints: number
+	audioPath: string
+	isMute: boolean
 	status: 'idle' | 'loading' | 'failed' | 'game-running' | 'game-over'
 }
 
@@ -32,6 +34,8 @@ const initialState: SprintState = {
 	maxCorrectAnswersSequence: 0,
 	gameRound: 1,
 	totalPoints: 0,
+	audioPath: '',
+	isMute: false,
 	status: 'idle',
 }
 
@@ -103,17 +107,23 @@ export const sprintSlice = createSlice({
 					state.correctWords = [...state.correctWords, state.currentWord]
 					state.correctAnswersInRow += 1
 					state.totalPoints += BASE_CORRECT_ANSWER_POINTS * state.gameRound
-					correctAnswerAudio.play()
+					if (!state.isMute) {
+						correctAnswerAudio.play()
+					}
 					if (state.gameRound < 4 && state.correctAnswersInRow % 4 === 0 && state.correctAnswersInRow !== 0) {
 						state.gameRound += 1
-						newRoundAudio.play()
+						if (!state.isMute) {
+							newRoundAudio.play()
+						}
 					}
 				} else {
 					state.incorrectWords = [...state.incorrectWords, state.currentWord]
 					state.maxCorrectAnswersSequence = Math.max(state.maxCorrectAnswersSequence, state.correctAnswersInRow)
 					state.correctAnswersInRow = 0
 					state.gameRound = 1
-					incorrectAnswerAudio.play()
+					if (!state.isMute) {
+						incorrectAnswerAudio.play()
+					}
 				}
 			}
 
@@ -123,6 +133,7 @@ export const sprintSlice = createSlice({
 				state.currentIdx += 1
 				state.currentWord = state.words[state.currentIdx]
 				state.suggestedTranslation = getSuggestedTranslation(state.currentWord!, state.words)
+				state.audioPath = `${DOMAIN_URL}/${state.currentWord!.audio}`
 			} else {
 				state.status = 'game-over'
 				// TODO: для всех слов - проверить word.userWord?, если нет, то добавить в статистику +1 новое слово с таймстемпом
@@ -138,6 +149,13 @@ export const sprintSlice = createSlice({
 		gameTimeout: state => {
 			state.status = 'game-over'
 		},
+		playWordAudio: state => {
+			const newAudio = new Audio(state.audioPath)
+			newAudio.play()
+		},
+		toggleMute: state => {
+			state.isMute = !state.isMute
+		},
 	},
 	extraReducers: builder => {
 		builder
@@ -150,10 +168,11 @@ export const sprintSlice = createSlice({
 				shuffleArray(state.words)
 				state.currentWord = state.words[state.currentIdx]
 				state.suggestedTranslation = getSuggestedTranslation(state.currentWord!, state.words)
+				state.audioPath = `${DOMAIN_URL}/${state.currentWord!.audio}`
 			})
 	},
 })
 
-export const { answer, reset, gameTimeout } = sprintSlice.actions
+export const { answer, reset, gameTimeout, playWordAudio, toggleMute } = sprintSlice.actions
 
 export default sprintSlice.reducer

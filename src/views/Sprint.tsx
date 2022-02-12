@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
 import { useLocation, useMatch, useNavigate } from 'react-router-dom'
 
+import { MusicNote, MusicOff, VolumeUp } from '@mui/icons-material'
 import NoIcon from '@mui/icons-material/Cancel'
 import YesIcon from '@mui/icons-material/CheckCircle'
 import { useTheme } from '@mui/material'
@@ -16,7 +17,7 @@ import { GameResultDialog } from '~/components/game'
 import { Path } from '~/components/router'
 import { Timer, TimerContextProvider, useTimerContext } from '~/components/timer'
 import { selectAuthIsLoggedIn } from '~/features/auth'
-import { answer, gameTimeout, reset, selectSprintState, startGame } from '~/features/sprint'
+import { answer, gameTimeout, playWordAudio, reset, selectSprintState, startGame, toggleMute } from '~/features/sprint'
 import { sendUpdatedStatistic, updateCompletedPagesAfterGame, updateGameStatistic, updateWordStatistic } from '~/features/statistic'
 import { Word } from '~/types/word'
 import { BASE_CORRECT_ANSWER_POINTS, GAME_TIME, PAGES_PER_GROUP } from '~/utils/constants'
@@ -40,7 +41,9 @@ const useSprintGame = () => {
 		navigate(Path.SPRINT)
 	}
 
-	const { words, status, word, suggestedTranslation, correctWords, incorrectWords, correctAnswersInRow, gameRound, totalPoints, bestSeries } = useAppSelector(selectSprintState)
+	const { words, status, word, suggestedTranslation, correctWords, incorrectWords, correctAnswersInRow, gameRound, totalPoints, bestSeries, isMute } =
+		useAppSelector(selectSprintState)
+
 	const isLoggedIn = useAppSelector(selectAuthIsLoggedIn)
 
 	const isFromTextbook = !!(location.state as LocationState)?.fromTextbook
@@ -140,16 +143,17 @@ const useSprintGame = () => {
 		dispatch(gameTimeout())
 	}, [dispatch])
 
-	return { status, word, suggestedTranslation, selectOption, correctWords, incorrectWords, correctAnswersInRow, gameRound, totalPoints, onTimeout }
+	return { status, word, suggestedTranslation, selectOption, correctWords, incorrectWords, correctAnswersInRow, gameRound, totalPoints, onTimeout, isMute }
 }
 
 const SprintInner = () => {
 	const { t } = useTranslation()
+	const dispatch = useDispatch()
 	const theme = useTheme()
 	const questionBlockRef = useRef<HTMLDivElement>(null)
 	const answerAnimationTimeout = useRef<NodeJS.Timeout>()
 
-	const { status, word, suggestedTranslation, selectOption, correctWords, incorrectWords, correctAnswersInRow, gameRound, totalPoints, onTimeout } = useSprintGame()
+	const { status, word, suggestedTranslation, selectOption, correctWords, incorrectWords, correctAnswersInRow, gameRound, totalPoints, onTimeout, isMute } = useSprintGame()
 
 	const animateAnswer = useCallback((color: string) => {
 		if (!questionBlockRef.current) {
@@ -192,9 +196,23 @@ const SprintInner = () => {
 		<Container maxWidth="sm" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }} style={{ position: 'relative' }}>
 			{status === 'game-running' && word && (
 				<Box sx={{ width: '100%' }}>
-					<Typography variant="h3" style={{ textAlign: 'center', padding: 20 }}>
-						{totalPoints}
-					</Typography>
+					<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+						<IconButton aria-label="play audio" onClick={() => dispatch(playWordAudio())} sx={{ width: 40, height: 40, borderRadius: 5 }}>
+							<VolumeUp fontSize="inherit" />
+						</IconButton>
+						<Typography variant="h3" style={{ textAlign: 'center', padding: 20 }}>
+							{totalPoints}
+						</Typography>
+						{isMute ? (
+							<IconButton aria-label="volume" size="medium" onClick={() => dispatch(toggleMute())} sx={{ width: 40, height: 40, borderRadius: 5 }}>
+								<MusicOff />
+							</IconButton>
+						) : (
+							<IconButton aria-label="volume" size="medium" onClick={() => dispatch(toggleMute())} sx={{ width: 40, height: 40, borderRadius: 5 }}>
+								<MusicNote />
+							</IconButton>
+						)}
+					</Box>
 					<Box ref={questionBlockRef} sx={{ width: '100%', height: 410, border: `4px solid ${theme.palette.primary.main}`, borderRadius: 5, transition: 'border-color 400ms' }}>
 						<Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, padding: 2 }}>
 							<Box sx={{ width: 15, height: 15, borderRadius: '50%', backgroundColor: !(correctAnswersInRow % 4 === 0) ? '#2e7d32' : '#cccccc' }} />
@@ -245,7 +263,7 @@ const SprintInner = () => {
 					</Box>
 				</Box>
 			)}
-			<Timer onTimeout={onTimeout} sx={{ position: 'absolute', width: 100, top: 200, right: 0 }} />
+			<Timer onTimeout={onTimeout} sx={{ position: 'absolute', width: 100, top: 30, left: 30 }} />
 			<GameResultDialog isOpen={status === 'game-over'} incorrectWords={incorrectWords} correctWords={correctWords} />
 		</Container>
 	)
