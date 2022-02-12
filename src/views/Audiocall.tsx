@@ -102,7 +102,9 @@ function Audiocall() {
 
 		// TODO: update completed pages after game
 		if (isLoggedIn) {
+			// set to store
 			await dispatch(updateCompletedPagesAfterGame({ correctWords, incorrectWords }))
+			// send to server
 			dispatch(sendUpdatedStatistic())
 		}
 	}
