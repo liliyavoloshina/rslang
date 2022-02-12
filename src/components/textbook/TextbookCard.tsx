@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 import BookmarkAddedIcon from '@mui/icons-material/BookmarkAdded'
 import DiamondIcon from '@mui/icons-material/Diamond'
 import VolumeUpIcon from '@mui/icons-material/VolumeUp'
@@ -27,6 +29,8 @@ interface TextbookCardProps {
 }
 
 export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: TextbookCardProps) {
+	const { t } = useTranslation()
+
 	const dispatch = useAppDispatch()
 
 	const group = useAppSelector(selectTextbookGroup)
@@ -114,12 +118,12 @@ export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: Te
 
 					{isLoggedIn && (
 						<Stack>
-							<Tooltip title={isLearned ? '' : 'Add to learned'} placement="top">
+							<Tooltip title={isLearned ? '' : t('TEXTBOOK.ADD_TO_LEARNED')} placement="top">
 								<IconButton sx={{ color: learnedBtnColor }} onClick={addToLearned} disabled={isLearned}>
 									<BookmarkAddedIcon />
 								</IconButton>
 							</Tooltip>
-							<Tooltip title={isDifficultDisable ? '' : isDifficult ? 'Remove from difficult' : 'Add to difficult'}>
+							<Tooltip title={isDifficultDisable ? '' : t(isDifficult ? 'TEXTBOOK.REMOVED_FROM_DIFFICULT' : 'TEXTBOOK.ADD_TO_DIFFICULT')}>
 								<IconButton sx={{ color: difficultBtnColor }} onClick={toggleWordDifficulty} disabled={isDifficultDisable}>
 									<DiamondIcon />
 								</IconButton>
@@ -132,15 +136,15 @@ export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: Te
 					<Stack flexDirection="row" justifyContent="space-between">
 						<Box>
 							<Typography variant="subtitle2" color={(theme: Theme) => theme.text.success}>
-								Правильных ответов: {userWord?.optional?.correctAnswers ? userWord?.optional?.correctAnswers : 0}
+								{t('TEXTBOOK.CORRECT_ANSWER_COUNT', { count: (userWord?.optional?.correctAnswers as number | undefined) ?? 0 })}
 							</Typography>
 							<Typography variant="subtitle2" color={(theme: Theme) => theme.text.danger}>
-								Неправильных ответов: {userWord?.optional?.incorrectAnswers ? userWord?.optional?.incorrectAnswers : 0}
+								{t('TEXTBOOK.INCORRECT_ANSWER_COUNT', { count: (userWord?.optional?.incorrectAnswers as number | undefined) ?? 0 })}
 							</Typography>
 						</Box>
 						<Stack flexDirection="row" columnGap="10px">
-							<Chip sx={{ display: isLearned ? 'flex' : 'none', backgroundColor: learnedBtnColor, color: '#fff' }} label="Learned" />
-							<Chip sx={{ display: isDifficult ? 'flex' : 'none', backgroundColor: difficultBtnColor, color: '#fff' }} label="Difficult" />
+							<Chip sx={{ display: isLearned ? 'flex' : 'none', backgroundColor: learnedBtnColor, color: '#fff' }} label={t('TEXTBOOK.LEARNED')} />
+							<Chip sx={{ display: isDifficult ? 'flex' : 'none', backgroundColor: difficultBtnColor, color: '#fff' }} label={t('TEXTBOOK.DIFFICULT')} />
 						</Stack>
 					</Stack>
 				)}

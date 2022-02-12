@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useLocation, useMatch, useNavigate } from 'react-router-dom'
 
 import { VolumeUp } from '@mui/icons-material'
@@ -10,8 +11,7 @@ import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 
 import { useAppDispatch, useAppSelector } from '~/app/hooks'
-import LevelSelection from '~/components/game/LevelSelection'
-import Popup from '~/components/layout/Popup'
+import { GameResultDialog, LevelSelection } from '~/components/game'
 import { Path } from '~/components/router'
 import {
 	checkAnswer,
@@ -28,7 +28,6 @@ import {
 	showNextWord,
 	toggleAudiocallAudio,
 } from '~/features/audiocall'
-import { GameName } from '~/types/game'
 import { DOMAIN_URL, PAGES_PER_GROUP } from '~/utils/constants'
 
 interface LocationState {
@@ -36,6 +35,8 @@ interface LocationState {
 }
 
 function Audiocall() {
+	const { t } = useTranslation()
+
 	const location = useLocation()
 	const dispatch = useAppDispatch()
 	const navigate = useNavigate()
@@ -61,22 +62,25 @@ function Audiocall() {
 		navigate(Path.AUDIOCALL)
 	}
 
-	const handleKeyDown = (event: KeyboardEvent) => {
-		event.preventDefault()
-		const { key } = event
+	const handleKeyDown = useCallback(
+		(event: KeyboardEvent) => {
+			event.preventDefault()
+			const { key } = event
 
-		if (key === '') {
-			dispatch(toggleAudiocallAudio())
-		} else if (['1', '2', '3', '4', '5'].includes(key)) {
-			dispatch(checkAnswer({ answer: key, isKeyboard: true }))
-		} else if (key === 'Enter') {
-			dispatch(showNextWord())
-		}
-	}
+			if (key === '') {
+				dispatch(toggleAudiocallAudio())
+			} else if (['1', '2', '3', '4', '5'].includes(key)) {
+				dispatch(checkAnswer({ answer: key, isKeyboard: true }))
+			} else if (key === 'Enter') {
+				dispatch(showNextWord())
+			}
+		},
+		[dispatch]
+	)
 
-	const fetchWords = async () => {
-		await dispatch(fetchAudiocallWords({ group, page: page ?? Math.floor(Math.random() * PAGES_PER_GROUP), isFromTextbook }))
-	}
+	const fetchWords = useCallback(() => {
+		return dispatch(fetchAudiocallWords({ group, page: page ?? Math.floor(Math.random() * PAGES_PER_GROUP), isFromTextbook }))
+	}, [dispatch, group, isFromTextbook, page])
 
 	useEffect(() => {
 		dispatch(resetGame())
@@ -87,14 +91,14 @@ function Audiocall() {
 		return () => {
 			window.removeEventListener('keydown', handleKeyDown)
 		}
-	}, [])
+	}, [dispatch, fetchWords, handleKeyDown])
 
 	if (isLevelSelection) {
-		return <LevelSelection gameName={GameName.Audiocall} />
+		return <LevelSelection title={t('AUDIOCALL.TITLE')} description={t('AUDIOCALL.DESCRIPTION')} />
 	}
 
 	if (status !== 'success') {
-		return <div>loading...</div>
+		return <div>{t('COMMON.LOADING')}</div>
 	}
 
 	return (
@@ -109,7 +113,7 @@ function Audiocall() {
 						<VolumeUp fontSize="inherit" />
 					</IconButton>
 					<Typography variant="subtitle1" sx={{ fontWeight: '700' }}>
-						{currentWord!.word}
+						{currentWord?.word ?? ''}
 					</Typography>
 				</Box>
 
@@ -170,11 +174,11 @@ function Audiocall() {
 				</Grid>
 
 				<Button onClick={() => dispatch(showNextWord())} tabIndex={0} variant="contained" color="secondary" fullWidth>
-					{answeredWord ? 'Next' : 'Skip'}
+					{t(answeredWord ? 'AUDIOCALL.NEXT' : 'AUDIOCALL.SKIP')}
 				</Button>
 			</Box>
 
-			<Popup isOpen={isFinished} correctWords={correctWords} incorrectWords={incorrectWords} />
+			<GameResultDialog isOpen={isFinished} correctWords={correctWords} incorrectWords={incorrectWords} />
 		</Container>
 	)
 }

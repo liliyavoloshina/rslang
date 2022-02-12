@@ -5,6 +5,7 @@ import { BrowserRouter } from 'react-router-dom'
 
 import App from './App'
 import './app/setupAxios'
+import './app/setupI18n'
 import { store } from './app/store'
 import './index.css'
 

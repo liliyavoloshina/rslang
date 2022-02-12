@@ -1,16 +1,18 @@
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
-import LevelSelection from '~/components/game/LevelSelection'
+import { LevelSelection } from '~/components/game'
 import { Path } from '~/components/router'
-import { GameName } from '~/types/game'
 
 // TODO: maybe somehow combine that with sprintlevelselection component?
 function AudiocallLevelSelect() {
+	const { t } = useTranslation()
+
 	const navigate = useNavigate()
 
 	const onLevelSelected = (group: number) => navigate(`${Path.AUDIOCALL}/${group}`)
 
-	return <LevelSelection gameName={GameName.Audiocall} onLevelSelected={onLevelSelected} />
+	return <LevelSelection title={t('AUDIOCALL.TITLE')} description={t('AUDIOCALL.DESCRIPTION')} onLevelSelected={onLevelSelected} />
 }
 
 export default AudiocallLevelSelect

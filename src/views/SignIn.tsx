@@ -1,4 +1,5 @@
 import { ChangeEvent, SyntheticEvent, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link as RouterLink, useNavigate } from 'react-router-dom'
 
 import Alert from '@mui/lab/Alert'
@@ -16,6 +17,8 @@ import { clearError, selectAuthIsLoggedIn, selectAuthLoading, selectAuthSignInEr
 import { validateEmail } from '~/utils/helpers'
 
 function SignIn() {
+	const { t } = useTranslation()
+
 	const navigate = useNavigate()
 	const dispatch = useAppDispatch()
 	const loading = useAppSelector(selectAuthLoading)
@@ -30,14 +33,14 @@ function SignIn() {
 	useEffect(() => {
 		if (!emailData) return
 
-		setEmailError(validateEmail(emailData) ? '' : 'Invalid E-mail!')
-	}, [emailData])
+		setEmailError(validateEmail(emailData) ? '' : t('AUTH.INVALID_EMAIL'))
+	}, [emailData, t])
 
 	useEffect(() => {
 		if (!passwordData) return
 
-		setPasswordError(passwordData.length < 7 ? 'Password is too short!' : '')
-	}, [passwordData])
+		setPasswordError(passwordData.length < 7 ? t('AUTH.SHORT_PASSWORD') : '')
+	}, [passwordData, t])
 
 	useEffect(() => {
 		dispatch(clearError())
@@ -47,8 +50,8 @@ function SignIn() {
 		e.preventDefault()
 
 		if (!passwordData || !emailData) {
-			setEmailError('Invalid E-mail!')
-			setPasswordError('Password is too short!')
+			setEmailError(t('AUTH.INVALID_EMAIL'))
+			setPasswordError(t('AUTH.SHORT_PASSWORD'))
 		}
 
 		dispatch(signIn({ email: emailData, password: passwordData }))
@@ -58,7 +61,7 @@ function SignIn() {
 	// eslint-disable-next-line consistent-return
 	useEffect(() => {
 		if (isLoggedIn) {
-			return navigate(Path.HOME)
+			navigate(Path.HOME)
 		}
 	}, [navigate, isLoggedIn])
 
@@ -66,7 +69,7 @@ function SignIn() {
 		<Stack alignItems="center" justifyContent="center" sx={{ height: '100%' }}>
 			<Box component="form" onSubmit={handleSubmit}>
 				<Typography variant="h3" gutterBottom>
-					Sign In
+					{t('AUTH.SIGN_IN')}
 				</Typography>
 				{signInError && (
 					<Alert severity="error" sx={{ my: 2 }}>
@@ -74,23 +77,31 @@ function SignIn() {
 					</Alert>
 				)}
 				<FormControl fullWidth sx={{ my: 1 }}>
-					<TextField value={emailData} onChange={(e: ChangeEvent<HTMLInputElement>) => setEmailData(e.target.value)} label="Email" error={!!emailError} helperText={emailError} />
+					<TextField
+						value={emailData}
+						onChange={(e: ChangeEvent<HTMLInputElement>) => setEmailData(e.target.value)}
+						label={t('AUTH.EMAIL')}
+						name="email"
+						error={!!emailError}
+						helperText={emailError}
+					/>
 				</FormControl>
 				<FormControl fullWidth sx={{ my: 1 }}>
 					<TextField
 						value={passwordData}
 						onChange={(e: ChangeEvent<HTMLInputElement>) => setPasswordData(e.target.value)}
-						label="Password"
+						label={t('AUTH.PASSWORD')}
 						type="password"
+						name="password"
 						error={!!passwordError}
 						helperText={passwordError}
 					/>
 				</FormControl>
-				<LoadingButton fullWidth type="submit" disabled={!!passwordError || !!emailError} loading={loading} loadingIndicator="Loading..." variant="outlined">
-					Sign In
+				<LoadingButton fullWidth type="submit" disabled={!!passwordError || !!emailError} loading={loading} loadingIndicator={t('COMMON.LOADING')} variant="outlined">
+					{t('AUTH.SIGN_IN')}
 				</LoadingButton>
-				<Button sx={{ my: 1 }} fullWidth variant="text" component={RouterLink} to="/signup">
-					Don&#39;t have an account?
+				<Button sx={{ my: 1 }} fullWidth variant="text" component={RouterLink} to={Path.SIGN_UP}>
+					{t('AUTH.SIGN_UP_PROMPT')}
 				</Button>
 			</Box>
 		</Stack>
