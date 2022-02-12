@@ -124,9 +124,9 @@ export const finishAudiocall = createAsyncThunk('audiocall/finishAudiocall', asy
 	}
 
 	// update short game statistsic if logged in
-	if (userId) {
-		await updateGameStatistic(userId, GameName.Audiocall, newStatistic)
-	}
+	// if (userId) {
+	// 	await updateGameStatistic(userId, GameName.Audiocall, newStatistic)
+	// }
 })
 
 const getRandomAnswers = (correctAnswer: string, answers: string[]) => {
