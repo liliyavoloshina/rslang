@@ -6,8 +6,6 @@ import { getAllWords, getNotLearnedWord } from '~/utils/api'
 import { DOMAIN_URL, MAX_AUDIOCALL_ANSWERS_AMOUNT, WORD_PER_PAGE_AMOUNT } from '~/utils/constants'
 import { shuffleArray } from '~/utils/helpers'
 
-import { updateWordStatistic } from '../statistic'
-
 export interface AudiocallState {
 	words: Word[]
 	answers: string[]

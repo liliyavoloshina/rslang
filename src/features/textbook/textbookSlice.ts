@@ -16,9 +16,6 @@ import {
 } from '~/utils/api'
 import { WORD_PER_PAGE_AMOUNT } from '~/utils/constants'
 import { localStorageSetPagination } from '~/utils/localStorage'
-import { updateShortLearnedAmount } from '~/utils/statistic'
-
-import { updateWordStatistic } from '../statistic/statisticSlice'
 
 export interface TextbookState {
 	words: Word[]
@@ -93,69 +90,6 @@ export const fetchDifficultWords = createAsyncThunk<Word[], void, { state: RootS
 	// TODO: refactor duplicated code
 	// eslint-disable-next-line no-underscore-dangle
 	return response[0].paginatedResults.map(word => ({ ...word, id: word._id! }))
-})
-
-export const changeWordDifficulty = createAsyncThunk('textbook/changeWordDifficulty', async (arg: { word: Word; difficulty: WordDifficulty }, { getState }) => {
-	const state = getState() as RootState
-	const { userInfo } = state.auth
-
-	if (!userInfo) {
-		throw new Error('Not permitted')
-	}
-
-	const { word, difficulty } = arg
-	const { userId } = userInfo
-	const wordId = word.id
-
-	await updateWordStatistic(userId, word, { difficulty })
-
-	return { wordId, difficulty, isPageCompleted: false }
-})
-
-export const addWordToLearned = createAsyncThunk('textbook/addWordToLearned', async (word: Word, { getState }) => {
-	const state = getState() as RootState
-	const { userInfo } = state.auth
-
-	if (!userInfo) {
-		throw new Error('Not permitted')
-	}
-
-	const { userId } = userInfo
-	const { id: wordId } = word
-
-	try {
-		await addWordToLearned(userId, wordId, wordLearnedStatus, true)
-	} catch (e) {
-		await addWordToLearned(userId, wordId, wordLearnedStatus, false)
-	}
-
-	let isPageCompleted = false
-
-	if (wordLearnedStatus) {
-		isPageCompleted = await updateCompletedPages(words, group, page, userId)
-		await removeWordFromDifficult(userId, wordId, WordDifficulty.Normal)
-	}
-
-	await updateWordStatistic(userId, word, fieldToUpdate)
-
-	return { wordId }
-})
-
-export const createNewStatistic = createAsyncThunk('textbook/createNewStatistic', async (arg, { getState }) => {
-	const state = getState() as RootState
-	const { userInfo } = state.auth
-	if (!userInfo) {
-		throw new Error('Not permitted')
-	}
-
-	const newStatistic = {
-		learnedWords: 0,
-		optional: {
-			completedPages: { 0: { 0: false } },
-		},
-	}
-
-	await setNewStatistic(userInfo.userId, newStatistic)
 })
 
 export const textbookSlice = createSlice({

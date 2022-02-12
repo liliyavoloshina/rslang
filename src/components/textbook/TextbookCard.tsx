@@ -82,13 +82,16 @@ export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: Te
 		await dispatch(updateWordStatistic({ wordToUpdate: passedWord, newFields: { difficulty } }))
 		// update ui
 		dispatch(changeWordDifficulty({ passedWord, difficulty }))
+
 		dispatch(updateCompletedPages({ page, group }))
 	}
 
 	const addToLearned = async () => {
 		// update word stat
 		await dispatch(updateWordStatistic({ wordToUpdate: passedWord, newFields: { isLearned: true } }))
+		// update ui
 		dispatch(changeWordLearnedStatus(passedWord.id))
+
 		dispatch(updateCompletedPages({ page, group }))
 	}
 
