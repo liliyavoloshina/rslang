@@ -76,16 +76,15 @@ export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: Te
 		}
 	}
 
-	const toggleWordDifficulty = () => {
+	const toggleWordDifficulty = async () => {
 		const difficulty = userWord?.difficulty === WordDifficulty.Difficult ? WordDifficulty.Normal : WordDifficulty.Difficult
 
-		dispatch(changeWordDifficulty({ word: passedWord, difficulty }))
-
+		await dispatch(changeWordDifficulty({ word: passedWord, difficulty }))
 		dispatch(updateCompletedPages({ page, group }))
 	}
 
-	const addToLearned = () => {
-		dispatch(addWordToLearned(passedWord))
+	const addToLearned = async () => {
+		await dispatch(addWordToLearned(passedWord))
 		dispatch(updateCompletedPages({ page, group }))
 	}
 

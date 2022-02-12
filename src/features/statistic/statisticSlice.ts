@@ -74,25 +74,17 @@ export const fetchUserStatistic = createAsyncThunk<UserStatistic, void, { state:
 })
 
 const transformOptionalStatistic = (currentStatistic: UserStatistic, group: number, page: number, isPageCompleted: boolean) => {
-	const newGroupField = {
-		...currentStatistic.optional.completedPages[group],
-	}
+	const newGroupField = JSON.parse(JSON.stringify({ ...currentStatistic.optional.completedPages[group] }))
 	newGroupField[page] = isPageCompleted
 
 	const updatedOptional = JSON.parse(JSON.stringify(currentStatistic.optional))
 
 	updatedOptional.completedPages[group] = newGroupField
 
+	console.log(updatedOptional, 'updatedOptional')
+
 	return updatedOptional
 }
-
-export const sendUpdatedStatistic = createAsyncThunk('textbook/sendUpdatedStatistic', async (arg, { getState }) => {
-	const state = getState() as RootState
-	const statisticToSend = state.statistic
-	const { userId } = state.auth.userInfo!
-
-	await apiClient.setNewStatistic(userId, statisticToSend)
-})
 
 const transformExistingCompletedPages = (completedPages: CompletedPages, group: number, page: number, isPageCompleted: boolean) => {
 	const newGroupField = JSON.parse(JSON.stringify({ ...completedPages[group] }))
@@ -104,6 +96,14 @@ const transformExistingCompletedPages = (completedPages: CompletedPages, group: 
 
 	return updatedCompleted
 }
+
+export const sendUpdatedStatistic = createAsyncThunk('textbook/sendUpdatedStatistic', async (arg, { getState }) => {
+	const state = getState() as RootState
+	const statisticToSend = state.statistic
+	const { userId } = state.auth.userInfo!
+
+	await apiClient.setNewStatistic(userId, statisticToSend)
+})
 
 // updates completed pages after game
 export const updateCompletedPagesAfterGame = createAsyncThunk<{ updatedCompletedPages: CompletedPages }, { correctWords: Word[]; incorrectWords: Word[] }, { state: RootState }>(
@@ -180,7 +180,7 @@ export const updateCompletedPages = createAsyncThunk<{ isPageCompleted: boolean;
 		let isPageCompleted = false
 
 		const learnedOrDifficultWord = words.filter(word => word.userWord?.difficulty === WordDifficulty.Difficult || !!word.userWord?.optional?.isLearned)
-		isPageCompleted = learnedOrDifficultWord.length + 1 === WORD_PER_PAGE_AMOUNT
+		isPageCompleted = learnedOrDifficultWord.length === WORD_PER_PAGE_AMOUNT
 
 		const updatedOptional = transformOptionalStatistic(currentStatistic, group, page, isPageCompleted)
 
