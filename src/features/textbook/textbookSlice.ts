@@ -63,10 +63,8 @@ export const fetchTextbookWords = createAsyncThunk<Word[], void, { state: RootSt
 	if (userInfo) {
 		const response = await getUserWords(userInfo.userId, group, page)
 
-		// TODO: check if this map function is really needed here
 		// eslint-disable-next-line no-underscore-dangle
 		const modified = response[0].paginatedResults.map(word => ({ ...word, id: word._id! }))
-		console.log(modified, 'modified')
 		return modified
 	}
 

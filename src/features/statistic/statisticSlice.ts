@@ -3,14 +3,15 @@
 /* eslint-disable guard-for-in */
 
 /* eslint-disable no-restricted-syntax */
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 
 import { RootState } from '~/app/store'
 import { GameName } from '~/types/game'
-import { CompletedPages, UserStatistic, WordFieldsToUpdate } from '~/types/statistic'
+import { CompletedPages, ShortStatGame, UserStatistic, WordFieldsToUpdate } from '~/types/statistic'
 import { UserWord, Word, WordDifficulty } from '~/types/word'
 import apiClient from '~/utils/api'
 import { CORRECT_ANSWERS_TO_LEARN_DIFFICULT, CORRECT_ANSWERS_TO_LEARN_NORMAL, WORD_PER_PAGE_AMOUNT } from '~/utils/constants'
+import { isTheSameDay } from '~/utils/helpers'
 
 const initialState: UserStatistic = {
 	learnedWords: 0,
@@ -81,8 +82,6 @@ const transformOptionalStatistic = (currentStatistic: UserStatistic, group: numb
 
 	updatedOptional.completedPages[group] = newGroupField
 
-	console.log(updatedOptional, 'updatedOptional')
-
 	return updatedOptional
 }
 
@@ -97,6 +96,7 @@ const transformExistingCompletedPages = (completedPages: CompletedPages, group: 
 	return updatedCompleted
 }
 
+// send updated statistic to the server
 export const sendUpdatedStatistic = createAsyncThunk('textbook/sendUpdatedStatistic', async (arg, { getState }) => {
 	const state = getState() as RootState
 	const statisticToSend = state.statistic
@@ -295,7 +295,26 @@ export const createNewStatistic = createAsyncThunk('textbook/createNewStatistic'
 export const statisticSlice = createSlice({
 	name: 'statistic',
 	initialState,
-	reducers: {},
+	reducers: {
+		updateGameStatistic: (state, action: PayloadAction<{ gameName: GameName; newStatistic: ShortStatGame }>) => {
+			const { gameName, newStatistic } = action.payload
+			const existingStatistic = state.optional.shortStat
+			const oldDate = new Date(existingStatistic.date)
+			const curDate = new Date()
+
+			if (isTheSameDay(oldDate, curDate)) {
+				existingStatistic.games[gameName].newWords += newStatistic.newWords
+				existingStatistic.games[gameName].correctWordsPercent.push(...newStatistic.correctWordsPercent)
+
+				if (existingStatistic.games[gameName].longestSeries < newStatistic.longestSeries) {
+					existingStatistic.games[gameName].longestSeries = newStatistic.longestSeries
+				}
+			} else {
+				existingStatistic.date = curDate.getTime()
+				existingStatistic.games[gameName] = newStatistic
+			}
+		},
+	},
 	extraReducers: builder => {
 		builder
 			.addCase(updateCompletedPagesAfterGame.fulfilled, (state, action) => {
@@ -318,4 +337,5 @@ export const statisticSlice = createSlice({
 	},
 })
 
+export const { updateGameStatistic } = statisticSlice.actions
 export default statisticSlice.reducer

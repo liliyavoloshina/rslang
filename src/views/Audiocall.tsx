@@ -25,12 +25,14 @@ import {
 	selectAudiocallIncorrectAnswers,
 	selectAudiocallIsFinished,
 	selectAudiocallIsLevelSelection,
+	selectAudiocallLongestSeries,
 	selectAudiocallStatus,
+	selectAudiocallWords,
 	showNextWord,
 	toggleAudiocallAudio,
 } from '~/features/audiocall'
 import { selectAuthIsLoggedIn } from '~/features/auth'
-import { sendUpdatedStatistic, updateCompletedPagesAfterGame } from '~/features/statistic'
+import { sendUpdatedStatistic, updateCompletedPagesAfterGame, updateGameStatistic } from '~/features/statistic'
 import { DOMAIN_URL, PAGES_PER_GROUP } from '~/utils/constants'
 
 interface LocationState {
@@ -53,6 +55,8 @@ function Audiocall() {
 	const correctWords = useAppSelector(selectAudiocallCorrectAnswers)
 	const answeredWord = useAppSelector(selectAudiocallAnsweredWord)
 	const isLoggedIn = useAppSelector(selectAuthIsLoggedIn)
+	const audiocallWords = useAppSelector(selectAudiocallWords)
+	const bestSeries = useAppSelector(selectAudiocallLongestSeries)
 
 	const groupMatch = useMatch(Path.AUDIOCALL_WITH_GROUP)
 	const pageMatch = useMatch(Path.AUDIOCALL_WITH_GROUP_AND_PAGE)
@@ -97,14 +101,32 @@ function Audiocall() {
 		}
 	}, [dispatch, fetchWords, handleKeyDown])
 
+	const getAudiocallGameStatistic = () => {
+		const newWords = audiocallWords.filter(word => !word.userWord?.optional).length
+		const correctWordsPercent = (correctWords.length / audiocallWords.length) * 100
+		const longestSeries = Math.max(...bestSeries.correctAnswers)
+
+		const newStatistic = {
+			newWords,
+			correctWordsPercent: [correctWordsPercent],
+			longestSeries,
+		}
+
+		return newStatistic
+	}
+
 	const finish = async () => {
 		await dispatch(finishAudiocall())
 
-		// TODO: update completed pages after game
 		if (isLoggedIn) {
-			// set to store
+			// set to completed page field store
 			await dispatch(updateCompletedPagesAfterGame({ correctWords, incorrectWords }))
-			// send to server
+
+			// caluclate and set new game statistic
+			const gameStatistic = getAudiocallGameStatistic()
+			dispatch(updateGameStatistic({ gameName: GameName.Audiocall, newStatistic: gameStatistic }))
+
+			// send updated stat to the server
 			dispatch(sendUpdatedStatistic())
 		}
 	}
