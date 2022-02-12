@@ -57,7 +57,6 @@ function Textbook() {
 			dispatch(fetchTextbookWords())
 		}
 
-		// dispatch(getCompletedPages())
 		dispatch(fetchUserStatistic())
 	}, [dispatch])
 

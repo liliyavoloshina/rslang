@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 
 import { RootState } from '~/app/store'
 import { GameName } from '~/types/game'
+import { CompletedPages } from '~/types/statistic'
 import { Word } from '~/types/word'
 import { getAllWords, getNotLearnedWord } from '~/utils/api'
 import { DOMAIN_URL, MAX_AUDIOCALL_ANSWERS_AMOUNT, WORD_PER_PAGE_AMOUNT } from '~/utils/constants'
@@ -52,11 +53,14 @@ interface FetchWordsParams {
 	isFromTextbook: boolean
 }
 
-export const fetchAudiocallWords = createAsyncThunk<Word[], FetchWordsParams, { state: RootState }>(
+export const fetchAudiocallWords = createAsyncThunk<{ wordsForGame: Word[]; answers: string[] }, FetchWordsParams, { state: RootState }>(
 	'audiocall/fetchWords',
 	async ({ group, page, isFromTextbook }, { getState }) => {
 		const state = getState()
 		const { isLoggedIn, userInfo } = state.auth
+
+		let wordsForGame
+		let answers
 
 		// if there are possibly learned words
 		if (isFromTextbook && isLoggedIn && userInfo) {
@@ -65,13 +69,22 @@ export const fetchAudiocallWords = createAsyncThunk<Word[], FetchWordsParams, { 
 				const wordsFromPage = data[0].paginatedResults
 				words.unshift(...wordsFromPage)
 
-				if (words.length < WORD_PER_PAGE_AMOUNT && currentPage > 0) {
+				if (words.length < WORD_PER_PAGE_AMOUNT && currentPage !== 0) {
 					return addNotLearnedWordsFromPage(currentPage - 1, words)
 				}
 
-				return words.slice(0, WORD_PER_PAGE_AMOUNT)
+				const sliced = words.slice(0, WORD_PER_PAGE_AMOUNT)
+				return sliced
 			}
-			return addNotLearnedWordsFromPage(page, [])
+			wordsForGame = await addNotLearnedWordsFromPage(page, [])
+
+			// there maybe not enough answers if available words is less than 5
+			const allWords = await apiClient.getAllWords(group, page)
+			answers = allWords.map(word => word.wordTranslate)
+		} else {
+			const allWords = await apiClient.getAllWords(group, page)
+			wordsForGame = allWords
+			answers = allWords.map(word => word.wordTranslate)
 		}
 
 		return getAllWords(group, page)
@@ -98,8 +111,10 @@ export const finishAudiocall = createAsyncThunk('audiocall/finishAudiocall', asy
 		longestSeries,
 	}
 
-	// update short game statistsic
-	await updateGameStatistic(userId, GameName.Audiocall, newStatistic)
+	// update short game statistsic if logged in
+	if (userId) {
+		await updateGameStatistic(userId, GameName.Audiocall, newStatistic)
+	}
 })
 
 const getRandomAnswers = (correctAnswer: string, answers: string[]) => {
@@ -201,19 +216,22 @@ export const audiocallSlice = createSlice({
 			})
 			.addCase(fetchAudiocallWords.fulfilled, (state, action) => {
 				state.status = 'success'
-				state.words = action.payload
+				const { wordsForGame, answers } = action.payload
+				state.words = wordsForGame
 				const correctAnswer = state.words[state.currentIdx].wordTranslate
-				const onlyAnswers = state.words.map(word => word.wordTranslate)
-				const randomAnswers = getRandomAnswers(correctAnswer, onlyAnswers)
+
+				const randomAnswers = getRandomAnswers(correctAnswer, answers)
 				state.answers = randomAnswers
+
 				// eslint-disable-next-line prefer-destructuring
 				state.currentWord = state.words[0]
+
 				state.audioPath = `${DOMAIN_URL}/${state.currentWord!.audio}`
 				const newAudio = new Audio(state.audioPath)
 				newAudio.play()
 			})
 			.addCase(finishAudiocall.fulfilled, (state, action) => {
-				state.isFinished = false
+				// state.isFinished = false
 			})
 	},
 })
