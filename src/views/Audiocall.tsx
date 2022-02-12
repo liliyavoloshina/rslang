@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
+
+/* eslint-disable no-await-in-loop */
+
+/* eslint-disable no-restricted-syntax */
 import { useLocation, useMatch, useNavigate } from 'react-router-dom'
 
 import { VolumeUp } from '@mui/icons-material'
@@ -116,8 +120,18 @@ function Audiocall() {
 
 	const updateEveryWordStatistic = async () => {
 		// update word statistic
-		if (correctWords.length > 0) correctWords.forEach(word => dispatch(updateWordStatistic({ wordToUpdate: word, newFields: { correctAnswers: 1 } })))
-		if (incorrectWords.length > 0) incorrectWords.forEach(word => dispatch(updateWordStatistic({ wordToUpdate: word, newFields: { incorrectAnswers: 1 } })))
+
+		if (correctWords.length > 0) {
+			for (const word of correctWords) {
+				await dispatch(updateWordStatistic({ wordToUpdate: word, newFields: { correctAnswers: 1 } }))
+			}
+		}
+
+		if (incorrectWords.length > 0) {
+			for (const word of incorrectWords) {
+				await dispatch(updateWordStatistic({ wordToUpdate: word, newFields: { incorrectAnswers: 1 } }))
+			}
+		}
 	}
 
 	const finish = async () => {
