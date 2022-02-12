@@ -1,13 +1,14 @@
 import { useEffect, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { Box, Typography } from '@mui/material'
 
 import { useTimerContext } from './Timer.context'
 import { TimerProps } from './Timer.types'
 
-const NumberFormat = Intl.NumberFormat('ru-RU', { maximumFractionDigits: 2 })
-
 const Timer = ({ onTimeout, ...boxProps }: TimerProps) => {
+	const { t } = useTranslation()
+
 	const { status, duration } = useTimerContext()
 
 	const timeLeftRef = useRef<HTMLSpanElement>(null)
@@ -25,13 +26,14 @@ const Timer = ({ onTimeout, ...boxProps }: TimerProps) => {
 			intervalRef.current = setInterval(() => {
 				if (timeLeftRef.current) {
 					const timePassed = (new Date().getTime() - startTime) / 1000
-					timeLeftRef.current.textContent = `seconds left: ${NumberFormat.format(Math.max(duration! - timePassed, 0))}`
+					const timeLeft = Math.max(Math.floor(duration! - timePassed), 0)
+					timeLeftRef.current.textContent = t('TIMER.TIME_LEFT', { count: timeLeft })
 				}
-			}, 20)
+			}, 200)
 
 			return () => intervalRef.current && clearInterval(intervalRef.current)
 		}
-	}, [duration, status])
+	}, [duration, status, t])
 
 	useEffect(() => {
 		if (status === 'timeout') {

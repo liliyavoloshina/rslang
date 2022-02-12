@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
 import { useMatch, useNavigate } from 'react-router-dom'
 
@@ -10,7 +11,7 @@ import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 
 import { useAppSelector } from '~/app/hooks'
-import Popup from '~/components/layout/Popup'
+import { GameResultDialog } from '~/components/game'
 import { Path } from '~/components/router'
 import { Timer, TimerContextProvider, useTimerContext } from '~/components/timer'
 import { answer, gameTimeout, reset, selectSprintState, startGame } from '~/features/sprint'
@@ -93,6 +94,8 @@ const useSprintGame = () => {
 }
 
 const SprintInner = () => {
+	const { t } = useTranslation()
+
 	const { status, word, suggestedTranslation, selectOption, correctWords, incorrectWords, correctAnswersInRow, gameRound, onTimeout } = useSprintGame()
 
 	return (
@@ -132,16 +135,16 @@ const SprintInner = () => {
 					</Box>
 					<Box sx={{ display: 'flex', justifyContent: 'center', gap: 3, mt: 2 }}>
 						<IconButton color="error" size="large" onClick={() => selectOption(false)}>
-							<NoIcon /> No
+							<NoIcon /> {t('COMMON.BUTTON.NO')}
 						</IconButton>
 						<IconButton color="success" size="large" onClick={() => selectOption(true)}>
-							<YesIcon /> Yes
+							<YesIcon /> {t('COMMON.BUTTON.YES')}
 						</IconButton>
 					</Box>
 				</Box>
 			)}
 			<Timer onTimeout={onTimeout} sx={{ position: 'absolute', width: 100, top: 200, right: 0 }} />
-			<Popup isOpen={status === 'game-over'} incorrectWords={incorrectWords} correctWords={correctWords} />
+			<GameResultDialog isOpen={status === 'game-over'} incorrectWords={incorrectWords} correctWords={correctWords} />
 		</Container>
 	)
 }

@@ -1,37 +1,37 @@
+import { TFuncKey, useTranslation } from 'react-i18next'
+
 import { Card, CardContent, CardMedia, Container, Grid, Typography } from '@mui/material'
 
 import AdvantageCard from '~/components/home/AdvantageCard'
 
-const advantages = [
-	{ title: 'Mini-games', desc: 'Games make learning fun', icon: 'game' },
-	{ title: 'Textbook', desc: 'Dictionary stores all the words you need', icon: 'book' },
-	{ title: 'Сhoose your words', desc: 'Сhoose words to study or mark as studied', icon: 'school' },
-	{ title: 'Learning Progress', desc: 'Track your progress', icon: 'progress' },
-	{ title: 'Learning Progress', desc: 'Track your progress', icon: 'progress' },
-	{ title: 'Learning Progress', desc: 'Track your progress', icon: 'progress' },
+const advantages: { title: TFuncKey; desc: TFuncKey; icon: string }[] = [
+	{ title: 'HOME.ADVANTAGES.MINI_GAMES', desc: 'HOME.ADVANTAGES.MINI_GAMES_DESC', icon: 'game' },
+	{ title: 'HOME.ADVANTAGES.TEXTBOOX', desc: 'HOME.ADVANTAGES.TEXTBOOX_DESC', icon: 'book' },
+	{ title: 'HOME.ADVANTAGES.CHOOSE_WORDS', desc: 'HOME.ADVANTAGES.CHOOSE_WORDS_DESC', icon: 'school' },
+	{ title: 'HOME.ADVANTAGES.LEARNING_PROGRESS', desc: 'HOME.ADVANTAGES.LEARNING_PROGRESS_DESC', icon: 'progress' },
+	{ title: 'HOME.ADVANTAGES.LEARNING_PROGRESS', desc: 'HOME.ADVANTAGES.LEARNING_PROGRESS_DESC', icon: 'progress' },
+	{ title: 'HOME.ADVANTAGES.LEARNING_PROGRESS', desc: 'HOME.ADVANTAGES.LEARNING_PROGRESS_DESC', icon: 'progress' },
 ]
 
 export default function Home() {
+	const { t } = useTranslation()
 	return (
 		<Container maxWidth="lg">
 			<Typography variant="h2" sx={{ mt: 3, mb: 3, textAlign: 'center' }}>
-				RS Lang
+				{t('HOME.TITLE')}
 			</Typography>
 			<Typography variant="body1" gutterBottom sx={{ mb: 5, textAlign: 'center' }}>
-				body1. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos blanditiis tenetur unde suscipit, quam beatae rerum inventore consectetur, neque doloribus, cupiditate
-				numquam dignissimos laborum fugiat deleniti? Eum quasi quidem quibusdam.
+				{t('HOME.DESCRIPTION')}
 			</Typography>
 			<Grid container spacing={2}>
-				{advantages.map((advantage, idx) => {
-					return (
-						<Grid item xs={4} key={idx}>
-							<AdvantageCard {...advantage} />
-						</Grid>
-					)
-				})}
+				{advantages.map(({ title, desc, icon }, idx) => (
+					<Grid item xs={4} key={idx}>
+						<AdvantageCard title={t(title) as string} desc={t(desc) as string} icon={icon} />
+					</Grid>
+				))}
 			</Grid>
 			<Typography variant="h4" sx={{ mt: 3, mb: 3, textAlign: 'center' }}>
-				Developer
+				{t('HOME.DEVELOPER')}
 			</Typography>
 			<Card sx={{ maxWidth: 345 }}>
 				<CardMedia
@@ -42,10 +42,10 @@ export default function Home() {
 				/>
 				<CardContent>
 					<Typography gutterBottom variant="h5" component="div">
-						Lizard
+						{t('HOME.FIRST_DEVELOPER.NICKNAME')}
 					</Typography>
 					<Typography variant="body2" color="text.secondary">
-						Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging across all continents except Antarctica
+						{t('HOME.FIRST_DEVELOPER.DESCRIPTION')}
 					</Typography>
 				</CardContent>
 			</Card>

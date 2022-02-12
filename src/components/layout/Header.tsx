@@ -1,4 +1,5 @@
 import { MouseEvent, useState } from 'react'
+import { TFuncKey, useTranslation } from 'react-i18next'
 import { Link, NavigateOptions, useNavigate } from 'react-router-dom'
 
 import MenuIcon from '@mui/icons-material/Menu'
@@ -16,47 +17,50 @@ import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 
 import { useAppSelector } from '~/app/hooks'
+import { LanguageMenu } from '~/components/LanguageMenu'
 import { Path } from '~/components/router'
 import { selectAuthUserInfo } from '~/features/auth'
 
-const PAGES: { name: string; path: Path }[] = [
+const PAGES: { name: TFuncKey; path: Path }[] = [
 	{
-		name: 'Home',
+		name: 'HEADER.HOME',
 		path: Path.HOME,
 	},
 	{
-		name: 'Textbook',
+		name: 'HEADER.TEXTBOOK',
 		path: Path.TEXTBOOK,
 	},
 	{
-		name: 'Statistic',
+		name: 'HEADER.STATISTIC',
 		path: Path.STATISTIC,
 	},
 ]
 
-const GAMES: { name: string; path: Path }[] = [
+const GAMES: { name: TFuncKey; path: Path }[] = [
 	{
-		name: 'Sprint',
+		name: 'HEADER.GAME.SPRINT',
 		path: Path.SPRINT,
 	},
 	{
-		name: 'Audiocall',
+		name: 'HEADER.GAME.AUDIOCALL',
 		path: Path.AUDIOCALL,
 	},
 ]
 
-const SETTINGS: { name: string; path: Path }[] = [
+const SETTINGS: { name: TFuncKey; path: Path }[] = [
 	{
-		name: 'Sign Up',
+		name: 'AUTH.SIGN_UP',
 		path: Path.SIGN_UP,
 	},
 	{
-		name: 'Sign In',
+		name: 'AUTH.SIGN_IN',
 		path: Path.SIGN_IN,
 	},
 ]
 
 function Header() {
+	const { t } = useTranslation()
+
 	const navigate = useNavigate()
 
 	const userInfo = useAppSelector(selectAuthUserInfo)
@@ -101,7 +105,7 @@ function Header() {
 			<Container maxWidth="xl">
 				<Toolbar disableGutters>
 					<Typography variant="h6" noWrap component="div" sx={{ mr: 2, display: { xs: 'none', md: 'flex' } }}>
-						LOGO
+						{t('HEADER.LOGO')}
 					</Typography>
 
 					<Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
@@ -128,12 +132,12 @@ function Header() {
 						>
 							{PAGES.map(page => (
 								<MenuItem key={page.name} onClick={() => openPage(page.path)}>
-									<Typography textAlign="center">{page.name}</Typography>
+									<Typography textAlign="center">{t(page.name)}</Typography>
 								</MenuItem>
 							))}
 							{GAMES.map(page => (
 								<MenuItem key={page.name} onClick={() => openPage(page.path)}>
-									<Typography textAlign="center">{page.name}</Typography>
+									<Typography textAlign="center">{t(page.name)}</Typography>
 								</MenuItem>
 							))}
 						</Menu>
@@ -143,13 +147,13 @@ function Header() {
 					<Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
 						{PAGES.map(page => (
 							<Button component={Link} to={page.path} key={page.path} onClick={handleCloseNavMenu} sx={{ my: 2, color: 'white', display: 'block' }}>
-								{page.name}
+								{t(page.name)}
 							</Button>
 						))}
 
 						<Tooltip title="Open Games">
 							<Button onClick={handleOpenGamesMenu} sx={{ display: 'block', color: 'white' }}>
-								Games
+								{t('HEADER.GAMES')}
 							</Button>
 						</Tooltip>
 						<Menu
@@ -170,15 +174,17 @@ function Header() {
 						>
 							{GAMES.map(game => (
 								<MenuItem key={game.name} onClick={() => openPage(game.path, { state: { fromTextbook: false } })}>
-									<Typography textAlign="center">{game.name}</Typography>
+									<Typography textAlign="center">{t(game.name)}</Typography>
 								</MenuItem>
 							))}
 						</Menu>
 					</Box>
 
+					<LanguageMenu />
+
 					<Stack flexDirection="row" alignItems="center" sx={{ flexGrow: 0 }}>
-						{userInfo?.token && <Typography variant="h6">Hello, {userInfo.name}!</Typography>}
-						<Tooltip title="Open Account">
+						{userInfo?.token && <Typography variant="h6">{t('HEADER.WELCOME', { name: userInfo.name })}</Typography>}
+						<Tooltip title={t('HEADER.OPEN_ACCOUNT')}>
 							<IconButton onClick={handleOpenUserMenu} sx={{ color: 'white' }}>
 								<PersonIcon />
 							</IconButton>
@@ -200,11 +206,11 @@ function Header() {
 							onClose={handleCloseUserMenu}
 						>
 							{userInfo?.token ? (
-								<Button onClick={() => openPage(Path.LOGOFF)}>Sign Out</Button>
+								<Button onClick={() => openPage(Path.LOGOFF)}>{t('AUTH.SIGN_OUT')}</Button>
 							) : (
 								SETTINGS.map(setting => (
 									<MenuItem key={setting.name} onClick={() => openPage(setting.path)}>
-										<Typography textAlign="center">{setting.name}</Typography>
+										<Typography textAlign="center">{t(setting.name)}</Typography>
 									</MenuItem>
 								))
 							)}

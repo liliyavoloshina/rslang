@@ -1,4 +1,5 @@
 import { ChangeEvent, SyntheticEvent, useCallback, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link as RouterLink, useNavigate } from 'react-router-dom'
 
 import LoadingButton from '@mui/lab/LoadingButton'
@@ -17,6 +18,8 @@ import { createNewStatistic } from '~/features/textbook/textbookSlice'
 import { validateEmail } from '~/utils/helpers'
 
 function SignUp() {
+	const { t } = useTranslation()
+
 	const navigate = useNavigate()
 	const dispatch = useAppDispatch()
 	const loading = useAppSelector(selectAuthLoading)
@@ -34,20 +37,20 @@ function SignUp() {
 	useEffect(() => {
 		if (!nameData) return
 
-		setNameError(nameData.length < 2 ? 'Name is too short!' : '')
-	}, [nameData])
+		setNameError(nameData.length < 2 ? t('AUTH.NAME_TOO_SHORT') : '')
+	}, [nameData, t])
 
 	useEffect(() => {
 		if (!emailData) return
 
-		setEmailError(validateEmail(emailData) ? '' : 'Invalid E-mail!')
-	}, [emailData])
+		setEmailError(validateEmail(emailData) ? '' : t('AUTH.INVALID_EMAIL'))
+	}, [emailData, t])
 
 	useEffect(() => {
 		if (!passwordData) return
 
-		setPasswordError(passwordData.length < 7 ? 'Password is too short!' : '')
-	}, [passwordData])
+		setPasswordError(passwordData.length < 7 ? t('AUTH.SHORT_PASSWORD') : '')
+	}, [passwordData, t])
 
 	useEffect(() => {
 		dispatch(clearError())
@@ -57,9 +60,9 @@ function SignUp() {
 		e.preventDefault()
 
 		if (!nameData || !passwordData || !emailData) {
-			setNameError('Name is too short!')
-			setEmailError('Invalid E-mail!')
-			setPasswordError('Password is too short!')
+			setNameError(t('AUTH.NAME_TOO_SHORT'))
+			setEmailError(t('AUTH.INVALID_EMAIL'))
+			setPasswordError(t('AUTH.SHORT_PASSWORD'))
 		}
 
 		await dispatch(signUp({ name: nameData, email: emailData, password: passwordData }))
@@ -88,7 +91,7 @@ function SignUp() {
 		<Stack alignItems="center" justifyContent="center" sx={{ height: '100%' }}>
 			<Box component="form" onSubmit={handleSubmit}>
 				<Typography variant="h3" gutterBottom>
-					Sign Up
+					{t('AUTH.SIGN_UP')}
 				</Typography>
 				{signUpError && (
 					<Alert severity="error" sx={{ my: 2 }}>
@@ -96,26 +99,49 @@ function SignUp() {
 					</Alert>
 				)}
 				<FormControl fullWidth sx={{ my: 1 }}>
-					<TextField value={nameData} onChange={(e: ChangeEvent<HTMLInputElement>) => setNameData(e.target.value)} label="Name" error={!!nameError} helperText={nameError} />
+					<TextField
+						value={nameData}
+						onChange={(e: ChangeEvent<HTMLInputElement>) => setNameData(e.target.value)}
+						label={t('AUTH.NAME')}
+						name="name"
+						error={!!nameError}
+						helperText={nameError}
+					/>
 				</FormControl>
 				<FormControl fullWidth sx={{ my: 1 }}>
-					<TextField value={emailData} onChange={(e: ChangeEvent<HTMLInputElement>) => setEmailData(e.target.value)} label="Email" error={!!emailError} helperText={emailError} />
+					<TextField
+						value={emailData}
+						onChange={(e: ChangeEvent<HTMLInputElement>) => setEmailData(e.target.value)}
+						label={t('AUTH.EMAIL')}
+						name="email"
+						error={!!emailError}
+						helperText={emailError}
+					/>
 				</FormControl>
 				<FormControl fullWidth sx={{ my: 1 }}>
 					<TextField
 						value={passwordData}
 						onChange={(e: ChangeEvent<HTMLInputElement>) => setPasswordData(e.target.value)}
-						label="Password"
+						label={t('AUTH.PASSWORD')}
+						name="password"
 						type="password"
 						error={!!passwordError}
 						helperText={passwordError}
 					/>
 				</FormControl>
-				<LoadingButton sx={{ my: 1 }} fullWidth type="submit" disabled={!!passwordError || !!emailError} loading={loading} loadingIndicator="Loading..." variant="outlined">
-					Sign Up
+				<LoadingButton
+					sx={{ my: 1 }}
+					fullWidth
+					type="submit"
+					disabled={!!passwordError || !!emailError}
+					loading={loading}
+					loadingIndicator={t('COMMON.LOADING')}
+					variant="outlined"
+				>
+					{t('AUTH.SIGN_UP')}
 				</LoadingButton>
-				<Button sx={{ my: 1 }} fullWidth variant="text" component={RouterLink} to="/signin">
-					Already have an account?
+				<Button sx={{ my: 1 }} fullWidth variant="text" component={RouterLink} to={Path.SIGN_IN}>
+					{t('AUTH.SIGN_IN_PROMPT')}
 				</Button>
 			</Box>
 		</Stack>
