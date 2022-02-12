@@ -29,6 +29,8 @@ import {
 	showNextWord,
 	toggleAudiocallAudio,
 } from '~/features/audiocall'
+import { selectAuthIsLoggedIn } from '~/features/auth'
+import { updateComletedPagesAfterGame } from '~/features/statistic'
 import { DOMAIN_URL, PAGES_PER_GROUP } from '~/utils/constants'
 
 interface LocationState {
@@ -50,6 +52,7 @@ function Audiocall() {
 	const incorrectWords = useAppSelector(selectAudiocallIncorrectAnswers)
 	const correctWords = useAppSelector(selectAudiocallCorrectAnswers)
 	const answeredWord = useAppSelector(selectAudiocallAnsweredWord)
+	const isLoggedIn = useAppSelector(selectAuthIsLoggedIn)
 
 	const groupMatch = useMatch(Path.AUDIOCALL_WITH_GROUP)
 	const pageMatch = useMatch(Path.AUDIOCALL_WITH_GROUP_AND_PAGE)
@@ -94,11 +97,18 @@ function Audiocall() {
 		}
 	}, [dispatch, fetchWords, handleKeyDown])
 
+	const finish = async () => {
+		await dispatch(finishAudiocall())
+
+		// TODO: update completed pages after game
+		if (isLoggedIn) {
+			dispatch(updateComletedPagesAfterGame({ correctWords, incorrectWords }))
+		}
+	}
+
 	useEffect(() => {
 		if (isFinished) {
-			dispatch(finishAudiocall())
-			// TODO: update completed pages after game
-			// dispatch(updateComletedPagesAfterGame())
+			finish()
 		}
 	}, [isFinished])
 
@@ -163,6 +173,7 @@ function Audiocall() {
 					{answers.map(answer => (
 						<Grid key={answer} item>
 							<Button
+								disabled={isFinished}
 								onClick={() => dispatch(checkAnswer({ answer, isKeyboard: false }))}
 								variant="contained"
 								sx={{ pointerEvents: answeredWord ? 'none' : 'all' }}
