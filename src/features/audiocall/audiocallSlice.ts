@@ -69,18 +69,30 @@ export const fetchAudiocallWords = createAsyncThunk<{ wordsForGame: Word[]; answ
 				const wordsFromPage = data[0].paginatedResults
 				words.unshift(...wordsFromPage)
 
-				if (words.length < WORD_PER_PAGE_AMOUNT && currentPage !== 0) {
-					return addNotLearnedWordsFromPage(currentPage - 1, words)
-				}
+		if (userInfo && isLoggedIn) {
+			const allUserWordsResponse = await apiClient.getUserWords(userInfo.userId, group, page)
+			const allUserWords = allUserWordsResponse[0].paginatedResults
 
-				const sliced = words.slice(0, WORD_PER_PAGE_AMOUNT)
-				return sliced
+			if (isFromTextbook) {
+				const addNotLearnedWordsFromPage = async (currentPage: number, words: Word[]): Promise<Word[]> => {
+					const response = await apiClient.getNotLearnedWord(userInfo.userId, group, currentPage)
+					const wordsFromPage = response[0].paginatedResults
+					words.unshift(...wordsFromPage)
+
+					if (words.length < WORD_PER_PAGE_AMOUNT && currentPage !== 0) {
+						return addNotLearnedWordsFromPage(currentPage - 1, words)
+					}
+
+					const sliced = words.slice(0, WORD_PER_PAGE_AMOUNT)
+					return sliced
+				}
+				wordsForGame = await addNotLearnedWordsFromPage(page, [])
+			} else {
+				wordsForGame = allUserWords
 			}
-			wordsForGame = await addNotLearnedWordsFromPage(page, [])
 
 			// there maybe not enough answers if available words is less than 5
-			const allWords = await apiClient.getAllWords(group, page)
-			answers = allWords.map(word => word.wordTranslate)
+			answers = allUserWords.map(word => word.wordTranslate)
 		} else {
 			const allWords = await apiClient.getAllWords(group, page)
 			wordsForGame = allWords
