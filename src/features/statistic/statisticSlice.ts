@@ -73,7 +73,7 @@ export const fetchUserStatistic = createAsyncThunk<UserStatistic, void, { state:
 	return res
 })
 
-const transformCompletedPagesStatistic = (currentStatistic: UserStatistic, group: number, page: number, isPageCompleted: boolean) => {
+const transformOptionalStatistic = (currentStatistic: UserStatistic, group: number, page: number, isPageCompleted: boolean) => {
 	const newGroupField = {
 		...currentStatistic.optional.completedPages[group],
 	}
@@ -86,71 +86,89 @@ const transformCompletedPagesStatistic = (currentStatistic: UserStatistic, group
 	return updatedOptional
 }
 
-interface PageInfo {
-	group: string
-	page: string
+export const sendUpdatedStatistic = createAsyncThunk('textbook/sendUpdatedStatistic', async (arg, { getState }) => {
+	const state = getState() as RootState
+	const statisticToSend = state.statistic
+	const { userId } = state.auth.userInfo!
+
+	await apiClient.setNewStatistic(userId, statisticToSend)
+})
+
+const transformExistingCompletedPages = (completedPages: CompletedPages, group: number, page: number, isPageCompleted: boolean) => {
+	const newGroupField = JSON.parse(JSON.stringify({ ...completedPages[group] }))
+	newGroupField[page] = isPageCompleted
+
+	const updatedCompleted = JSON.parse(JSON.stringify(completedPages))
+
+	updatedCompleted[group] = newGroupField
+
+	return updatedCompleted
 }
 
-export const updateComletedPagesAfterGame = createAsyncThunk<
-	{ completedPages: PageInfo[]; notCompletedPages: PageInfo[] },
-	{ correctWords: Word[]; incorrectWords: Word[] },
-	{ state: RootState }
->('statistic/updateComletedPagesAfterGame', async ({ correctWords, incorrectWords }, { getState }) => {
-	const state = getState()
-	const { userInfo } = state.auth
-	const currentStatistic = state.statistic
-	const userId = userInfo!.userId as string
+// updates completed pages after game
+export const updateCompletedPagesAfterGame = createAsyncThunk<{ updatedCompletedPages: CompletedPages }, { correctWords: Word[]; incorrectWords: Word[] }, { state: RootState }>(
+	'statistic/updateCompletedPagesAfterGame',
+	async ({ correctWords, incorrectWords }, { getState }) => {
+		const state = getState()
+		const { userInfo } = state.auth
+		const currentStatistic = state.statistic
+		const userId = userInfo!.userId as string
 
-	// get all pages and keys value
-	const pagesAndGroupCorrect: any = {}
-	const pagesAndGroupIncorrect: any = {}
+		interface PagesAndGroups {
+			[key: number]: Set<number>
+		}
 
-	correctWords.forEach(word => {
-		pagesAndGroupCorrect[word.group] = pagesAndGroupCorrect[word.group] ? pagesAndGroupCorrect[word.group].add(word.page) : new Set().add(word.page)
-	})
+		// get all pages and keys value
+		const pagesAndGroupCorrect: PagesAndGroups = {}
+		const pagesAndGroupIncorrect: PagesAndGroups = {}
 
-	incorrectWords.forEach(word => {
-		pagesAndGroupIncorrect[word.group] = pagesAndGroupIncorrect[word.group] ? pagesAndGroupIncorrect[word.group].add(word.page) : new Set().add(word.page)
-	})
+		correctWords.forEach(word => {
+			pagesAndGroupCorrect[word.group] = pagesAndGroupCorrect[word.group] ? pagesAndGroupCorrect[word.group].add(word.page) : new Set<number>().add(word.page)
+		})
 
-	// track pages for the ui update
-	const completedPages: PageInfo[] = []
-	const notCompletedPages: PageInfo[] = []
+		incorrectWords.forEach(word => {
+			pagesAndGroupIncorrect[word.group] = pagesAndGroupIncorrect[word.group] ? pagesAndGroupIncorrect[word.group].add(word.page) : new Set<number>().add(word.page)
+		})
 
-	// update completed pages statistic
-	if (Object.keys(pagesAndGroupCorrect).length > 0) {
-		for (const group in pagesAndGroupCorrect) {
-			const pagesToCheck = pagesAndGroupCorrect[group]
-			for (const page of pagesToCheck) {
-				// check is all words in this group and page learned
-				const completedResponse = await apiClient.getLearnedWordsByGroup(userId, +group, +page)
-				const isCompleted = completedResponse[0].paginatedResults.length === WORD_PER_PAGE_AMOUNT
+		let updatedCompletedPages
 
-				if (isCompleted) {
-					completedPages.push({ group, page })
-					const updatedOptional = transformCompletedPagesStatistic(currentStatistic, +group, +page, true)
-					await apiClient.updateCompletedPages(userId, updatedOptional)
+		// update completed pages statistic
+		if (Object.keys(pagesAndGroupCorrect).length > 0) {
+			for (const group in pagesAndGroupCorrect) {
+				const pagesToCheck = pagesAndGroupCorrect[group]
+				for (const page of pagesToCheck) {
+					// check if all words in this group and page learned
+					const completedResponse = await apiClient.getLearnedWordsByGroup(userId, +group, +page)
+					const isCompleted = completedResponse[0].paginatedResults.length === WORD_PER_PAGE_AMOUNT
+
+					if (isCompleted) {
+						const updatedOptional = transformExistingCompletedPages(updatedCompletedPages ?? currentStatistic.optional.completedPages, +group, +page, true)
+						updatedCompletedPages = updatedOptional
+						// await apiClient.updateCompletedPages(userId, updatedOptional)
+					} else {
+						const updatedOptional = transformExistingCompletedPages(updatedCompletedPages ?? currentStatistic.optional.completedPages, +group, +page, false)
+						updatedCompletedPages = updatedOptional
+					}
 				}
 			}
 		}
-	}
 
-	// update not completed pages statistic
-	if (Object.keys(pagesAndGroupIncorrect).length > 0) {
-		for (const group in pagesAndGroupIncorrect) {
-			const pagesToCheck = pagesAndGroupIncorrect[group]
-			for (const page of pagesToCheck) {
-				// TODO: remove from completed pages for ui update
-				// not.push({ group, page })
-				const updatedOptional = transformCompletedPagesStatistic(currentStatistic, +group, +page, false)
-				await apiClient.updateCompletedPages(userId, updatedOptional)
+		// update not completed pages statistic
+		if (Object.keys(pagesAndGroupIncorrect).length > 0) {
+			for (const group in pagesAndGroupIncorrect) {
+				const pagesToCheck = pagesAndGroupIncorrect[group]
+				for (const page of pagesToCheck) {
+					const updatedOptional = transformExistingCompletedPages(updatedCompletedPages ?? currentStatistic.optional.completedPages, +group, +page, false)
+					updatedCompletedPages = updatedOptional
+				}
 			}
 		}
+
+		return { updatedCompletedPages }
 	}
+)
 
-	return { completedPages, notCompletedPages }
-})
-
+// when check word as learned or difficult from card
 export const updateCompletedPages = createAsyncThunk<{ isPageCompleted: boolean; page: number; group: number }, { page: number; group: number }, { state: RootState }>(
 	'statistic/updateCompletedPages',
 	async ({ page, group }, { getState }) => {
@@ -164,7 +182,7 @@ export const updateCompletedPages = createAsyncThunk<{ isPageCompleted: boolean;
 		const learnedOrDifficultWord = words.filter(word => word.userWord?.difficulty === WordDifficulty.Difficult || !!word.userWord?.optional?.isLearned)
 		isPageCompleted = learnedOrDifficultWord.length + 1 === WORD_PER_PAGE_AMOUNT
 
-		const updatedOptional = transformCompletedPagesStatistic(currentStatistic, group, page, isPageCompleted)
+		const updatedOptional = transformOptionalStatistic(currentStatistic, group, page, isPageCompleted)
 
 		await apiClient.updateCompletedPages(userId, updatedOptional)
 
@@ -172,6 +190,7 @@ export const updateCompletedPages = createAsyncThunk<{ isPageCompleted: boolean;
 	}
 )
 
+// update single word statistic (need to pass fileds that needed to be updated)
 export const updateWordStatistic = async (userId: string, wordToUpdate: Word, newFields: WordFieldsToUpdate) => {
 	const word = JSON.parse(JSON.stringify(wordToUpdate))
 	const isStatisticExist = !!word.userWord
@@ -237,6 +256,7 @@ export const updateWordStatistic = async (userId: string, wordToUpdate: Word, ne
 	}
 }
 
+// creates and pushes new statistic when user signed up
 export const createNewStatistic = createAsyncThunk('textbook/createNewStatistic', async (arg, { getState }) => {
 	const state = getState() as RootState
 	const { userInfo } = state.auth
@@ -278,31 +298,10 @@ export const statisticSlice = createSlice({
 	reducers: {},
 	extraReducers: builder => {
 		builder
-			.addCase(updateComletedPagesAfterGame.fulfilled, (state, action) => {
-				const { completedPages, notCompletedPages } = action.payload
+			.addCase(updateCompletedPagesAfterGame.fulfilled, (state, action) => {
+				const { updatedCompletedPages } = action.payload
 
-				if (completedPages.length > 0) {
-					completedPages.forEach(pair => {
-						const { group, page } = pair
-
-						if (state.optional.completedPages[+group]) {
-							state.optional.completedPages[+group][+page] = true
-						} else {
-							state.optional.completedPages[+group] = { [page]: true }
-						}
-					})
-				}
-				if (notCompletedPages.length > 0) {
-					notCompletedPages.forEach(pair => {
-						const { group, page } = pair
-
-						if (state.optional.completedPages[+group]) {
-							state.optional.completedPages[+group][+page] = false
-						} else {
-							state.optional.completedPages[+group] = { [page]: false }
-						}
-					})
-				}
+				state.optional.completedPages = updatedCompletedPages
 			})
 			.addCase(fetchUserStatistic.fulfilled, (state, action) => {
 				state.optional = { ...action.payload.optional }

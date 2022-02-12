@@ -30,7 +30,7 @@ import {
 	toggleAudiocallAudio,
 } from '~/features/audiocall'
 import { selectAuthIsLoggedIn } from '~/features/auth'
-import { updateComletedPagesAfterGame } from '~/features/statistic'
+import { sendUpdatedStatistic, updateCompletedPagesAfterGame } from '~/features/statistic'
 import { DOMAIN_URL, PAGES_PER_GROUP } from '~/utils/constants'
 
 interface LocationState {
@@ -102,7 +102,8 @@ function Audiocall() {
 
 		// TODO: update completed pages after game
 		if (isLoggedIn) {
-			dispatch(updateComletedPagesAfterGame({ correctWords, incorrectWords }))
+			await dispatch(updateCompletedPagesAfterGame({ correctWords, incorrectWords }))
+			dispatch(sendUpdatedStatistic())
 		}
 	}
 
