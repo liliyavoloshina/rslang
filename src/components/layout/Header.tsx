@@ -1,5 +1,5 @@
 import { MouseEvent, useState } from 'react'
-import { Link as RouterLink, useNavigate } from 'react-router-dom'
+import { Link, NavigateOptions, useNavigate } from 'react-router-dom'
 
 import MenuIcon from '@mui/icons-material/Menu'
 import PersonIcon from '@mui/icons-material/Person'
@@ -8,7 +8,6 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
 import IconButton from '@mui/material/IconButton'
-import Link from '@mui/material/Link'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import Stack from '@mui/material/Stack'
@@ -16,9 +15,9 @@ import Toolbar from '@mui/material/Toolbar'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 
-import { useAppDispatch, useAppSelector } from '~/app/hooks'
+import { useAppSelector } from '~/app/hooks'
 import { Path } from '~/components/router'
-import { selectAuthUserInfo, signOut } from '~/features/auth'
+import { selectAuthUserInfo } from '~/features/auth'
 
 const PAGES: { name: string; path: Path }[] = [
 	{
@@ -58,9 +57,10 @@ const SETTINGS: { name: string; path: Path }[] = [
 ]
 
 function Header() {
-	const dispatch = useAppDispatch()
 	const navigate = useNavigate()
+
 	const userInfo = useAppSelector(selectAuthUserInfo)
+
 	const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null)
 	const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null)
 	const [anchorElGames, setAnchorElGames] = useState<null | HTMLElement>(null)
@@ -89,8 +89,11 @@ function Header() {
 		setAnchorElGames(null)
 	}
 
-	const handleSignOut = () => {
-		navigate(Path.LOGOFF)
+	const openPage = (path: Path, options?: NavigateOptions) => {
+		handleCloseNavMenu()
+		handleCloseGamesMenu()
+		handleCloseUserMenu()
+		navigate(path, options)
 	}
 
 	return (
@@ -123,18 +126,14 @@ function Header() {
 								display: { xs: 'block', md: 'none' },
 							}}
 						>
-							{PAGES.map((page, idx) => (
-								<MenuItem key={page.name} onClick={handleCloseNavMenu}>
-									<Link underline="none" key={idx} component={RouterLink} to={page.path}>
-										<Typography textAlign="center">{page.name}</Typography>
-									</Link>
+							{PAGES.map(page => (
+								<MenuItem key={page.name} onClick={() => openPage(page.path)}>
+									<Typography textAlign="center">{page.name}</Typography>
 								</MenuItem>
 							))}
-							{GAMES.map((page, idx) => (
-								<MenuItem key={page.name} onClick={handleCloseNavMenu}>
-									<Link underline="none" key={idx} component={RouterLink} state={{ fromTextbook: false }} to={page.path}>
-										<Typography textAlign="center">{page.name}</Typography>
-									</Link>
+							{GAMES.map(page => (
+								<MenuItem key={page.name} onClick={() => openPage(page.path)}>
+									<Typography textAlign="center">{page.name}</Typography>
 								</MenuItem>
 							))}
 						</Menu>
@@ -142,8 +141,8 @@ function Header() {
 
 					{/* desktop  */}
 					<Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-						{PAGES.map((page, idx) => (
-							<Button component={RouterLink} to={page.path} key={idx} onClick={handleCloseNavMenu} sx={{ my: 2, color: 'white', display: 'block' }}>
+						{PAGES.map(page => (
+							<Button component={Link} to={page.path} key={page.path} onClick={handleCloseNavMenu} sx={{ my: 2, color: 'white', display: 'block' }}>
 								{page.name}
 							</Button>
 						))}
@@ -169,11 +168,9 @@ function Header() {
 							open={Boolean(anchorElGames)}
 							onClose={handleCloseGamesMenu}
 						>
-							{GAMES.map((game, idx) => (
-								<MenuItem key={game.name} onClick={handleCloseNavMenu}>
-									<Link underline="none" key={idx} component={RouterLink} to={game.path} state={{ fromTextbook: false }}>
-										<Typography textAlign="center">{game.name}</Typography>
-									</Link>
+							{GAMES.map(game => (
+								<MenuItem key={game.name} onClick={() => openPage(game.path, { state: { fromTextbook: false } })}>
+									<Typography textAlign="center">{game.name}</Typography>
 								</MenuItem>
 							))}
 						</Menu>
@@ -203,13 +200,11 @@ function Header() {
 							onClose={handleCloseUserMenu}
 						>
 							{userInfo?.token ? (
-								<Button onClick={handleSignOut}>Sign Out</Button>
+								<Button onClick={() => openPage(Path.LOGOFF)}>Sign Out</Button>
 							) : (
-								SETTINGS.map((setting, idx) => (
-									<MenuItem key={setting.name} onClick={handleCloseUserMenu}>
-										<Link underline="none" key={idx} component={RouterLink} to={setting.path}>
-											<Typography textAlign="center">{setting.name}</Typography>
-										</Link>
+								SETTINGS.map(setting => (
+									<MenuItem key={setting.name} onClick={() => openPage(setting.path)}>
+										<Typography textAlign="center">{setting.name}</Typography>
 									</MenuItem>
 								))
 							)}
