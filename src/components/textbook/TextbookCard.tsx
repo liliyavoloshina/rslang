@@ -16,9 +16,8 @@ import Typography from '@mui/material/Typography'
 import { blue, lightGreen } from '@mui/material/colors'
 
 import { useAppDispatch, useAppSelector } from '~/app/hooks'
-import { selectAuthUserInfo } from '~/features/auth'
-import { updateCompletedPages } from '~/features/statistic'
-import { addWordToLearned, changeWordDifficulty, selectTextbookGroup } from '~/features/textbook'
+import { updateCompletedPages, updateWordStatistic } from '~/features/statistic'
+import { changeWordDifficulty, changeWordLearnedStatus, selectTextbookGroup } from '~/features/textbook'
 import { Word, WordDifficulty } from '~/types/word'
 import { DOMAIN_URL } from '~/utils/constants'
 
@@ -79,12 +78,17 @@ export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: Te
 	const toggleWordDifficulty = async () => {
 		const difficulty = userWord?.difficulty === WordDifficulty.Difficult ? WordDifficulty.Normal : WordDifficulty.Difficult
 
-		await dispatch(changeWordDifficulty({ word: passedWord, difficulty }))
+		// update word stat
+		await dispatch(updateWordStatistic({ wordToUpdate: passedWord, newFields: { difficulty } }))
+		// update ui
+		dispatch(changeWordDifficulty({ passedWord, difficulty }))
 		dispatch(updateCompletedPages({ page, group }))
 	}
 
 	const addToLearned = async () => {
-		await dispatch(addWordToLearned(passedWord))
+		// update word stat
+		await dispatch(updateWordStatistic({ wordToUpdate: passedWord, newFields: { isLearned: true } }))
+		dispatch(changeWordLearnedStatus(passedWord.id))
 		dispatch(updateCompletedPages({ page, group }))
 	}
 
