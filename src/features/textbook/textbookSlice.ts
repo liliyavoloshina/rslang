@@ -1,9 +1,19 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 
 import { RootState } from '~/app/store'
-import { ApiMethod, CompletedPages } from '~/types/api'
+import { CompletedPages } from '~/types/api'
 import { Word, WordDifficulty } from '~/types/word'
-import apiClient from '~/utils/api'
+import {
+	addWordToDifficult,
+	addWordToLearned,
+	getAllWords,
+	getDifficultWords,
+	getUserStatistic,
+	getUserWords,
+	removeWordFromDifficult,
+	setNewStatistic,
+	updateCompletedPages as updateCompletedPagesApi,
+} from '~/utils/api'
 import { WORD_PER_PAGE_AMOUNT } from '~/utils/constants'
 import { localStorageSetPagination } from '~/utils/localStorage'
 
@@ -28,7 +38,7 @@ const updateCompletedPages = async (words: Word[], group: number, page: number, 
 
 	const learnedOrDifficultWord = words.filter(word => word.userWord?.difficulty === WordDifficulty.Difficult || !!word.userWord?.optional?.isLearned)
 	isPageCompleted = learnedOrDifficultWord.length + 1 === WORD_PER_PAGE_AMOUNT
-	const currentStatistic = await apiClient.getUserStatistic(userId)
+	const currentStatistic = await getUserStatistic(userId)
 
 	const newGroupField = {
 		...currentStatistic.optional.completedPages[group],
@@ -38,7 +48,7 @@ const updateCompletedPages = async (words: Word[], group: number, page: number, 
 	const updatedOptional = { ...currentStatistic.optional }
 	updatedOptional.completedPages[group] = newGroupField
 
-	await apiClient.updateCompletedPages(userId, updatedOptional)
+	await updateCompletedPagesApi(userId, updatedOptional)
 
 	return isPageCompleted
 }
@@ -49,14 +59,14 @@ export const fetchTextbookWords = createAsyncThunk<Word[], void, { state: RootSt
 	const { userInfo } = state.auth
 
 	if (userInfo) {
-		const response = await apiClient.getUserWords(userInfo.userId, group, page)
+		const response = await getUserWords(userInfo.userId, group, page)
 
 		// TODO: check if this map function is really needed here
 		// eslint-disable-next-line no-underscore-dangle
 		return response[0].paginatedResults.map(word => ({ ...word, id: word._id! }))
 	}
 
-	return apiClient.getAllWords(group, page)
+	return getAllWords(group, page)
 })
 
 export const getCompletedPages = createAsyncThunk<CompletedPages, void, { state: RootState }>('textbook/getCompletedPages', async (arg, { getState }) => {
@@ -66,7 +76,7 @@ export const getCompletedPages = createAsyncThunk<CompletedPages, void, { state:
 		throw new Error('Not permitted')
 	}
 
-	const res = (await apiClient.getUserStatistic(userInfo.userId)) || {}
+	const res = (await getUserStatistic(userInfo.userId)) || {}
 	return res.optional.completedPages
 })
 
@@ -77,7 +87,7 @@ export const fetchDifficultWords = createAsyncThunk<Word[], void, { state: RootS
 		throw new Error('Not permitted')
 	}
 
-	const response = await apiClient.getDifficultWords(userInfo.userId as string)
+	const response = await getDifficultWords(userInfo.userId as string)
 	// TODO: refactor duplicated code
 	// eslint-disable-next-line no-underscore-dangle
 	return response[0].paginatedResults.map(word => ({ ...word, id: word._id! }))
@@ -97,9 +107,9 @@ export const changeWordDifficulty = createAsyncThunk('textbook/changeWordDifficu
 	let isPageCompleted = false
 
 	if (difficulty === WordDifficulty.Normal) {
-		await apiClient.removeWordFromDifficult(userId, wordId, difficulty)
+		await removeWordFromDifficult(userId, wordId, difficulty)
 	} else {
-		await apiClient.addWordToDifficult(userId, wordId, difficulty)
+		await addWordToDifficult(userId, wordId, difficulty)
 		isPageCompleted = await updateCompletedPages(words, group, page, userId)
 	}
 
@@ -118,16 +128,16 @@ export const changeWordLearnedStatus = createAsyncThunk('textbook/changeWordLear
 	const { userId } = userInfo
 
 	try {
-		await apiClient.addWordToLearned(userId, wordId, wordLearnedStatus, ApiMethod.Put)
+		await addWordToLearned(userId, wordId, wordLearnedStatus, true)
 	} catch (e) {
-		await apiClient.addWordToLearned(userId, wordId, wordLearnedStatus, ApiMethod.Post)
+		await addWordToLearned(userId, wordId, wordLearnedStatus, false)
 	}
 
 	let isPageCompleted = false
 
 	if (wordLearnedStatus) {
 		isPageCompleted = await updateCompletedPages(words, group, page, userId)
-		await apiClient.removeWordFromDifficult(userId, wordId, WordDifficulty.Normal)
+		await removeWordFromDifficult(userId, wordId, WordDifficulty.Normal)
 	}
 
 	return { wordId, wordLearnedStatus, isPageCompleted }
@@ -147,7 +157,7 @@ export const createNewStatistic = createAsyncThunk('textbook/createNewStatistic'
 		},
 	}
 
-	await apiClient.setNewStatistic(userInfo.userId, newStatistic)
+	await setNewStatistic(userInfo.userId, newStatistic)
 })
 
 export const textbookSlice = createSlice({

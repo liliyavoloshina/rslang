@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 
 import { RootState } from '~/app/store'
 import { Word } from '~/types/word'
-import apiClient from '~/utils/api'
+import { getAllWords, getNotLearnedWord } from '~/utils/api'
 import { DOMAIN_URL, MAX_AUDIOCALL_ANSWERS_AMOUNT, WORD_PER_PAGE_AMOUNT } from '~/utils/constants'
 import { shuffleArray } from '~/utils/helpers'
 
@@ -49,8 +49,8 @@ export const fetchAudiocallWords = createAsyncThunk<Word[], FetchWordsParams, { 
 		// if there are possibly learned words
 		if (isFromTextbook && isLoggedIn && userInfo) {
 			const addNotLearnedWordsFromPage = async (currentPage: number, words: Word[]): Promise<Word[]> => {
-				const response = await apiClient.getNotLearnedWord(userInfo.userId, group, currentPage)
-				const wordsFromPage = response[0].paginatedResults
+				const data = await getNotLearnedWord(userInfo.userId, group, currentPage)
+				const wordsFromPage = data[0].paginatedResults
 				words.unshift(...wordsFromPage)
 
 				if (words.length < WORD_PER_PAGE_AMOUNT && currentPage > 0) {
@@ -62,7 +62,7 @@ export const fetchAudiocallWords = createAsyncThunk<Word[], FetchWordsParams, { 
 			return addNotLearnedWordsFromPage(page, [])
 		}
 
-		return apiClient.getAllWords(group, page)
+		return getAllWords(group, page)
 	}
 )
 
