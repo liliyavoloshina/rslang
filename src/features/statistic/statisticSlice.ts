@@ -97,7 +97,6 @@ export const updateComletedPagesAfterGame = createAsyncThunk<
 	{ state: RootState }
 >('statistic/updateComletedPagesAfterGame', async ({ correctWords, incorrectWords }, { getState }) => {
 	const state = getState()
-	console.log('updateComletedPagesAfterGame')
 	const { userInfo } = state.auth
 	const currentStatistic = state.statistic
 	const userId = userInfo!.userId as string
@@ -114,6 +113,7 @@ export const updateComletedPagesAfterGame = createAsyncThunk<
 		pagesAndGroupIncorrect[word.group] = pagesAndGroupIncorrect[word.group] ? pagesAndGroupIncorrect[word.group].add(word.page) : new Set().add(word.page)
 	})
 
+	// track pages for the ui update
 	const completedPages: PageInfo[] = []
 	const notCompletedPages: PageInfo[] = []
 
@@ -125,8 +125,6 @@ export const updateComletedPagesAfterGame = createAsyncThunk<
 				// check is all words in this group and page learned
 				const completedResponse = await apiClient.getLearnedWordsByGroup(userId, +group, +page)
 				const isCompleted = completedResponse[0].paginatedResults.length === WORD_PER_PAGE_AMOUNT
-				console.log(completedResponse[0].paginatedResults.length, 'completedResponse[0].paginatedResults.length')
-				console.log(isCompleted, 'isCompleted')
 
 				if (isCompleted) {
 					completedPages.push({ group, page })
@@ -137,9 +135,16 @@ export const updateComletedPagesAfterGame = createAsyncThunk<
 		}
 	}
 
-	if (Object.keys(pagesAndGroupCorrect).length > 0) {
-		for (const group of pagesAndGroupCorrect) {
-			console.log(group, pagesAndGroupCorrect[group])
+	// update not completed pages statistic
+	if (Object.keys(pagesAndGroupIncorrect).length > 0) {
+		for (const group in pagesAndGroupIncorrect) {
+			const pagesToCheck = pagesAndGroupIncorrect[group]
+			for (const page of pagesToCheck) {
+				// TODO: remove from completed pages for ui update
+				// not.push({ group, page })
+				const updatedOptional = transformCompletedPagesStatistic(currentStatistic, +group, +page, false)
+				await apiClient.updateCompletedPages(userId, updatedOptional)
+			}
 		}
 	}
 
