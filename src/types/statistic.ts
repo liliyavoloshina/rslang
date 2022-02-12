@@ -39,4 +39,4 @@ interface WordFieldsToUpdate {
 	isLearned?: boolean
 }
 
-export type { UserStatistic, CompletedPages, ShortStatGame, WordFieldsToUpdate }
+export type { UserStatistic, CompletedPages, ShortStatGame, WordFieldsToUpdate, StatisticOptional }
