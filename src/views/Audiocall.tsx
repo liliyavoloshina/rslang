@@ -16,7 +16,6 @@ import { Path } from '~/components/router'
 import {
 	checkAnswer,
 	fetchAudiocallWords,
-	finishAudiocall,
 	resetGame,
 	selectAudiocallAnsweredWord,
 	selectAudiocallAnswers,
@@ -32,7 +31,7 @@ import {
 	toggleAudiocallAudio,
 } from '~/features/audiocall'
 import { selectAuthIsLoggedIn } from '~/features/auth'
-import { sendUpdatedStatistic, updateCompletedPagesAfterGame, updateGameStatistic } from '~/features/statistic'
+import { sendUpdatedStatistic, updateCompletedPagesAfterGame, updateGameStatistic, updateWordStatistic } from '~/features/statistic'
 import { DOMAIN_URL, PAGES_PER_GROUP } from '~/utils/constants'
 
 interface LocationState {
@@ -115,8 +114,15 @@ function Audiocall() {
 		return newStatistic
 	}
 
+	const updateEveryWordStatistic = async () => {
+		// update word statistic
+		if (correctWords.length > 0) correctWords.forEach(word => dispatch(updateWordStatistic({ wordToUpdate: word, newFields: { correctAnswers: 1 } })))
+		if (incorrectWords.length > 0) incorrectWords.forEach(word => dispatch(updateWordStatistic({ wordToUpdate: word, newFields: { incorrectAnswers: 1 } })))
+	}
+
 	const finish = async () => {
-		await dispatch(finishAudiocall())
+		// update every word statistic and learned words in short stat if necessary
+		await updateEveryWordStatistic()
 
 		if (isLoggedIn) {
 			// set to completed page field store

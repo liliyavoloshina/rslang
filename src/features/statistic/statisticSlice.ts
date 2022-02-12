@@ -191,70 +191,90 @@ export const updateCompletedPages = createAsyncThunk<{ isPageCompleted: boolean;
 )
 
 // update single word statistic (need to pass fileds that needed to be updated)
-export const updateWordStatistic = async (userId: string, wordToUpdate: Word, newFields: WordFieldsToUpdate) => {
-	const word = JSON.parse(JSON.stringify(wordToUpdate))
-	const isStatisticExist = !!word.userWord
-	const wordId = word.id
+export const updateWordStatistic = createAsyncThunk<number, { wordToUpdate: Word; newFields: WordFieldsToUpdate }, { state: RootState }>(
+	'statistic/updateWordStatistic',
+	async ({ wordToUpdate, newFields }, { getState }) => {
+		const state = getState()
+		const userId = state.auth.userInfo!.userId as string
+		const word = JSON.parse(JSON.stringify(wordToUpdate))
+		const isStatisticExist = !!word.userWord
+		const wordId = word.id
 
-	let statisticToUpdate: UserWord
+		let statisticToUpdate: UserWord
 
-	if (isStatisticExist) {
-		statisticToUpdate = word.userWord!
-	} else {
-		statisticToUpdate = {
-			difficulty: WordDifficulty.Normal,
-			optional: {
-				correctAnswers: 0,
-				incorrectAnswers: 0,
-				correctStrike: 0,
-				isLearned: false,
-			},
-		}
-	}
-
-	const { difficulty } = statisticToUpdate
-	const { correctAnswers, correctStrike, incorrectAnswers } = statisticToUpdate.optional
-	const { isLearned, difficulty: newDifficulty, correctAnswers: newCorrectAnswers, incorrectAnswers: newIncorrectAnswers } = newFields
-
-	if (isLearned) {
-		statisticToUpdate.optional.isLearned = isLearned
-		statisticToUpdate.difficulty = WordDifficulty.Normal
-	}
-
-	if (newDifficulty) {
-		statisticToUpdate.difficulty = newDifficulty
-	}
-
-	if (newCorrectAnswers) {
-		const updatedFields = updateWordCorrectAnswers(difficulty, correctAnswers, correctStrike)
-
-		statisticToUpdate.optional = {
-			...statisticToUpdate.optional,
-			...updatedFields,
+		if (isStatisticExist) {
+			statisticToUpdate = word.userWord!
+		} else {
+			statisticToUpdate = {
+				difficulty: WordDifficulty.Normal,
+				optional: {
+					correctAnswers: 0,
+					incorrectAnswers: 0,
+					correctStrike: 0,
+					isLearned: false,
+				},
+			}
 		}
 
-		if (updatedFields.isLearned) {
+		let newLearnedAmount = 0
+
+		const { difficulty } = statisticToUpdate
+		const { correctAnswers, correctStrike, incorrectAnswers, isLearned: wasLearned } = statisticToUpdate.optional
+		const { isLearned, difficulty: newDifficulty, correctAnswers: newCorrectAnswers, incorrectAnswers: newIncorrectAnswers } = newFields
+
+		if (isLearned) {
+			statisticToUpdate.optional.isLearned = isLearned
 			statisticToUpdate.difficulty = WordDifficulty.Normal
+			newLearnedAmount += 1
 		}
-	}
 
-	if (newIncorrectAnswers) {
-		const updatedFields = updateWordIncorrectAnswers(incorrectAnswers)
-
-		statisticToUpdate.optional = {
-			...statisticToUpdate.optional,
-			...updatedFields,
+		if (newDifficulty) {
+			statisticToUpdate.difficulty = newDifficulty
 		}
-	}
 
-	if (isStatisticExist) {
-		// update existing stat
-		await apiClient.updateWordStatistic(userId, wordId, statisticToUpdate)
-	} else {
-		// create new stat
-		await apiClient.addWordStatistic(userId, wordId, statisticToUpdate)
+		if (newCorrectAnswers) {
+			const updatedFields = updateWordCorrectAnswers(difficulty, correctAnswers, correctStrike)
+
+			// if word wasn't learned - increase learned words in short stat
+			if (wasLearned === false && updatedFields.isLearned === true) {
+				newLearnedAmount += 1
+			}
+
+			statisticToUpdate.optional = {
+				...statisticToUpdate.optional,
+				...updatedFields,
+			}
+
+			if (updatedFields.isLearned) {
+				statisticToUpdate.difficulty = WordDifficulty.Normal
+			}
+		}
+
+		if (newIncorrectAnswers) {
+			const updatedFields = updateWordIncorrectAnswers(incorrectAnswers)
+
+			// if word was learned - decrease learned words in short stat
+			if (wasLearned === true && updatedFields.isLearned === true) {
+				newLearnedAmount -= 1
+			}
+
+			statisticToUpdate.optional = {
+				...statisticToUpdate.optional,
+				...updatedFields,
+			}
+		}
+
+		if (isStatisticExist) {
+			// update existing stat
+			await apiClient.updateWordStatistic(userId, wordId, statisticToUpdate)
+		} else {
+			// create new stat
+			await apiClient.addWordStatistic(userId, wordId, statisticToUpdate)
+		}
+
+		return newLearnedAmount
 	}
-}
+)
 
 // creates and pushes new statistic when user signed up
 export const createNewStatistic = createAsyncThunk('textbook/createNewStatistic', async (arg, { getState }) => {
@@ -324,6 +344,9 @@ export const statisticSlice = createSlice({
 			})
 			.addCase(fetchUserStatistic.fulfilled, (state, action) => {
 				state.optional = { ...action.payload.optional }
+			})
+			.addCase(updateWordStatistic.fulfilled, (state, action) => {
+				state.optional.shortStat.learnedWords += action.payload
 			})
 			.addCase(updateCompletedPages.fulfilled, (state, action) => {
 				const { isPageCompleted, page, group } = action.payload

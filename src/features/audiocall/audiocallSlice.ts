@@ -1,13 +1,10 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 
 import { RootState } from '~/app/store'
-import { GameName } from '~/types/game'
-import { CompletedPages } from '~/types/statistic'
 import { Word } from '~/types/word'
 import { getAllWords, getNotLearnedWord } from '~/utils/api'
 import { DOMAIN_URL, MAX_AUDIOCALL_ANSWERS_AMOUNT, WORD_PER_PAGE_AMOUNT } from '~/utils/constants'
 import { shuffleArray } from '~/utils/helpers'
-import { updateGameStatistic } from '~/utils/statistic'
 
 import { updateWordStatistic } from '../statistic'
 
@@ -102,32 +99,6 @@ export const fetchAudiocallWords = createAsyncThunk<{ wordsForGame: Word[]; answ
 		return getAllWords(group, page)
 	}
 )
-
-export const finishAudiocall = createAsyncThunk('audiocall/finishAudiocall', async (arg, { getState }) => {
-	const state = getState() as RootState
-	const { userInfo } = state.auth
-	const userId = userInfo!.userId as string
-	const { words, correctAnswers, incorrectAnswers, longestSeries: bestSeries } = state.audiocall
-
-	const newWords = words.filter(word => !word.userWord?.optional).length
-	const correctWordsPercent = (correctAnswers.length / words.length) * 100
-	const longestSeries = Math.max(...bestSeries.correctAnswers)
-
-	// update word statistic
-	if (correctAnswers.length > 0) correctAnswers.forEach(word => updateWordStatistic(userId, word, { correctAnswers: 1 }))
-	if (incorrectAnswers.length > 0) incorrectAnswers.forEach(word => updateWordStatistic(userId, word, { incorrectAnswers: 1 }))
-
-	const newStatistic = {
-		newWords,
-		correctWordsPercent: [correctWordsPercent],
-		longestSeries,
-	}
-
-	// update short game statistsic if logged in
-	// if (userId) {
-	// 	await updateGameStatistic(userId, GameName.Audiocall, newStatistic)
-	// }
-})
 
 const getRandomAnswers = (correctAnswer: string, answers: string[]) => {
 	shuffleArray(answers)
@@ -241,9 +212,6 @@ export const audiocallSlice = createSlice({
 				state.audioPath = `${DOMAIN_URL}/${state.currentWord!.audio}`
 				const newAudio = new Audio(state.audioPath)
 				newAudio.play()
-			})
-			.addCase(finishAudiocall.fulfilled, (state, action) => {
-				// state.isFinished = false
 			})
 	},
 })

@@ -63,9 +63,9 @@ export const fetchTextbookWords = createAsyncThunk<Word[], void, { state: RootSt
 	if (userInfo) {
 		const response = await getUserWords(userInfo.userId, group, page)
 
+		// TODO: check if this map function is really needed here
 		// eslint-disable-next-line no-underscore-dangle
-		const modified = response[0].paginatedResults.map(word => ({ ...word, id: word._id! }))
-		return modified
+		return response[0].paginatedResults.map(word => ({ ...word, id: word._id! }))
 	}
 
 	return getAllWords(group, page)
@@ -107,14 +107,7 @@ export const changeWordDifficulty = createAsyncThunk('textbook/changeWordDifficu
 	const { userId } = userInfo
 	const wordId = word.id
 
-	// let isPageCompleted = false
-
-	if (difficulty === WordDifficulty.Normal) {
-		await removeWordFromDifficult(userId, wordId, difficulty)
-	} else {
-		await addWordToDifficult(userId, wordId, difficulty)
-		isPageCompleted = await updateCompletedPages(words, group, page, userId)
-	}
+	await updateWordStatistic(userId, word, { difficulty })
 
 	return { wordId, difficulty, isPageCompleted: false }
 })
