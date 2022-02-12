@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { ThemeProvider } from '@mui/material/styles'
@@ -5,7 +6,7 @@ import { ThemeProvider } from '@mui/material/styles'
 import Footer from '~/components/layout/Footer'
 import Header from '~/components/layout/Header'
 import { Path, Router } from '~/components/router'
-import { setUser, signOut } from '~/features/auth'
+import { setUser } from '~/features/auth'
 import { localStorageGetUser } from '~/utils/localStorage'
 import theme from '~/utils/theme'
 
@@ -17,11 +18,13 @@ function App() {
 
 	const isFooter = [Path.AUDIOCALL, Path.SPRINT].every(pattern => !location.startsWith(pattern))
 
-	const user = localStorageGetUser()
+	useEffect(() => {
+		const user = localStorageGetUser()
 
-	if (user && user.token) {
-		dispatch(setUser(user))
-	}
+		if (user && user.token) {
+			dispatch(setUser(user))
+		}
+	}, [dispatch])
 
 	return (
 		<ThemeProvider theme={theme}>

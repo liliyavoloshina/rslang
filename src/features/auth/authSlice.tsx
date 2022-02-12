@@ -1,25 +1,23 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 
 import { SignInData, SignUpData, UserInfo } from '~/types/auth'
-import apiClient from '~/utils/api'
+import { signIn as signInApi, signUp as signUpApi } from '~/utils/api'
 import { handleError } from '~/utils/helpers'
 import { localStorageClear, localStorageSetUser } from '~/utils/localStorage'
 
-export const signIn = createAsyncThunk('auth/signin', async (arg: SignInData, { rejectWithValue }) => {
+export const signIn = createAsyncThunk('auth/signin', (signInData: SignInData, { rejectWithValue }) => {
 	try {
-		const response = await apiClient.signIn(arg)
-		return response
+		return signInApi(signInData)
 	} catch (e) {
 		const errorToShow = handleError(e)
 		return rejectWithValue(errorToShow)
 	}
 })
 
-export const signUp = createAsyncThunk('auth/signup', async (arg: SignUpData, { rejectWithValue }) => {
+export const signUp = createAsyncThunk('auth/signup', async (signUpData: SignUpData, { rejectWithValue }) => {
 	try {
-		await apiClient.signUp(arg)
-
-		return { email: arg.email, password: arg.password }
+		await signUpApi(signUpData)
+		return { email: signUpData.email, password: signUpData.password }
 	} catch (e) {
 		const errorToShow = handleError(e)
 		return rejectWithValue(errorToShow)

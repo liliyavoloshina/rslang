@@ -90,9 +90,7 @@ function Header() {
 	}
 
 	const handleSignOut = () => {
-		dispatch(signOut())
-		handleCloseUserMenu()
-		navigate(Path.HOME)
+		navigate(Path.LOGOFF)
 	}
 
 	return (

@@ -1,9 +1,7 @@
-import { useState } from 'react'
-
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 
 import { Word } from '~/types/word'
-import apiClient from '~/utils/api'
+import { getAllWords } from '~/utils/api'
 // TODO: uncomment and use this instead of hardcoded temp test value
 import { MAX_WORDS_GAME_AMOUNT } from '~/utils/constants'
 import { shuffleArray } from '~/utils/helpers'
@@ -39,15 +37,12 @@ const getSuggestedTranslation = (currentWord: Word, words: Word[]) => {
 	if (shouldSuggestCorrectOption) {
 		return currentWord.wordTranslate
 	}
-	for (;;) {
-		const randomWord = words[Math.floor(Math.random() * words.length)]
-		if (randomWord !== currentWord) {
-			return randomWord.wordTranslate
-		}
-	}
+
+	const otherWords = words.filter(word => word !== currentWord)
+	return otherWords[Math.floor(Math.random() * otherWords.length)].wordTranslate
 }
 
-export const startGame = createAsyncThunk('sprint/startGame', ({ group, page }: { group: number; page: number }) => apiClient.getAllWords(group, page))
+export const startGame = createAsyncThunk('sprint/startGame', ({ group, page }: { group: number; page: number }) => getAllWords(group, page))
 
 export const sprintSlice = createSlice({
 	name: 'sprint',
