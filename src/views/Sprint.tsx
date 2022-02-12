@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
 import { useLocation, useMatch, useNavigate } from 'react-router-dom'
 
 import NoIcon from '@mui/icons-material/Cancel'
 import YesIcon from '@mui/icons-material/CheckCircle'
+import { useTheme } from '@mui/material'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import IconButton from '@mui/material/IconButton'
@@ -144,8 +145,48 @@ const useSprintGame = () => {
 
 const SprintInner = () => {
 	const { t } = useTranslation()
+	const theme = useTheme()
+	const questionBlockRef = useRef<HTMLDivElement>(null)
+	const answerAnimationTimeout = useRef<NodeJS.Timeout>()
 
 	const { status, word, suggestedTranslation, selectOption, correctWords, incorrectWords, correctAnswersInRow, gameRound, totalPoints, onTimeout } = useSprintGame()
+
+	const animateAnswer = useCallback((color: string) => {
+		if (!questionBlockRef.current) {
+			return
+		}
+
+		const clearAnimationTimeout = () => {
+			if (answerAnimationTimeout.current) {
+				clearTimeout(answerAnimationTimeout.current)
+			}
+		}
+
+		clearAnimationTimeout()
+
+		questionBlockRef.current.style.borderColor = color
+
+		answerAnimationTimeout.current = setTimeout(() => {
+			if (questionBlockRef.current) {
+				questionBlockRef.current.style.borderColor = theme.palette.secondary.main
+			}
+		}, 400)
+
+		// eslint-disable-next-line consistent-return
+		return () => clearAnimationTimeout()
+	}, [])
+
+	useEffect(() => {
+		if (status === 'game-running' && questionBlockRef.current && correctWords.length !== 0) {
+			animateAnswer(theme.palette.success.light)
+		}
+	}, [status, correctWords, animateAnswer])
+
+	useEffect(() => {
+		if (status === 'game-running' && questionBlockRef.current && incorrectWords.length !== 0) {
+			animateAnswer(theme.palette.error.light)
+		}
+	}, [status, incorrectWords, animateAnswer])
 
 	return (
 		<Container maxWidth="sm" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }} style={{ position: 'relative' }}>
@@ -154,18 +195,18 @@ const SprintInner = () => {
 					<Typography variant="h3" style={{ textAlign: 'center', padding: 20 }}>
 						{totalPoints}
 					</Typography>
-					<Box sx={{ width: '100%', height: 500, border: '2px solid #283593', borderRadius: 5 }}>
+					<Box ref={questionBlockRef} sx={{ width: '100%', height: 410, border: `4px solid ${theme.palette.primary.main}`, borderRadius: 5, transition: 'border-color 400ms' }}>
 						<Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, padding: 2 }}>
-							<Box sx={{ width: 15, height: 15, borderRadius: '50%', backgroundColor: !(correctAnswersInRow % 4 === 0) ? '#00ff00' : '#cccccc' }} />
+							<Box sx={{ width: 15, height: 15, borderRadius: '50%', backgroundColor: !(correctAnswersInRow % 4 === 0) ? '#2e7d32' : '#cccccc' }} />
 							<Box
 								sx={{
 									width: 15,
 									height: 15,
 									borderRadius: '50%',
-									backgroundColor: (correctAnswersInRow - 2) % 4 === 0 || (correctAnswersInRow - 3) % 4 === 0 ? '#00ff00' : '#cccccc',
+									backgroundColor: (correctAnswersInRow - 2) % 4 === 0 || (correctAnswersInRow - 3) % 4 === 0 ? '#2e7d32' : '#cccccc',
 								}}
 							/>
-							<Box sx={{ width: 15, height: 15, borderRadius: '50%', backgroundColor: (correctAnswersInRow - 3) % 4 === 0 ? '#00ff00' : '#cccccc' }} />
+							<Box sx={{ width: 15, height: 15, borderRadius: '50%', backgroundColor: (correctAnswersInRow - 3) % 4 === 0 ? '#2e7d32' : '#cccccc' }} />
 						</Box>
 						<Typography variant="subtitle1" color="GrayText" style={{ textAlign: 'center' }}>
 							{t('SPRINT.SCORE_PER_WORD', { count: gameRound * BASE_CORRECT_ANSWER_POINTS })}
@@ -197,10 +238,10 @@ const SprintInner = () => {
 								<YesIcon /> {t('COMMON.BUTTON.YES')}
 							</IconButton>
 						</Box>
-						<Box sx={{ display: 'flex', justifyContent: 'center', gap: 15, mt: 2 }}>
-							<img style={{ width: 30, height: 10, objectFit: 'contain', transform: 'rotate(180deg)' }} src="/assets/svg/arrow.png" alt="" />
-							<img style={{ width: 30, height: 10, objectFit: 'contain' }} src="/assets/svg/arrow.png" alt="" />
-						</Box>
+					</Box>
+					<Box sx={{ display: 'flex', justifyContent: 'center', gap: 15, mt: 2 }}>
+						<img style={{ width: 30, height: 10, objectFit: 'contain', transform: 'rotate(180deg)' }} src="/assets/svg/arrow.png" alt="" />
+						<img style={{ width: 30, height: 10, objectFit: 'contain' }} src="/assets/svg/arrow.png" alt="" />
 					</Box>
 				</Box>
 			)}

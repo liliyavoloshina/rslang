@@ -100,7 +100,7 @@ export const sprintSlice = createSlice({
 			if (state.currentWord) {
 				const correctOption = state.suggestedTranslation === state.currentWord.wordTranslate
 				if (action.payload === correctOption) {
-					state.correctWords.push(state.currentWord)
+					state.correctWords = [...state.correctWords, state.currentWord]
 					state.correctAnswersInRow += 1
 					state.totalPoints += BASE_CORRECT_ANSWER_POINTS * state.gameRound
 					correctAnswerAudio.play()
@@ -109,7 +109,7 @@ export const sprintSlice = createSlice({
 						newRoundAudio.play()
 					}
 				} else {
-					state.incorrectWords.push(state.currentWord)
+					state.incorrectWords = [...state.incorrectWords, state.currentWord]
 					state.maxCorrectAnswersSequence = Math.max(state.maxCorrectAnswersSequence, state.correctAnswersInRow)
 					state.correctAnswersInRow = 0
 					state.gameRound = 1
