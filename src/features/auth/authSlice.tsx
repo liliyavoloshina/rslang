@@ -3,7 +3,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { SignInData, SignUpData, UserInfo } from '~/types/auth'
 import { signIn as signInApi, signUp as signUpApi } from '~/utils/api'
 import { handleError } from '~/utils/helpers'
-import { localStorageClear, localStorageSetUser } from '~/utils/localStorage'
+import { localStorageClear, localStorageGetUser, localStorageSetUser } from '~/utils/localStorage'
 
 export const signIn = createAsyncThunk('auth/signin', (signInData: SignInData, { rejectWithValue }) => {
 	try {
@@ -24,6 +24,8 @@ export const signUp = createAsyncThunk('auth/signup', async (signUpData: SignUpD
 	}
 })
 
+const initialUser = localStorageGetUser() || undefined
+
 interface AuthState {
 	userInfo: UserInfo | undefined
 	isLoggedIn: boolean
@@ -34,8 +36,8 @@ interface AuthState {
 }
 
 const initialState: AuthState = {
-	userInfo: undefined,
-	isLoggedIn: false,
+	userInfo: initialUser,
+	isLoggedIn: !!initialUser?.token,
 	isSignUpInProcess: false,
 	signUpError: '',
 	signInError: '',
@@ -51,8 +53,8 @@ export const authSlice = createSlice({
 			state.signUpError = ''
 		},
 		setUser: (state, action) => {
-			state.isLoggedIn = true
 			state.userInfo = action.payload
+			state.isLoggedIn = !!state.userInfo?.token
 		},
 		signOut: state => {
 			state.userInfo = undefined
