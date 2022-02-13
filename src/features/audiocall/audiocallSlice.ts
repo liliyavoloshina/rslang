@@ -2,7 +2,8 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 
 import { RootState } from '~/app/store'
 import { Word } from '~/types/word'
-import { getAllWords, getNotLearnedWord } from '~/utils/api'
+import { getNotLearnedWord, getUserWords } from '~/utils/api/userWords'
+import { getAllWords } from '~/utils/api/words'
 import { DOMAIN_URL, MAX_AUDIOCALL_ANSWERS_AMOUNT, WORD_PER_PAGE_AMOUNT } from '~/utils/constants'
 import { shuffleArray } from '~/utils/helpers'
 
@@ -58,19 +59,13 @@ export const fetchAudiocallWords = createAsyncThunk<{ wordsForGame: Word[]; answ
 		let answers
 
 		// if there are possibly learned words
-		if (isFromTextbook && isLoggedIn && userInfo) {
-			const addNotLearnedWordsFromPage = async (currentPage: number, words: Word[]): Promise<Word[]> => {
-				const data = await getNotLearnedWord(userInfo.userId, group, currentPage)
-				const wordsFromPage = data[0].paginatedResults
-				words.unshift(...wordsFromPage)
-
 		if (userInfo && isLoggedIn) {
-			const allUserWordsResponse = await apiClient.getUserWords(userInfo.userId, group, page)
+			const allUserWordsResponse = await getUserWords(userInfo.userId, group, page)
 			const allUserWords = allUserWordsResponse[0].paginatedResults
 
 			if (isFromTextbook) {
 				const addNotLearnedWordsFromPage = async (currentPage: number, words: Word[]): Promise<Word[]> => {
-					const response = await apiClient.getNotLearnedWord(userInfo.userId, group, currentPage)
+					const response = await getNotLearnedWord(userInfo.userId, group, currentPage)
 					const wordsFromPage = response[0].paginatedResults
 					words.unshift(...wordsFromPage)
 
@@ -87,14 +82,14 @@ export const fetchAudiocallWords = createAsyncThunk<{ wordsForGame: Word[]; answ
 			}
 
 			// there maybe not enough answers if available words is less than 5
-			answers = allUserWords.map(word => word.wordTranslate)
+			answers = allUserWords.map((word: Word) => word.wordTranslate)
 		} else {
-			const allWords = await apiClient.getAllWords(group, page)
+			const allWords = await getAllWords(group, page)
 			wordsForGame = allWords
-			answers = allWords.map(word => word.wordTranslate)
+			answers = allWords.map((word: Word) => word.wordTranslate)
 		}
 
-		return getAllWords(group, page)
+		return { wordsForGame, answers }
 	}
 )
 
