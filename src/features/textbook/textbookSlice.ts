@@ -21,12 +21,14 @@ const initialState: TextbookState = {
 }
 
 export const fetchTextbookWords = createAsyncThunk<Word[], void, { state: RootState }>('textbook/fetchWords', async (_arg, { getState }) => {
+	console.log('fetching words...')
 	const state = getState()
 	const { page, group } = state.textbook
 	const { userInfo } = state.auth
+	const userId = userInfo?.userId as string
 
-	if (userInfo) {
-		const response = await getUserWords(userInfo.userId, group, page)
+	if (userId) {
+		const response = await getUserWords(userId, group, page)
 
 		// eslint-disable-next-line no-underscore-dangle
 		const modified = response[0].paginatedResults.map((word: Word) => ({ ...word, id: word._id! }))

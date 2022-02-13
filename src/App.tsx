@@ -12,12 +12,8 @@ import theme from '~/utils/theme'
 
 import { useAppDispatch } from './app/hooks'
 
-function App() {
-	const location = useLocation().pathname
+function CheckAuth() {
 	const dispatch = useAppDispatch()
-
-	const isFooter = [Path.AUDIOCALL, Path.SPRINT].every(pattern => !location.startsWith(pattern))
-
 	useEffect(() => {
 		const user = localStorageGetUser()
 
@@ -26,8 +22,17 @@ function App() {
 		}
 	}, [dispatch])
 
+	return null
+}
+
+function App() {
+	const location = useLocation().pathname
+
+	const isFooter = [Path.AUDIOCALL, Path.SPRINT].every(pattern => !location.startsWith(pattern))
+
 	return (
 		<ThemeProvider theme={theme}>
+			<CheckAuth />
 			<Header />
 			<main className="main">
 				<Router />
