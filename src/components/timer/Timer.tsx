@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { CountdownCircleTimer } from 'react-countdown-circle-timer'
 import { useTranslation } from 'react-i18next'
 
 import { Box, Typography } from '@mui/material'
@@ -41,7 +42,14 @@ const Timer = ({ onTimeout, ...boxProps }: TimerProps) => {
 		}
 	}, [onTimeout, status])
 
-	return <Box {...boxProps}>{status === 'running' && <Typography ref={timeLeftRef} />}</Box>
+	return (
+		<Box {...boxProps}>
+			<CountdownCircleTimer isPlaying duration={60} colors={['#004777', '#F7B801', '#A30000', '#A30000']} colorsTime={[60, 50, 20, 0]} size={100}>
+				{({ remainingTime }) => remainingTime}
+			</CountdownCircleTimer>
+			{/* <Box>{status === 'running' && <Typography ref={timeLeftRef} />}</Box> */}
+		</Box>
+	)
 }
 
 export { Timer }
