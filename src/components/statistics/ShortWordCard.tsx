@@ -4,14 +4,14 @@ import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
 
-interface TodayWordCardProps {
+interface ShortWordCardProps {
 	value: string
 	text: string
 }
 
-export function TodayWordCard({ value, text }: TodayWordCardProps) {
+export default function ShortWordCard({ value, text }: ShortWordCardProps) {
 	return (
-		<Card sx={{ minWidth: 275 }}>
+		<Card>
 			<CardContent>
 				<Typography variant="h3" gutterBottom align="center">
 					{value}

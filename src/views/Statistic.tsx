@@ -4,16 +4,19 @@ import { useTranslation } from 'react-i18next'
 import { Box, Container, Stack, Typography } from '@mui/material'
 
 import { useAppDispatch, useAppSelector } from '~/app/hooks'
-import { TodayWordCard } from '~/components/statistics/TodayWordCard'
+import ShortGameCard from '~/components/statistics/ShortGameCard'
+import ShortWordCard from '~/components/statistics/ShortWordCard'
 import {
 	fetchUserStatistics,
-	selectStatisticLongestSeriesShort,
+	selectStatisticCorrectWordsPercentAudiocall,
+	selectStatisticCorrectWordsPercentSprint,
 	selectStatisticOptional,
 	selectStatisticTotalCorrectPercentShort,
 	selectStatisticTotalNewWordsShort,
 	sendUpdatedStatistic,
 	updateShortStatistics,
 } from '~/features/statistic'
+import { GameName } from '~/types/game'
 import { isTheSameDay } from '~/utils/helpers'
 
 function Statistic() {
@@ -21,10 +24,14 @@ function Statistic() {
 	const dispatch = useAppDispatch()
 	const statistics = useAppSelector(selectStatisticOptional)
 	const totalNewWordsShort = useAppSelector(selectStatisticTotalNewWordsShort)
-	const totalLongestSeriesShort = useAppSelector(selectStatisticLongestSeriesShort)
 	const totalCorrectPercentShort = useAppSelector(selectStatisticTotalCorrectPercentShort)
+	const correctWordsPercentAudiocall = useAppSelector(selectStatisticCorrectWordsPercentAudiocall)
+	const correctWordsPercentSprint = useAppSelector(selectStatisticCorrectWordsPercentSprint)
 
-	const { date } = statistics.shortStat
+	const { date, learnedWords } = statistics.shortStat
+	const { audiocall, sprint } = statistics.shortStat.games
+	const { newWords: newWordsAudiocall, longestSeries: longestSeriesAudiocall } = audiocall
+	const { newWords: newWordsSprint, longestSeries: longestSeriesSprint } = sprint
 
 	const oldDate = new Date(date)
 	const curDate = new Date()
@@ -44,16 +51,24 @@ function Statistic() {
 
 	return (
 		<Container maxWidth="lg">
-			<Box>
-				<Typography variant="h4" sx={{ mt: 3, mb: 3 }} align="center">
-					{t('STATISTIC.TITLE')} for today ({curDate.toLocaleDateString()})
-				</Typography>
-				<Stack flexDirection="row" alignItems="center" justifyContent="center">
-					<TodayWordCard value={`${totalNewWordsShort}`} text="Number of new words" />
-					<TodayWordCard value={`${totalCorrectPercentShort}%`} text="Percentage of correct answers" />
-					<TodayWordCard value={`${totalLongestSeriesShort}`} text="Longest series of correct answers" />
+			<Stack gap="20px">
+				<Box>
+					<Typography variant="h4" sx={{ mt: 3, mb: 3 }} align="center">
+						{t('STATISTIC.TITLE')} for today ({curDate.toLocaleDateString()})
+					</Typography>
+					<Stack flexDirection="row" alignItems="center" justifyContent="center" gap="20px">
+						<ShortWordCard value={`${totalNewWordsShort}`} text="Number of new words" />
+						<ShortWordCard value={`${learnedWords}`} text="Number of learned words" />
+						<ShortWordCard value={`${totalCorrectPercentShort}%`} text="Percentage of correct answers" />
+					</Stack>
+				</Box>
+
+				<Stack flexDirection="row" alignItems="center" justifyContent="center" gap="20px">
+					<ShortGameCard gameName={GameName.Audiocall} newWords={newWordsAudiocall} correctPercent={correctWordsPercentAudiocall} longestSeries={longestSeriesAudiocall} />
+					<ShortGameCard gameName={GameName.Sprint} newWords={newWordsSprint} correctPercent={correctWordsPercentSprint} longestSeries={longestSeriesSprint} />
 				</Stack>
-			</Box>
+			</Stack>
+
 			<Box>
 				<Typography variant="h4" sx={{ mt: 3, mb: 3 }} align="center">
 					Statistics for all time
