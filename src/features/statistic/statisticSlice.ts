@@ -24,8 +24,9 @@ interface StatisticsState {
 	statistics: UserStatistic
 	statisticsCalculated: {
 		totalCorrectPercentShort: string
-		longestSeriesShort: number
 		totalNewWordsShort: number
+		correctWordsPercentAudiocall: string
+		correctWordsPercentSprint: string
 	}
 }
 
@@ -39,8 +40,9 @@ const initialState: StatisticsState = {
 	},
 	statisticsCalculated: {
 		totalCorrectPercentShort: '0',
-		longestSeriesShort: 0,
 		totalNewWordsShort: 0,
+		correctWordsPercentAudiocall: '0',
+		correctWordsPercentSprint: '0',
 	},
 }
 
@@ -342,8 +344,8 @@ export const statisticSlice = createSlice({
 				const { shortStat } = state.statistics.optional
 				const { games } = shortStat
 				const { audiocall, sprint } = games
-				const { newWords: newWordsAudiocall, correctWordsPercent: correctWordsPercentAudiocall, longestSeries: longestSeriesAudiocall } = audiocall
-				const { newWords: newWordsSprint, correctWordsPercent: correctWordsPercentSprint, longestSeries: longestSeriesSprint } = sprint
+				const { newWords: newWordsAudiocall, correctWordsPercent: correctWordsPercentAudiocall } = audiocall
+				const { newWords: newWordsSprint, correctWordsPercent: correctWordsPercentSprint } = sprint
 
 				const totalNewWordsToday = newWordsAudiocall + newWordsSprint
 
@@ -351,11 +353,9 @@ export const statisticSlice = createSlice({
 				const averagePercentSprint = correctWordsPercentSprint.length ? correctWordsPercentSprint.reduce((a, b) => a + b) / correctWordsPercentSprint.length : 0
 				const totalCorrectPercentToday = (averagePercentAudiocall + averagePercentSprint).toFixed(0)
 
-				const longestSeries = Math.max(longestSeriesAudiocall || 0, longestSeriesSprint || 0)
-
 				state.statisticsCalculated.totalNewWordsShort = totalNewWordsToday
-				state.statisticsCalculated.longestSeriesShort = longestSeries
 				state.statisticsCalculated.totalCorrectPercentShort = totalCorrectPercentToday
+				state.statisticsCalculated.correctWordsPercentAudiocall = averagePercentAudiocall.toFixed(0)
 			})
 			.addCase(updateWordStatistic.fulfilled, (state, action) => {
 				state.statistics.optional.shortStat.learnedWords += action.payload
