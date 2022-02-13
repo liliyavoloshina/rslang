@@ -21,7 +21,6 @@ const initialState: TextbookState = {
 }
 
 export const fetchTextbookWords = createAsyncThunk<Word[], void, { state: RootState }>('textbook/fetchWords', async (_arg, { getState }) => {
-	console.log('fetching words...')
 	const state = getState()
 	const { page, group } = state.textbook
 	const { userInfo } = state.auth
