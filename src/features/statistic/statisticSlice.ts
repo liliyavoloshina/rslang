@@ -11,35 +11,36 @@ import { CompletedPages, ShortStatGame, UserStatistic, WordFieldsToUpdate } from
 import { UserWord, Word, WordDifficulty } from '~/types/word'
 import {
 	addWordStatistic as addWordStatisticApi,
-	getUserStatistic,
+	getUserStatistics,
 	setNewStatistic,
 	updateCompletedPages as updateCompletedPagesApi,
 	updateWordStatistic as updateWordStatisticApi,
 } from '~/utils/api/statistics'
 import { getLearnedWordsByGroup } from '~/utils/api/userWords'
-import { CORRECT_ANSWERS_TO_LEARN_DIFFICULT, CORRECT_ANSWERS_TO_LEARN_NORMAL, WORD_PER_PAGE_AMOUNT } from '~/utils/constants'
+import { CORRECT_ANSWERS_TO_LEARN_DIFFICULT, CORRECT_ANSWERS_TO_LEARN_NORMAL, INITIAL_SHORT_STATISTICS, WORD_PER_PAGE_AMOUNT } from '~/utils/constants'
 import { isTheSameDay } from '~/utils/helpers'
 
-const initialState: UserStatistic = {
-	learnedWords: 0,
-	optional: {
-		completedPages: { 0: { 0: false } },
-		shortStat: {
-			date: 0,
-			games: {
-				audiocall: {
-					newWords: 0,
-					correctWordsPercent: [],
-					longestSeries: 0,
-				},
-				sprint: {
-					newWords: 0,
-					correctWordsPercent: [],
-					longestSeries: 0,
-				},
-			},
-			learnedWords: 0,
+interface StatisticsState {
+	statistics: UserStatistic
+	statisticsCalculated: {
+		totalCorrectPercentShort: string
+		longestSeriesShort: number
+		totalNewWordsShort: number
+	}
+}
+
+const initialState: StatisticsState = {
+	statistics: {
+		learnedWords: 0,
+		optional: {
+			completedPages: { 0: { 0: false } },
+			shortStat: INITIAL_SHORT_STATISTICS,
 		},
+	},
+	statisticsCalculated: {
+		totalCorrectPercentShort: '0',
+		longestSeriesShort: 0,
+		totalNewWordsShort: 0,
 	},
 }
 
@@ -48,12 +49,10 @@ const updateWordCorrectAnswers = (difficulty: WordDifficulty, oldAnswers: number
 
 	if (difficulty === WordDifficulty.Normal && correctStrike === CORRECT_ANSWERS_TO_LEARN_NORMAL - 1) {
 		isLearned = true
-		// TODO: update short statictic learnedWords
 	}
 
 	if (difficulty === WordDifficulty.Difficult && correctStrike === CORRECT_ANSWERS_TO_LEARN_DIFFICULT - 1) {
 		isLearned = true
-		// TODO: update short statictic learnedWords
 	}
 
 	oldAnswers += 1
@@ -69,7 +68,7 @@ const updateWordIncorrectAnswers = (oldAnswers: number) => {
 	return { incorrectAnswers: oldAnswers, isLearned, correctStrike }
 }
 
-export const fetchUserStatistic = createAsyncThunk<UserStatistic, void, { state: RootState }>('statistic/fetchUserStatistic', async (arg, { getState }) => {
+export const fetchUserStatistics = createAsyncThunk<UserStatistic, void, { state: RootState }>('statistic/fetchUserStatistics', async (arg, { getState }) => {
 	const state = getState()
 	const { userInfo } = state.auth
 
@@ -77,7 +76,7 @@ export const fetchUserStatistic = createAsyncThunk<UserStatistic, void, { state:
 		throw new Error('Not permitted')
 	}
 
-	const res = await getUserStatistic(userInfo.userId)
+	const res = await getUserStatistics(userInfo.userId)
 	return res
 })
 
@@ -104,12 +103,12 @@ const transformExistingCompletedPages = (completedPages: CompletedPages, group: 
 }
 
 // send updated statistic to the server
-export const sendUpdatedStatistic = createAsyncThunk('textbook/sendUpdatedStatistic', async (arg, { getState }) => {
+export const sendUpdatedStatistic = createAsyncThunk('textbook/sendUpdatedStatistic', (arg, { getState }) => {
 	const state = getState() as RootState
-	const statisticToSend = state.statistic
+	const statisticToSend = state.statistic.statistics
 	const { userId } = state.auth.userInfo!
 
-	await setNewStatistic(userId, statisticToSend)
+	setNewStatistic(userId, statisticToSend)
 })
 
 // updates completed pages after game
@@ -118,7 +117,7 @@ export const updateCompletedPagesAfterGame = createAsyncThunk<{ updatedCompleted
 	async ({ correctWords, incorrectWords }, { getState }) => {
 		const state = getState()
 		const { userInfo } = state.auth
-		const currentStatistic = state.statistic
+		const currentStatistic = state.statistic.statistics
 		const userId = userInfo!.userId as string
 
 		interface PagesAndGroups {
@@ -181,7 +180,7 @@ export const updateCompletedPages = createAsyncThunk<{ isPageCompleted: boolean;
 	async ({ page, group }, { getState }) => {
 		const state = getState()
 		const { words } = state.textbook
-		const currentStatistic = state.statistic
+		const currentStatistic = state.statistic.statistics
 		const userId = state.auth.userInfo?.userId as string
 
 		let isPageCompleted = false
@@ -291,28 +290,11 @@ export const createNewStatistic = createAsyncThunk('textbook/createNewStatistic'
 		throw new Error('Not permitted')
 	}
 
-	const date = new Date().getTime()
-
 	const newStatistic: UserStatistic = {
 		learnedWords: 0,
 		optional: {
 			completedPages: { 0: { 0: false } },
-			shortStat: {
-				date,
-				games: {
-					audiocall: {
-						newWords: 0,
-						correctWordsPercent: [],
-						longestSeries: 0,
-					},
-					sprint: {
-						newWords: 0,
-						correctWordsPercent: [],
-						longestSeries: 0,
-					},
-				},
-				learnedWords: 0,
-			},
+			shortStat: INITIAL_SHORT_STATISTICS,
 		},
 	}
 
@@ -325,7 +307,7 @@ export const statisticSlice = createSlice({
 	reducers: {
 		updateGameStatistic: (state, action: PayloadAction<{ gameName: GameName; newStatistic: ShortStatGame }>) => {
 			const { gameName, newStatistic } = action.payload
-			const existingStatistic = state.optional.shortStat
+			const existingStatistic = state.statistics.optional.shortStat
 			const oldDate = new Date(existingStatistic.date)
 			const curDate = new Date()
 
@@ -341,31 +323,54 @@ export const statisticSlice = createSlice({
 				existingStatistic.games[gameName] = newStatistic
 			}
 		},
+		updateShortStatistics: state => {
+			state.statistics.optional.shortStat = INITIAL_SHORT_STATISTICS
+		},
 	},
+
 	extraReducers: builder => {
 		builder
 			.addCase(updateCompletedPagesAfterGame.fulfilled, (state, action) => {
 				const { updatedCompletedPages } = action.payload
 
-				state.optional.completedPages = updatedCompletedPages
+				state.statistics.optional.completedPages = updatedCompletedPages
 			})
-			.addCase(fetchUserStatistic.fulfilled, (state, action) => {
-				state.optional = { ...action.payload.optional }
+			.addCase(fetchUserStatistics.fulfilled, (state, action) => {
+				state.statistics.optional = { ...action.payload.optional }
+
+				// calculate total stats for showing in the statistics page
+				const { shortStat } = state.statistics.optional
+				const { games } = shortStat
+				const { audiocall, sprint } = games
+				const { newWords: newWordsAudiocall, correctWordsPercent: correctWordsPercentAudiocall, longestSeries: longestSeriesAudiocall } = audiocall
+				const { newWords: newWordsSprint, correctWordsPercent: correctWordsPercentSprint, longestSeries: longestSeriesSprint } = sprint
+
+				const totalNewWordsToday = newWordsAudiocall + newWordsSprint
+
+				const averagePercentAudiocall = correctWordsPercentAudiocall.length ? correctWordsPercentAudiocall.reduce((a, b) => a + b) / correctWordsPercentAudiocall.length : 0
+				const averagePercentSprint = correctWordsPercentSprint.length ? correctWordsPercentSprint.reduce((a, b) => a + b) / correctWordsPercentSprint.length : 0
+				const totalCorrectPercentToday = (averagePercentAudiocall + averagePercentSprint).toFixed(0)
+
+				const longestSeries = Math.max(longestSeriesAudiocall || 0, longestSeriesSprint || 0)
+
+				state.statisticsCalculated.totalNewWordsShort = totalNewWordsToday
+				state.statisticsCalculated.longestSeriesShort = longestSeries
+				state.statisticsCalculated.totalCorrectPercentShort = totalCorrectPercentToday
 			})
 			.addCase(updateWordStatistic.fulfilled, (state, action) => {
-				state.optional.shortStat.learnedWords += action.payload
+				state.statistics.optional.shortStat.learnedWords += action.payload
 			})
 			.addCase(updateCompletedPages.fulfilled, (state, action) => {
 				const { isPageCompleted, page, group } = action.payload
 
-				if (state.optional.completedPages[group]) {
-					state.optional.completedPages[group][page] = isPageCompleted
+				if (state.statistics.optional.completedPages[group]) {
+					state.statistics.optional.completedPages[group][page] = isPageCompleted
 				} else {
-					state.optional.completedPages[group] = { [page]: isPageCompleted }
+					state.statistics.optional.completedPages[group] = { [page]: isPageCompleted }
 				}
 			})
 	},
 })
 
-export const { updateGameStatistic } = statisticSlice.actions
+export const { updateGameStatistic, updateShortStatistics } = statisticSlice.actions
 export default statisticSlice.reducer

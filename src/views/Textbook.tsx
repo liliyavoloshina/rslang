@@ -14,7 +14,7 @@ import TextbookCard from '~/components/textbook/TextbookCard'
 import TextbookGroupDropdown from '~/components/textbook/TextbookGroupDropdown'
 import TextbookPagination from '~/components/textbook/TextbookPagination'
 import { selectAuthIsLoggedIn } from '~/features/auth'
-import { fetchUserStatistic } from '~/features/statistic'
+import { fetchUserStatistics } from '~/features/statistic'
 import { selectStatisticCompletedPages } from '~/features/statistic/statisticSlice.selectors'
 import {
 	changeGroup,
@@ -57,7 +57,7 @@ function Textbook() {
 			dispatch(fetchTextbookWords())
 		}
 
-		dispatch(fetchUserStatistic())
+		dispatch(fetchUserStatistics())
 	}, [dispatch])
 
 	return (
