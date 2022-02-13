@@ -9,7 +9,14 @@ import { RootState } from '~/app/store'
 import { GameName } from '~/types/game'
 import { CompletedPages, ShortStatGame, UserStatistic, WordFieldsToUpdate } from '~/types/statistic'
 import { UserWord, Word, WordDifficulty } from '~/types/word'
-import apiClient from '~/utils/api'
+import {
+	addWordStatistic as addWordStatisticApi,
+	getUserStatistic,
+	setNewStatistic,
+	updateCompletedPages as updateCompletedPagesApi,
+	updateWordStatistic as updateWordStatisticApi,
+} from '~/utils/api/statistics'
+import { getLearnedWordsByGroup } from '~/utils/api/userWords'
 import { CORRECT_ANSWERS_TO_LEARN_DIFFICULT, CORRECT_ANSWERS_TO_LEARN_NORMAL, WORD_PER_PAGE_AMOUNT } from '~/utils/constants'
 import { isTheSameDay } from '~/utils/helpers'
 
@@ -70,7 +77,7 @@ export const fetchUserStatistic = createAsyncThunk<UserStatistic, void, { state:
 		throw new Error('Not permitted')
 	}
 
-	const res = await apiClient.getUserStatistic(userInfo.userId)
+	const res = await getUserStatistic(userInfo.userId)
 	return res
 })
 
@@ -102,7 +109,7 @@ export const sendUpdatedStatistic = createAsyncThunk('textbook/sendUpdatedStatis
 	const statisticToSend = state.statistic
 	const { userId } = state.auth.userInfo!
 
-	await apiClient.setNewStatistic(userId, statisticToSend)
+	await setNewStatistic(userId, statisticToSend)
 })
 
 // updates completed pages after game
@@ -138,7 +145,7 @@ export const updateCompletedPagesAfterGame = createAsyncThunk<{ updatedCompleted
 				const pagesToCheck = pagesAndGroupCorrect[group]
 				for (const page of pagesToCheck) {
 					// check if all words in this group and page learned
-					const completedResponse = await apiClient.getLearnedWordsByGroup(userId, +group, +page)
+					const completedResponse = await getLearnedWordsByGroup(userId, +group, +page)
 					const isCompleted = completedResponse[0].paginatedResults.length === WORD_PER_PAGE_AMOUNT
 
 					if (isCompleted) {
@@ -184,7 +191,7 @@ export const updateCompletedPages = createAsyncThunk<{ isPageCompleted: boolean;
 
 		const updatedOptional = transformOptionalStatistic(currentStatistic, group, page, isPageCompleted)
 
-		await apiClient.updateCompletedPages(userId, updatedOptional)
+		await updateCompletedPagesApi(userId, updatedOptional)
 
 		return { isPageCompleted, page, group }
 	}
@@ -266,10 +273,10 @@ export const updateWordStatistic = createAsyncThunk<number, { wordToUpdate: Word
 
 		if (isStatisticExist) {
 			// update existing stat
-			await apiClient.updateWordStatistic(userId, wordId, statisticToUpdate)
+			await updateWordStatisticApi(userId, wordId, statisticToUpdate)
 		} else {
 			// create new stat
-			await apiClient.addWordStatistic(userId, wordId, statisticToUpdate)
+			await addWordStatisticApi(userId, wordId, statisticToUpdate)
 		}
 
 		return newLearnedAmount
@@ -309,7 +316,7 @@ export const createNewStatistic = createAsyncThunk('textbook/createNewStatistic'
 		},
 	}
 
-	await apiClient.setNewStatistic(userInfo.userId, newStatistic)
+	await setNewStatistic(userInfo.userId, newStatistic)
 })
 
 export const statisticSlice = createSlice({
