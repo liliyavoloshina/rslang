@@ -121,8 +121,6 @@ function Audiocall() {
 	const updateEveryWordStatistic = async () => {
 		// update word statistic
 
-		console.log('update every word statistic...')
-
 		if (correctWords.length > 0) {
 			for (const word of correctWords) {
 				await dispatch(updateWordStatistic({ wordToUpdate: word, newFields: { correctAnswers: 1 } }))

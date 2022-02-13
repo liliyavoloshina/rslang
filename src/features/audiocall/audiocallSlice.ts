@@ -129,9 +129,6 @@ export const audiocallSlice = createSlice({
 				state.longestSeries.stopped = true
 			}
 
-			console.log(state.currentIdx, 'state.currentIdx')
-			console.log(state.words.length - 1, 'state.words.length - 1')
-			console.log(state.currentIdx === state.words.length - 1, 'state.currentIdx === state.words.length - 1')
 			if (state.currentIdx === state.words.length - 1) {
 				state.isFinished = true
 				return
