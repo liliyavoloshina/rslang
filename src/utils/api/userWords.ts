@@ -25,3 +25,7 @@ export const addWordToLearned = async (userId: string, wordId: string, isLearned
 	}
 	return post<UserWord>(`users/${userId}/words/${wordId}`, { data })
 }
+
+export const getLearnedWordsByGroup = async (userId: string, group: number, page: number) => {
+	return get<GetUserWordsResponse[]>(`users/${userId}/aggregatedWords?filter={"$and":[{"userWord.optional.isLearned":true},{"group":${group},"page":${page}}]}&wordsPerPage=600`)
+}
