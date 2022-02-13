@@ -1,20 +1,9 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 
 import { RootState } from '~/app/store'
-import { CompletedPages } from '~/types/api'
 import { Word, WordDifficulty } from '~/types/word'
-import {
-	addWordToDifficult,
-	addWordToLearned,
-	getAllWords,
-	getDifficultWords,
-	getUserStatistic,
-	getUserWords,
-	removeWordFromDifficult,
-	setNewStatistic,
-	updateCompletedPages as updateCompletedPagesApi,
-} from '~/utils/api'
-import { WORD_PER_PAGE_AMOUNT } from '~/utils/constants'
+import { getDifficultWords, getUserWords } from '~/utils/api/userWords'
+import { getAllWords } from '~/utils/api/words'
 import { localStorageSetPagination } from '~/utils/localStorage'
 
 export interface TextbookState {
@@ -29,27 +18,6 @@ const initialState: TextbookState = {
 	page: 0,
 	group: 0,
 	status: 'idle',
-	completedPages: {},
-}
-
-const updateCompletedPages = async (words: Word[], group: number, page: number, userId: string) => {
-	let isPageCompleted = false
-
-	const learnedOrDifficultWord = words.filter(word => word.userWord?.difficulty === WordDifficulty.Difficult || !!word.userWord?.optional?.isLearned)
-	isPageCompleted = learnedOrDifficultWord.length + 1 === WORD_PER_PAGE_AMOUNT
-	const currentStatistic = await getUserStatistic(userId)
-
-	const newGroupField = {
-		...currentStatistic.optional.completedPages[group],
-	}
-	newGroupField[page] = isPageCompleted
-
-	const updatedOptional = { ...currentStatistic.optional }
-	updatedOptional.completedPages[group] = newGroupField
-
-	await updateCompletedPagesApi(userId, updatedOptional)
-
-	return isPageCompleted
 }
 
 export const fetchTextbookWords = createAsyncThunk<Word[], void, { state: RootState }>('textbook/fetchWords', async (_arg, { getState }) => {
@@ -60,23 +28,12 @@ export const fetchTextbookWords = createAsyncThunk<Word[], void, { state: RootSt
 	if (userInfo) {
 		const response = await getUserWords(userInfo.userId, group, page)
 
-		// TODO: check if this map function is really needed here
 		// eslint-disable-next-line no-underscore-dangle
-		return response[0].paginatedResults.map(word => ({ ...word, id: word._id! }))
+		const modified = response[0].paginatedResults.map((word: Word) => ({ ...word, id: word._id! }))
+		return modified
 	}
 
 	return getAllWords(group, page)
-})
-
-export const getCompletedPages = createAsyncThunk<CompletedPages, void, { state: RootState }>('textbook/getCompletedPages', async (arg, { getState }) => {
-	const state = getState()
-	const { userInfo } = state.auth
-	if (!userInfo) {
-		throw new Error('Not permitted')
-	}
-
-	const res = (await getUserStatistic(userInfo.userId)) || {}
-	return res.optional.completedPages
 })
 
 export const fetchDifficultWords = createAsyncThunk<Word[], void, { state: RootState }>('textbook/fetchDifficultWords', async (arg, { getState }) => {
@@ -89,7 +46,7 @@ export const fetchDifficultWords = createAsyncThunk<Word[], void, { state: RootS
 	const response = await getDifficultWords(userInfo.userId as string)
 	// TODO: refactor duplicated code
 	// eslint-disable-next-line no-underscore-dangle
-	return response[0].paginatedResults.map(word => ({ ...word, id: word._id! }))
+	return response[0].paginatedResults.map((word: Word) => ({ ...word, id: word._id! }))
 })
 
 export const textbookSlice = createSlice({
@@ -105,6 +62,74 @@ export const textbookSlice = createSlice({
 			const newGroup = action.payload
 			state.group = newGroup
 			localStorageSetPagination({ name: 'group', value: newGroup })
+		},
+		changeWordDifficulty: (state, action: PayloadAction<{ passedWord: Word; difficulty: WordDifficulty }>) => {
+			const { passedWord, difficulty } = action.payload
+			const { id: passedWordId } = passedWord
+
+			state.words = state.words.map(word => {
+				if (word.id === passedWordId) {
+					const updatedWord = word
+
+					if (updatedWord.userWord) {
+						updatedWord.userWord = {
+							...updatedWord.userWord,
+							difficulty,
+						}
+					} else {
+						updatedWord.userWord = {
+							difficulty,
+							optional: { correctAnswers: 0, incorrectAnswers: 0, correctStrike: 0, isLearned: false },
+						}
+					}
+					return updatedWord
+				}
+
+				return word
+			})
+
+			if (difficulty === WordDifficulty.Normal) {
+				state.words = state.words.filter(word => word.id !== passedWordId)
+			}
+		},
+		changeWordLearnedStatus: (state, action) => {
+			const wordId = action.payload
+
+			state.words = state.words.map(word => {
+				if (word.id === wordId) {
+					const updatedWord = word
+
+					if (updatedWord.userWord) {
+						updatedWord.userWord = {
+							...updatedWord.userWord,
+							optional: { ...updatedWord.userWord.optional!, isLearned: true },
+						}
+					} else {
+						updatedWord.userWord = {
+							difficulty: WordDifficulty.Normal,
+							optional: { correctAnswers: 0, incorrectAnswers: 0, correctStrike: 0, isLearned: true },
+						}
+					}
+					return updatedWord
+				}
+
+				return word
+			})
+
+			if (state.group === 6) {
+				state.words = state.words.filter(word => word.id !== wordId)
+			}
+
+			state.words = state.words.map(word => {
+				if (word.id === wordId) {
+					word.userWord = {
+						optional: word.userWord!.optional,
+						difficulty: WordDifficulty.Normal,
+					}
+				}
+
+				return word
+			})
 		},
 	},
 	extraReducers: builder => {
@@ -123,75 +148,8 @@ export const textbookSlice = createSlice({
 				state.status = 'success'
 				state.words = action.payload
 			})
-			.addCase(changeWordDifficulty.fulfilled, (state, action) => {
-				const { wordId, difficulty } = action.payload!
-
-				state.words = state.words.map(word => {
-					if (word.id === wordId) {
-						const updatedWord = word
-
-						if (updatedWord.userWord) {
-							updatedWord.userWord = {
-								...updatedWord.userWord,
-								difficulty,
-							}
-						} else {
-							updatedWord.userWord = {
-								difficulty,
-								optional: { correctAnswers: 0, incorrectAnswers: 0, correctStrike: 0, isLearned: false },
-							}
-						}
-						return updatedWord
-					}
-
-					return word
-				})
-
-				if (difficulty === WordDifficulty.Normal) {
-					state.words = state.words.filter(word => word.id !== wordId)
-				}
-			})
-			.addCase(addWordToLearned.fulfilled, (state, action) => {
-				const { wordId } = action.payload!
-
-				state.words = state.words.map(word => {
-					if (word.id === wordId) {
-						const updatedWord = word
-
-						if (updatedWord.userWord) {
-							updatedWord.userWord = {
-								...updatedWord.userWord,
-								optional: { ...updatedWord.userWord.optional!, isLearned: true },
-							}
-						} else {
-							updatedWord.userWord = {
-								difficulty: WordDifficulty.Normal,
-								optional: { correctAnswers: 0, incorrectAnswers: 0, correctStrike: 0, isLearned: true },
-							}
-						}
-						return updatedWord
-					}
-
-					return word
-				})
-
-				if (state.group === 6) {
-					state.words = state.words.filter(word => word.id !== wordId)
-				}
-
-				state.words = state.words.map(word => {
-					if (word.id === wordId) {
-						word.userWord = {
-							optional: word.userWord!.optional,
-							difficulty: WordDifficulty.Normal,
-						}
-					}
-
-					return word
-				})
-			})
 	},
 })
 
-export const { changePage, changeGroup } = textbookSlice.actions
+export const { changePage, changeGroup, changeWordDifficulty, changeWordLearnedStatus } = textbookSlice.actions
 export default textbookSlice.reducer
