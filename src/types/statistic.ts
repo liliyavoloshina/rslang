@@ -15,6 +15,7 @@ interface ShortStatGame {
 interface ShortStat {
 	date: number
 	games: {
+		[key: string]: ShortStatGame
 		audiocall: ShortStatGame
 		sprint: ShortStatGame
 	}

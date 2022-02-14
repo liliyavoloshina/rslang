@@ -109,7 +109,6 @@ export const sprintSlice = createSlice({
 					state.incorrectWords.push(state.currentWord)
 					state.maxCorrectAnswersSequence = Math.max(state.maxCorrectAnswersSequence, state.correctAnswersInRow)
 					state.correctAnswersInRow = 0
-					console.log(state.maxCorrectAnswersSequence, 'state.maxCorrectAnswersSequence')
 					incorrectAnswerAudio.play()
 				}
 			}

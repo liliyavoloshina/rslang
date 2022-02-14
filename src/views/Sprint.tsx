@@ -17,7 +17,6 @@ import { Timer, TimerContextProvider, useTimerContext } from '~/components/timer
 import { selectAuthIsLoggedIn } from '~/features/auth'
 import { answer, gameTimeout, reset, selectSprintState, startGame } from '~/features/sprint'
 import { sendUpdatedStatistic, updateCompletedPagesAfterGame, updateGameStatistic, updateWordStatistic } from '~/features/statistic'
-import { GameName } from '~/types/game'
 import { Word } from '~/types/word'
 import { GAME_TIME, PAGES_PER_GROUP } from '~/utils/constants'
 
@@ -26,6 +25,7 @@ interface LocationState {
 }
 
 const useSprintGame = () => {
+	const { t } = useTranslation()
 	const location = useLocation()
 	const dispatch = useDispatch()
 	const navigate = useNavigate()
@@ -77,7 +77,7 @@ const useSprintGame = () => {
 
 			// caluclate and set new game statistic
 			const gameStatistic = getSprintGameStatistic()
-			dispatch(updateGameStatistic({ gameName: GameName.Sprint, newStatistic: gameStatistic }))
+			dispatch(updateGameStatistic({ gameName: t('SPRINT.TITLE'), newStatistic: gameStatistic }))
 
 			// send updated stat to the server
 			await dispatch(sendUpdatedStatistic())

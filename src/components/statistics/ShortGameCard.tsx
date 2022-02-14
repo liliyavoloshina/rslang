@@ -11,10 +11,8 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import Typography from '@mui/material/Typography'
 
-import { GameName } from '~/types/game'
-
 interface ShortGameCardProps {
-	gameName: GameName
+	gameName: string
 	newWords: number
 	correctPercent: string
 	longestSeries: number

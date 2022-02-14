@@ -6,7 +6,6 @@
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 
 import { RootState } from '~/app/store'
-import { GameName } from '~/types/game'
 import { CompletedPages, ShortStatGame, UserStatistic, WordFieldsToUpdate } from '~/types/statistic'
 import { UserWord, Word, WordDifficulty } from '~/types/word'
 import {
@@ -348,7 +347,7 @@ export const statisticSlice = createSlice({
 	name: 'statistic',
 	initialState,
 	reducers: {
-		updateGameStatistic: (state, action: PayloadAction<{ gameName: GameName; newStatistic: ShortStatGame }>) => {
+		updateGameStatistic: (state, action: PayloadAction<{ gameName: string; newStatistic: ShortStatGame }>) => {
 			const { gameName, newStatistic } = action.payload
 			const existingStatistic = state.statistics.optional.shortStat
 			const oldDate = new Date(existingStatistic.date)

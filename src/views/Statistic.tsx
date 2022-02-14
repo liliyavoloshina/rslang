@@ -18,7 +18,6 @@ import {
 	sendUpdatedStatistic,
 	updateShortStatistics,
 } from '~/features/statistic'
-import { GameName } from '~/types/game'
 import { isTheSameDay } from '~/utils/helpers'
 
 function Statistic() {
@@ -67,8 +66,8 @@ function Statistic() {
 				</Box>
 
 				<Stack flexDirection="row" alignItems="center" justifyContent="center" gap="20px">
-					<ShortGameCard gameName={GameName.Audiocall} newWords={newWordsAudiocall} correctPercent={correctWordsPercentAudiocall} longestSeries={longestSeriesAudiocall} />
-					<ShortGameCard gameName={GameName.Sprint} newWords={newWordsSprint} correctPercent={correctWordsPercentSprint} longestSeries={longestSeriesSprint} />
+					<ShortGameCard gameName={t('AUDIOCALL.TITLE')} newWords={newWordsAudiocall} correctPercent={correctWordsPercentAudiocall} longestSeries={longestSeriesAudiocall} />
+					<ShortGameCard gameName={t('SPRINT.TITLE')} newWords={newWordsSprint} correctPercent={correctWordsPercentSprint} longestSeries={longestSeriesSprint} />
 				</Stack>
 			</Stack>
 
