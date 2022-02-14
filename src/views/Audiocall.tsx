@@ -138,7 +138,7 @@ function Audiocall() {
 
 			// caluclate and set new game statistic
 			const gameStatistic = getAudiocallGameStatistic()
-			dispatch(updateGameStatistic({ gameName: GameName.Audiocall, newStatistic: gameStatistic }))
+			dispatch(updateGameStatistic({ gameName: t('AUDIOCALL.TITLE'), newStatistic: gameStatistic }))
 
 			// send updated stat to the server
 			await dispatch(sendUpdatedStatistic())
