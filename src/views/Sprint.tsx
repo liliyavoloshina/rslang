@@ -25,7 +25,6 @@ interface LocationState {
 }
 
 const useSprintGame = () => {
-	const { t } = useTranslation()
 	const location = useLocation()
 	const dispatch = useDispatch()
 	const navigate = useNavigate()
@@ -77,7 +76,7 @@ const useSprintGame = () => {
 
 			// caluclate and set new game statistic
 			const gameStatistic = getSprintGameStatistic()
-			dispatch(updateGameStatistic({ gameName: t('SPRINT.TITLE'), newStatistic: gameStatistic }))
+			dispatch(updateGameStatistic({ gameName: 'sprint', newStatistic: gameStatistic }))
 
 			// send updated stat to the server
 			await dispatch(sendUpdatedStatistic())

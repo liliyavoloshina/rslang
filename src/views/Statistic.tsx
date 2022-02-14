@@ -66,8 +66,8 @@ function Statistic() {
 				</Box>
 
 				<Stack flexDirection="row" alignItems="center" justifyContent="center" gap="20px">
-					<ShortGameCard gameName={t('AUDIOCALL.TITLE')} newWords={newWordsAudiocall} correctPercent={correctWordsPercentAudiocall} longestSeries={longestSeriesAudiocall} />
-					<ShortGameCard gameName={t('SPRINT.TITLE')} newWords={newWordsSprint} correctPercent={correctWordsPercentSprint} longestSeries={longestSeriesSprint} />
+					<ShortGameCard gameName="audiocall" newWords={newWordsAudiocall} correctPercent={correctWordsPercentAudiocall} longestSeries={longestSeriesAudiocall} />
+					<ShortGameCard gameName="sprint" newWords={newWordsSprint} correctPercent={correctWordsPercentSprint} longestSeries={longestSeriesSprint} />
 				</Stack>
 			</Stack>
 
