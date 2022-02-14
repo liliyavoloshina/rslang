@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 
@@ -11,8 +11,6 @@ interface Data {
 }
 
 export default function LongChartStat({ longStat }: { longStat: LongStat }) {
-	const [data, setDate] = useState<Data[]>([])
-
 	const transformData = (oldData: LongStat) => {
 		const { learnedWords, newWords } = oldData
 		const newData: Data[] = []
@@ -31,7 +29,7 @@ export default function LongChartStat({ longStat }: { longStat: LongStat }) {
 			newData.push(newDate)
 		})
 
-		setDate(newData)
+		return newData
 	}
 
 	useEffect(() => {
@@ -43,7 +41,7 @@ export default function LongChartStat({ longStat }: { longStat: LongStat }) {
 			<LineChart
 				width={500}
 				height={300}
-				data={data}
+				data={transformData(longStat)}
 				margin={{
 					top: 5,
 					right: 30,
