@@ -155,7 +155,7 @@ const Sprint = () => {
 				)}
 				<GameResultDialog isOpen={status === 'game-over'} incorrectWords={incorrectWords} correctWords={correctWords} />
 			</Container>
-			<IconButton size="large" onClick={() => selectOption(true)} sx={{ width: 40, height: 40, alignSelf: 'start' }}>
+			<IconButton size="large" onClick={() => navigate(Path.HOME)} sx={{ width: 40, height: 40, alignSelf: 'start' }}>
 				<CloseOutlined />
 			</IconButton>
 		</Container>
