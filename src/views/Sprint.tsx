@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
-import { useMatch, useNavigate } from 'react-router-dom'
+import { useLocation, useMatch, useNavigate } from 'react-router-dom'
 
 import NoIcon from '@mui/icons-material/Cancel'
 import YesIcon from '@mui/icons-material/CheckCircle'
@@ -14,10 +14,19 @@ import { useAppSelector } from '~/app/hooks'
 import { GameResultDialog } from '~/components/game'
 import { Path } from '~/components/router'
 import { Timer, TimerContextProvider, useTimerContext } from '~/components/timer'
+import { selectAuthIsLoggedIn } from '~/features/auth'
 import { answer, gameTimeout, reset, selectSprintState, startGame } from '~/features/sprint'
+import { sendUpdatedStatistic, updateCompletedPagesAfterGame, updateGameStatistic, updateWordStatistic } from '~/features/statistic'
+import { GameName } from '~/types/game'
+import { Word } from '~/types/word'
 import { GAME_TIME, PAGES_PER_GROUP } from '~/utils/constants'
 
+interface LocationState {
+	fromTextbook: boolean
+}
+
 const useSprintGame = () => {
+	const location = useLocation()
 	const dispatch = useDispatch()
 	const navigate = useNavigate()
 	// HACK: react-router-dom@6 does not support optional params anymore
@@ -31,22 +40,63 @@ const useSprintGame = () => {
 		navigate(Path.SPRINT)
 	}
 
-	const { status, word, suggestedTranslation, correctWords, incorrectWords, correctAnswersInRow, gameRound } = useAppSelector(selectSprintState)
+	const { words, status, word, suggestedTranslation, correctWords, incorrectWords, correctAnswersInRow, gameRound, bestSeries } = useAppSelector(selectSprintState)
+	const isLoggedIn = useAppSelector(selectAuthIsLoggedIn)
+
+	const isFromTextbook = !!(location.state as LocationState)?.fromTextbook
 
 	const { start, stop } = useTimerContext()
+
+	const getSprintGameStatistic = () => {
+		const newWords = words.filter((newWord: Word) => !newWord.userWord?.optional).length
+		const correctWordsPercent = (correctWords.length / words.length) * 100
+
+		const newStatistic = {
+			newWords,
+			correctWordsPercent: [correctWordsPercent],
+			longestSeries: bestSeries,
+		}
+
+		return newStatistic
+	}
+
+	const updateEveryWordStatistic = async () => {
+		// update word statistic
+		const correctPromises = correctWords.map(wordToSend => dispatch(updateWordStatistic({ wordToUpdate: wordToSend, newFields: { correctAnswers: 1 } })))
+		const incorrectPromises = incorrectWords.map(wordToSend => dispatch(updateWordStatistic({ wordToUpdate: wordToSend, newFields: { incorrectAnswers: 1 } })))
+
+		await Promise.all([...correctPromises, ...incorrectPromises])
+	}
+
+	const finish = async () => {
+		if (isLoggedIn) {
+			// update every word statistic and learned words in short stat if necessary
+			await updateEveryWordStatistic()
+			// set to completed page field store
+			await dispatch(updateCompletedPagesAfterGame({ correctWords, incorrectWords }))
+
+			// caluclate and set new game statistic
+			const gameStatistic = getSprintGameStatistic()
+			dispatch(updateGameStatistic({ gameName: GameName.Sprint, newStatistic: gameStatistic }))
+
+			// send updated stat to the server
+			await dispatch(sendUpdatedStatistic())
+		}
+	}
 
 	useEffect(() => {
 		if (status === 'game-running') {
 			// TODO: extract `30` to config/constants file
 			start(GAME_TIME)
 		} else if (status === 'game-over') {
+			finish()
 			stop()
 		}
 	}, [status, start, stop])
 
 	// start on mount or when group/page changes
 	useEffect(() => {
-		dispatch(startGame({ group, page: page ?? Math.floor(Math.random() * PAGES_PER_GROUP) }))
+		dispatch(startGame({ group, page: page ?? Math.floor(Math.random() * PAGES_PER_GROUP), isFromTextbook }))
 	}, [dispatch, group, page])
 
 	// reset game on unmount

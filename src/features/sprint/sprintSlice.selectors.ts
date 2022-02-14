@@ -1,6 +1,7 @@
 import { RootState } from '~/app/store'
 
 export const selectSprintState = ({ sprint }: RootState) => ({
+	words: sprint.words,
 	word: sprint.currentWord?.word,
 	suggestedTranslation: sprint.suggestedTranslation,
 	correctOption: sprint.currentWord && sprint.suggestedTranslation === sprint.currentWord?.word,
@@ -9,4 +10,5 @@ export const selectSprintState = ({ sprint }: RootState) => ({
 	status: sprint.status,
 	correctAnswersInRow: sprint.correctAnswersInRow,
 	gameRound: sprint.gameRound,
+	bestSeries: sprint.maxCorrectAnswersSequence,
 })

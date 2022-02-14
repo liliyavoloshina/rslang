@@ -109,7 +109,7 @@ const transformExistingCompletedPages = (completedPages: CompletedPages, group: 
 }
 
 // send updated statistic to the server
-export const sendUpdatedStatistic = createAsyncThunk('textbook/sendUpdatedStatistic', (arg, { getState }) => {
+export const sendUpdatedStatistic = createAsyncThunk('statistic/sendUpdatedStatistic', (arg, { getState }) => {
 	const state = getState() as RootState
 	const statisticToSend = state.statistic.statistics
 	const { userId } = state.auth.userInfo!
@@ -212,16 +212,19 @@ export const updateWordStatistic = createAsyncThunk<
 	const userId = state.auth.userInfo!.userId as string
 	const word = JSON.parse(JSON.stringify(wordToUpdate))
 	const isStatisticExist = !!word.userWord
-	const wordId = word.id
+	// eslint-disable-next-line no-underscore-dangle
+	const wordId = word._id
 
 	const newWordsIds = []
 	const learnedWordsIds = []
 
 	let statisticToUpdate: UserWord
+	let isNew = false
 
 	if (isStatisticExist) {
 		statisticToUpdate = word.userWord!
 	} else {
+		isNew = true
 		statisticToUpdate = {
 			difficulty: WordDifficulty.Normal,
 			optional: {
@@ -231,8 +234,6 @@ export const updateWordStatistic = createAsyncThunk<
 				isLearned: false,
 			},
 		}
-
-		newWordsIds.push(wordToUpdate.id)
 	}
 
 	let newLearnedAmount = 0
@@ -245,7 +246,7 @@ export const updateWordStatistic = createAsyncThunk<
 		statisticToUpdate.optional.isLearned = isLearned
 		statisticToUpdate.difficulty = WordDifficulty.Normal
 		newLearnedAmount += 1
-		learnedWordsIds.push(wordToUpdate.id)
+		learnedWordsIds.push(wordId)
 	}
 
 	if (newDifficulty) {
@@ -253,12 +254,15 @@ export const updateWordStatistic = createAsyncThunk<
 	}
 
 	if (newCorrectAnswers) {
+		if (isNew) {
+			newWordsIds.push(wordId)
+		}
 		const updatedFields = updateWordCorrectAnswers(difficulty, correctAnswers, correctStrike)
 
 		// if word wasn't learned - increase learned words in short stat
 		if (wasLearned === false && updatedFields.isLearned === true) {
 			newLearnedAmount += 1
-			learnedWordsIds.push(wordToUpdate.id)
+			learnedWordsIds.push(wordId)
 		}
 
 		statisticToUpdate.optional = {
@@ -272,6 +276,9 @@ export const updateWordStatistic = createAsyncThunk<
 	}
 
 	if (newIncorrectAnswers) {
+		if (isNew) {
+			newWordsIds.push(wordId)
+		}
 		const updatedFields = updateWordIncorrectAnswers(incorrectAnswers)
 
 		// if word was learned - decrease learned words in short stat
@@ -297,7 +304,7 @@ export const updateWordStatistic = createAsyncThunk<
 })
 
 // creates and pushes new statistic when user signed up
-export const createNewStatistic = createAsyncThunk('textbook/createNewStatistic', async (arg, { getState }) => {
+export const createNewStatistic = createAsyncThunk('statistic/createNewStatistic', async (arg, { getState }) => {
 	const state = getState() as RootState
 	const { userInfo } = state.auth
 
@@ -305,14 +312,17 @@ export const createNewStatistic = createAsyncThunk('textbook/createNewStatistic'
 		throw new Error('Not permitted')
 	}
 
+	// we set yesterday with 0 answers for more demontrative statistics graphics
+	const yesterday = new Date(new Date().setDate(new Date().getDate() - 1)).getTime()
+
 	const newStatistic: UserStatistic = {
 		learnedWords: 0,
 		optional: {
 			completedPages: { 0: { 0: false } },
 			shortStat: INITIAL_SHORT_STATISTICS,
 			longStat: {
-				newWords: {},
-				learnedWords: {},
+				newWords: { [yesterday]: [] },
+				learnedWords: { [yesterday]: [] },
 			},
 		},
 	}
@@ -326,7 +336,7 @@ const updateStatisticCalulated = (newWordsAudiocall: number, correctWordsPercent
 	const averagePercentAudiocall = correctWordsPercentAudiocall.length ? correctWordsPercentAudiocall.reduce((a, b) => a + b) / correctWordsPercentAudiocall.length : 0
 	const averagePercentSprint = correctWordsPercentSprint.length ? correctWordsPercentSprint.reduce((a, b) => a + b) / correctWordsPercentSprint.length : 0
 
-	const totalCorrectPercentShort = (averagePercentAudiocall + averagePercentSprint).toFixed(0)
+	const totalCorrectPercentShort = ((averagePercentAudiocall + averagePercentSprint) / 2).toFixed(0)
 
 	const correctAudiocall = averagePercentAudiocall.toFixed(0)
 	const correctSprint = averagePercentSprint.toFixed(0)
@@ -359,7 +369,6 @@ export const statisticSlice = createSlice({
 		updateShortStatistics: state => {
 			state.statistics.optional.shortStat = INITIAL_SHORT_STATISTICS
 		},
-		updateLongStatistics: state => {},
 	},
 
 	extraReducers: builder => {
@@ -401,11 +410,8 @@ export const statisticSlice = createSlice({
 				const currentLearnedWords = learnedWordsExist[currentDate] || []
 				const currentNewWords = newWordsExist[currentDate] || []
 
-				const uniqueLearnedWordsIds = new Set([...currentLearnedWords, ...learnedWordsIds])
-				const uniqueNewWordsIds = new Set([...currentNewWords, ...newWordsIds])
-
-				state.statistics.optional.longStat.learnedWords[currentDate] = [...uniqueLearnedWordsIds]
-				state.statistics.optional.longStat.newWords[currentDate] = [...uniqueNewWordsIds]
+				state.statistics.optional.longStat.learnedWords[currentDate] = [...currentLearnedWords, ...learnedWordsIds]
+				state.statistics.optional.longStat.newWords[currentDate] = [...currentNewWords, ...newWordsIds]
 			})
 			.addCase(updateCompletedPages.fulfilled, (state, action) => {
 				const { isPageCompleted, page, group } = action.payload
