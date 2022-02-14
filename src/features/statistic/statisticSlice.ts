@@ -320,6 +320,20 @@ export const createNewStatistic = createAsyncThunk('textbook/createNewStatistic'
 	await setNewStatistic(userInfo.userId, newStatistic)
 })
 
+const updateStatisticCalulated = (newWordsAudiocall: number, correctWordsPercentAudiocall: number[], newWordsSprint: number, correctWordsPercentSprint: number[]) => {
+	const totalNewWordsShort = newWordsAudiocall + newWordsSprint
+
+	const averagePercentAudiocall = correctWordsPercentAudiocall.length ? correctWordsPercentAudiocall.reduce((a, b) => a + b) / correctWordsPercentAudiocall.length : 0
+	const averagePercentSprint = correctWordsPercentSprint.length ? correctWordsPercentSprint.reduce((a, b) => a + b) / correctWordsPercentSprint.length : 0
+
+	const totalCorrectPercentShort = (averagePercentAudiocall + averagePercentSprint).toFixed(0)
+
+	const correctAudiocall = averagePercentAudiocall.toFixed(0)
+	const correctSprint = averagePercentSprint.toFixed(0)
+
+	return { totalNewWordsShort, totalCorrectPercentShort, correctAudiocall, correctSprint }
+}
+
 export const statisticSlice = createSlice({
 	name: 'statistic',
 	initialState,
@@ -365,15 +379,17 @@ export const statisticSlice = createSlice({
 				const { newWords: newWordsAudiocall, correctWordsPercent: correctWordsPercentAudiocall } = audiocall
 				const { newWords: newWordsSprint, correctWordsPercent: correctWordsPercentSprint } = sprint
 
-				const totalNewWordsToday = newWordsAudiocall + newWordsSprint
+				const { totalNewWordsShort, totalCorrectPercentShort, correctAudiocall, correctSprint } = updateStatisticCalulated(
+					newWordsAudiocall,
+					correctWordsPercentAudiocall,
+					newWordsSprint,
+					correctWordsPercentSprint
+				)
 
-				const averagePercentAudiocall = correctWordsPercentAudiocall.length ? correctWordsPercentAudiocall.reduce((a, b) => a + b) / correctWordsPercentAudiocall.length : 0
-				const averagePercentSprint = correctWordsPercentSprint.length ? correctWordsPercentSprint.reduce((a, b) => a + b) / correctWordsPercentSprint.length : 0
-				const totalCorrectPercentToday = (averagePercentAudiocall + averagePercentSprint).toFixed(0)
-
-				state.statisticsCalculated.totalNewWordsShort = totalNewWordsToday
-				state.statisticsCalculated.totalCorrectPercentShort = totalCorrectPercentToday
-				state.statisticsCalculated.correctWordsPercentAudiocall = averagePercentAudiocall.toFixed(0)
+				state.statisticsCalculated.totalNewWordsShort = totalNewWordsShort
+				state.statisticsCalculated.totalCorrectPercentShort = totalCorrectPercentShort
+				state.statisticsCalculated.correctWordsPercentAudiocall = correctAudiocall
+				state.statisticsCalculated.correctWordsPercentSprint = correctSprint
 			})
 			.addCase(updateWordStatistic.fulfilled, (state, action) => {
 				const { newLearnedAmount, newWordsIds, learnedWordsIds } = action.payload

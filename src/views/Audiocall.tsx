@@ -135,9 +135,6 @@ function Audiocall() {
 	}
 
 	const finish = async () => {
-		// update every word statistic and learned words in short stat if necessary
-		await updateEveryWordStatistic()
-
 		if (isLoggedIn) {
 			// set to completed page field store
 			await dispatch(updateCompletedPagesAfterGame({ correctWords, incorrectWords }))
@@ -149,6 +146,9 @@ function Audiocall() {
 			// send updated stat to the server
 			await dispatch(sendUpdatedStatistic())
 		}
+
+		// update every word statistic and learned words in short stat if necessary
+		await updateEveryWordStatistic()
 	}
 
 	useEffect(() => {
