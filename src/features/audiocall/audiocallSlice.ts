@@ -189,6 +189,7 @@ export const audiocallSlice = createSlice({
 		builder
 			.addCase(fetchAudiocallWords.pending, state => {
 				state.status = 'loading'
+				state.isFinished = false
 			})
 			.addCase(fetchAudiocallWords.fulfilled, (state, action) => {
 				state.status = 'success'

@@ -16,15 +16,11 @@ export default function LongChartStat({ longStat }: { longStat: LongStat }) {
 		const newData: Data[] = []
 
 		const dates = Object.keys(oldData.learnedWords)
-		// const testDate = new Date('2022-02-09T12:46:24.279Z').getTime()
-		// const dates = [testDate, ...Object.keys(oldData.learnedWords)]
 
 		dates.forEach(date => {
 			const transformedDate = new Date(+date).toLocaleDateString()
 			const totalLearnedWords = learnedWords[+date].length
 			const totalNewWords = newWords[+date].length
-			// const totalLearnedWords = learnedWords[+date] ? learnedWords[+date].length : 0
-			// const totalNewWords = newWords[+date] ? newWords[+date].length : 0
 			const newDate = { name: transformedDate, learnedWords: totalLearnedWords, newWords: totalNewWords }
 			newData.push(newDate)
 		})
@@ -54,8 +50,8 @@ export default function LongChartStat({ longStat }: { longStat: LongStat }) {
 				<YAxis />
 				<Tooltip />
 				<Legend />
-				<Line type="monotone" dataKey="newWords" stroke="#8884d8" activeDot={{ r: 8 }} />
-				<Line type="monotone" dataKey="learnedWords" stroke="#82ca9d" />
+				<Line type="monotone" name="New words" dataKey="newWords" stroke="#8884d8" activeDot={{ r: 8 }} />
+				<Line type="monotone" name="Learned words" dataKey="learnedWords" stroke="#82ca9d" />
 			</LineChart>
 		</ResponsiveContainer>
 	)

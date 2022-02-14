@@ -1,9 +1,10 @@
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 
+import { RootState } from '~/app/store'
 import { Word } from '~/types/word'
-import { getAllWords } from '~/utils/api'
+import { getAllWords, getNotLearnedWord, getUserWords } from '~/utils/api'
 // TODO: uncomment and use this instead of hardcoded temp test value
-import { MAX_WORDS_GAME_AMOUNT } from '~/utils/constants'
+import { MAX_WORDS_GAME_AMOUNT, WORD_PER_PAGE_AMOUNT } from '~/utils/constants'
 import { shuffleArray } from '~/utils/helpers'
 
 type SprintState = {
@@ -42,7 +43,49 @@ const getSuggestedTranslation = (currentWord: Word, words: Word[]) => {
 	return otherWords[Math.floor(Math.random() * otherWords.length)].wordTranslate
 }
 
-export const startGame = createAsyncThunk('sprint/startGame', ({ group, page }: { group: number; page: number }) => getAllWords(group, page))
+// TODO: we need to get aggregated words here, so we will have userWord field
+// export const startGame = createAsyncThunk('sprint/startGame', ({ group, page }: { group: number; page: number }) => getAllWords(group, page))
+
+interface FetchWordsParams {
+	group: number
+	page: number
+	isFromTextbook: boolean
+}
+
+export const startGame = createAsyncThunk<Word[], FetchWordsParams, { state: RootState }>('sprint/startGame', async ({ group, page, isFromTextbook }, { getState }) => {
+	const state = getState()
+	const { isLoggedIn, userInfo } = state.auth
+
+	let wordsForGame
+
+	// if there are possibly learned words
+	if (userInfo && isLoggedIn) {
+		const allUserWordsResponse = await getUserWords(userInfo.userId, group, page)
+		const allUserWords = allUserWordsResponse[0].paginatedResults
+
+		if (isFromTextbook) {
+			const addNotLearnedWordsFromPage = async (currentPage: number, words: Word[]): Promise<Word[]> => {
+				const response = await getNotLearnedWord(userInfo.userId, group, currentPage)
+				const wordsFromPage = response[0].paginatedResults
+				words.unshift(...wordsFromPage)
+
+				if (words.length < WORD_PER_PAGE_AMOUNT && currentPage !== 0) {
+					return addNotLearnedWordsFromPage(currentPage - 1, words)
+				}
+
+				const sliced = words.slice(0, WORD_PER_PAGE_AMOUNT)
+				return sliced
+			}
+			wordsForGame = await addNotLearnedWordsFromPage(page, [])
+		} else {
+			wordsForGame = allUserWords
+		}
+	} else {
+		wordsForGame = await getAllWords(group, page)
+	}
+
+	return wordsForGame
+})
 
 export const sprintSlice = createSlice({
 	name: 'sprint',
@@ -66,6 +109,7 @@ export const sprintSlice = createSlice({
 					state.incorrectWords.push(state.currentWord)
 					state.maxCorrectAnswersSequence = Math.max(state.maxCorrectAnswersSequence, state.correctAnswersInRow)
 					state.correctAnswersInRow = 0
+					console.log(state.maxCorrectAnswersSequence, 'state.maxCorrectAnswersSequence')
 					incorrectAnswerAudio.play()
 				}
 			}

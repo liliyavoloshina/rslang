@@ -100,6 +100,7 @@ function Audiocall() {
 
 		window.addEventListener('keydown', handleKeyDown)
 		return () => {
+			dispatch(resetGame())
 			window.removeEventListener('keydown', handleKeyDown)
 		}
 	}, [dispatch, fetchWords, handleKeyDown])
@@ -121,21 +122,17 @@ function Audiocall() {
 	const updateEveryWordStatistic = async () => {
 		// update word statistic
 
-		if (correctWords.length > 0) {
-			for (const word of correctWords) {
-				await dispatch(updateWordStatistic({ wordToUpdate: word, newFields: { correctAnswers: 1 } }))
-			}
-		}
+		const correctPromises = correctWords.map(word => dispatch(updateWordStatistic({ wordToUpdate: word, newFields: { correctAnswers: 1 } })))
+		const incorrectPromises = incorrectWords.map(word => dispatch(updateWordStatistic({ wordToUpdate: word, newFields: { incorrectAnswers: 1 } })))
 
-		if (incorrectWords.length > 0) {
-			for (const word of incorrectWords) {
-				await dispatch(updateWordStatistic({ wordToUpdate: word, newFields: { incorrectAnswers: 1 } }))
-			}
-		}
+		await Promise.all([...correctPromises, ...incorrectPromises])
 	}
 
 	const finish = async () => {
+		// dipatch
 		if (isLoggedIn) {
+			// update every word statistic and learned words in short stat if necessary
+			await updateEveryWordStatistic()
 			// set to completed page field store
 			await dispatch(updateCompletedPagesAfterGame({ correctWords, incorrectWords }))
 
@@ -146,9 +143,6 @@ function Audiocall() {
 			// send updated stat to the server
 			await dispatch(sendUpdatedStatistic())
 		}
-
-		// update every word statistic and learned words in short stat if necessary
-		await updateEveryWordStatistic()
 	}
 
 	useEffect(() => {
