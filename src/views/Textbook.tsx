@@ -77,7 +77,7 @@ function Textbook() {
 				)}
 
 				<Stack spacing={2} direction="row" justifyContent="space-between">
-					<Button component={RouterLink} to={`${Path.SPRINT}/${group}/${page}`} disabled={isPageCompleted}>
+					<Button component={RouterLink} to={`${Path.SPRINT}?group=${group}&page=${page}`} disabled={isPageCompleted}>
 						{t('TEXTBOOK.OPEN_SPRTING_GAME')}
 					</Button>
 					<Button component={RouterLink} to={`${Path.AUDIOCALL}/${group}/${page}`} state={{ fromTextbook: true }} disabled={isPageCompleted}>
