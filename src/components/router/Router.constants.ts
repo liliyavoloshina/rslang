@@ -5,7 +5,6 @@ import { Logoff } from '~/views/Logoff'
 import SignIn from '~/views/SignIn'
 import SignUp from '~/views/SignUp'
 import Sprint from '~/views/Sprint'
-import SprintLevelSelect from '~/views/SprintLevelSelect'
 import Statistic from '~/views/Statistic'
 import Textbook from '~/views/Textbook'
 
@@ -20,8 +19,6 @@ enum Path {
 	SIGN_UP = '/signup',
 	LOGOFF = '/logoff',
 	SPRINT = '/sprint',
-	SPRINT_WITH_GROUP = '/sprint/:group',
-	SPRINT_WITH_GROUP_AND_PAGE = '/sprint/:group/:page',
 }
 
 const RouteByPath: Record<Path, () => JSX.Element> = {
@@ -34,9 +31,7 @@ const RouteByPath: Record<Path, () => JSX.Element> = {
 	[Path.SIGN_IN]: SignIn,
 	[Path.SIGN_UP]: SignUp,
 	[Path.LOGOFF]: Logoff,
-	[Path.SPRINT]: SprintLevelSelect,
-	[Path.SPRINT_WITH_GROUP]: Sprint,
-	[Path.SPRINT_WITH_GROUP_AND_PAGE]: Sprint,
+	[Path.SPRINT]: Sprint,
 }
 
 export { Path, RouteByPath }

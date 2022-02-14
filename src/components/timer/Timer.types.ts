@@ -1,6 +1,5 @@
-import { BoxProps } from '@mui/material'
-
-export type TimerProps = BoxProps & {
+export type TimerProps = {
+	duration: number
 	onTimeout?: () => void
 	onTimeAlmostUp?: (time: number) => void
 }
