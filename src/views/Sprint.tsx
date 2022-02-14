@@ -17,7 +17,7 @@ import { GameResultDialog } from '~/components/game'
 import { Path } from '~/components/router'
 import { Timer, TimerContextProvider, useTimerContext } from '~/components/timer'
 import { selectAuthIsLoggedIn } from '~/features/auth'
-import { answer, gameTimeout, playWordAudio, reset, selectSprintState, startGame, toggleMute } from '~/features/sprint'
+import { answer, gameTimeAlmostUp, gameTimeout, playWordAudio, reset, selectSprintState, startGame, toggleMute } from '~/features/sprint'
 import { sendUpdatedStatistic, updateCompletedPagesAfterGame, updateGameStatistic, updateWordStatistic } from '~/features/statistic'
 import { Word } from '~/types/word'
 import { BASE_CORRECT_ANSWER_POINTS, GAME_TIME, PAGES_PER_GROUP } from '~/utils/constants'
@@ -143,7 +143,11 @@ const useSprintGame = () => {
 		dispatch(gameTimeout())
 	}, [dispatch])
 
-	return { status, word, suggestedTranslation, selectOption, correctWords, incorrectWords, correctAnswersInRow, gameRound, totalPoints, onTimeout, isMute }
+	const onTimeAlmostUp = useCallback(() => {
+		dispatch(gameTimeAlmostUp())
+	}, [dispatch])
+
+	return { status, word, suggestedTranslation, selectOption, correctWords, incorrectWords, correctAnswersInRow, gameRound, totalPoints, onTimeout, onTimeAlmostUp, isMute }
 }
 
 const SprintInner = () => {
@@ -153,7 +157,8 @@ const SprintInner = () => {
 	const questionBlockRef = useRef<HTMLDivElement>(null)
 	const answerAnimationTimeout = useRef<NodeJS.Timeout>()
 
-	const { status, word, suggestedTranslation, selectOption, correctWords, incorrectWords, correctAnswersInRow, gameRound, totalPoints, onTimeout, isMute } = useSprintGame()
+	const { status, word, suggestedTranslation, selectOption, correctWords, incorrectWords, correctAnswersInRow, gameRound, totalPoints, onTimeout, onTimeAlmostUp, isMute } =
+		useSprintGame()
 
 	const animateAnswer = useCallback((color: string) => {
 		if (!questionBlockRef.current) {
@@ -194,7 +199,7 @@ const SprintInner = () => {
 
 	return (
 		<Container maxWidth="lg" sx={{ display: 'flex', alignItems: 'baseline-position', justifyContent: 'space-between', height: '100%' }}>
-			<Timer onTimeout={onTimeout} sx={{ width: 50, height: 50, alignSelf: 'start', marginTop: 3 }} />
+			<Timer onTimeout={onTimeout} onTimeAlmostUp={onTimeAlmostUp} sx={{ width: 50, height: 50, alignSelf: 'start', marginTop: 3 }} />
 
 			<Container maxWidth="sm" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
 				{status === 'game-running' && word && (

@@ -149,6 +149,12 @@ export const sprintSlice = createSlice({
 		gameTimeout: state => {
 			state.status = 'game-over'
 		},
+		gameTimeAlmostUp: state => {
+			if (!state.isMute) {
+				const audio = new Audio('/assets/audio/time_count.mp3')
+				audio.play()
+			}
+		},
 		playWordAudio: state => {
 			const newAudio = new Audio(state.audioPath)
 			newAudio.play()
@@ -173,6 +179,6 @@ export const sprintSlice = createSlice({
 	},
 })
 
-export const { answer, reset, gameTimeout, playWordAudio, toggleMute } = sprintSlice.actions
+export const { answer, reset, gameTimeAlmostUp, gameTimeout, playWordAudio, toggleMute } = sprintSlice.actions
 
 export default sprintSlice.reducer
