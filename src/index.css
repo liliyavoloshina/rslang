@@ -21,3 +21,7 @@ body {
 .footer {
 	flex: 0 0 auto;
 }
+
+.recharts-responsive-container {
+	font-family: Roboto, sans-serif;
+}

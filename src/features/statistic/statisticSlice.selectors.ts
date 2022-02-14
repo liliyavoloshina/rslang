@@ -6,3 +6,4 @@ export const selectStatisticTotalNewWordsShort = (state: RootState) => state.sta
 export const selectStatisticTotalCorrectPercentShort = (state: RootState) => state.statistic.statisticsCalculated.totalCorrectPercentShort
 export const selectStatisticCorrectWordsPercentAudiocall = (state: RootState) => state.statistic.statisticsCalculated.correctWordsPercentAudiocall
 export const selectStatisticCorrectWordsPercentSprint = (state: RootState) => state.statistic.statisticsCalculated.correctWordsPercentSprint
+export const selectStatisticLongStat = (state: RootState) => state.statistic.statistics.optional.longStat
