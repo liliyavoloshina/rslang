@@ -347,7 +347,7 @@ export const statisticSlice = createSlice({
 	name: 'statistic',
 	initialState,
 	reducers: {
-		updateGameStatistic: (state, action: PayloadAction<{ gameName: string; newStatistic: ShortStatGame }>) => {
+		updateGameStatistic: (state, action: PayloadAction<{ gameName: 'audiocall' | 'sprint'; newStatistic: ShortStatGame }>) => {
 			const { gameName, newStatistic } = action.payload
 			const existingStatistic = state.statistics.optional.shortStat
 			const oldDate = new Date(existingStatistic.date)

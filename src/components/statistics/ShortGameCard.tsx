@@ -12,7 +12,7 @@ import ListItemText from '@mui/material/ListItemText'
 import Typography from '@mui/material/Typography'
 
 interface ShortGameCardProps {
-	gameName: string
+	gameName: 'audiocall' | 'sprint'
 	newWords: number
 	correctPercent: string
 	longestSeries: number
