@@ -23,7 +23,7 @@ const LanguageMenu = () => {
 	return (
 		<>
 			<IconButton sx={{ width: 48, height: 48, mr: 2 }} onClick={e => setAnchorEl(e.currentTarget)}>
-				<img src={`/assets/flags/${i18n.language}.png`} alt={i18n.language} style={{ width: '100%', height: '100%' }} />
+				<img src={`/assets/flags/${i18n.language.split('-')[0]}.png`} alt={i18n.language} style={{ width: '100%', height: '100%' }} />
 			</IconButton>
 			<Menu
 				anchorEl={anchorEl}
