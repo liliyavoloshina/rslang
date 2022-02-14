@@ -16,26 +16,37 @@ axios.interceptors.request.use(async requestConfig => {
 	}
 
 	if (userInfo && userInfo.token) {
+		const refreshURL = `users/${userInfo.userId}/tokens`
+		if (requestConfig.url === refreshURL) {
+			// skip sending new refresh request while sending another refresh request
+			return requestConfig
+		}
+
 		const singinDate = userInfo.expirationDate!
 		const currentDate = new Date().getTime()
 		const isExpired = singinDate < currentDate
 
 		if (isExpired) {
-			const refreshConfig: AxiosRequestHeaders = {
+			const refreshHeaders: AxiosRequestHeaders = {
 				'Content-Type': 'application/json',
 				Authorization: `Bearer ${userInfo.refreshToken}`,
 			}
-			const { data: token } = await axios.get<TokenResponse>(`users/${userInfo.userId}/tokens`, refreshConfig)
-			const updatedUserInfo = {
-				name: token.name,
-				refreshToken: token.refreshToken,
-				token: token.token,
-				userId: token.userId,
+			try {
+				const { data } = await axios.get<TokenResponse>(refreshURL, { headers: refreshHeaders })
+				const updatedUserInfo = {
+					name: data.name,
+					refreshToken: data.refreshToken,
+					token: data.token,
+					userId: data.userId,
+				}
+
+				localStorageSetUser(updatedUserInfo)
+
+				userInfo.token = updatedUserInfo.token
+				headers.Authorization = `Bearer ${updatedUserInfo.token}`
+			} catch {
+				window.location.pathname = Path.LOGOFF
 			}
-
-			localStorageSetUser(updatedUserInfo)
-
-			headers.Authorization = `Bearer ${updatedUserInfo.token}`
 		} else {
 			headers.Authorization = `Bearer ${userInfo.token}`
 		}
