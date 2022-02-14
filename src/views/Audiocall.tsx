@@ -147,7 +147,7 @@ function Audiocall() {
 			dispatch(updateGameStatistic({ gameName: GameName.Audiocall, newStatistic: gameStatistic }))
 
 			// send updated stat to the server
-			dispatch(sendUpdatedStatistic())
+			await dispatch(sendUpdatedStatistic())
 		}
 	}
 

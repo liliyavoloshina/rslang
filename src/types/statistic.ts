@@ -21,9 +21,19 @@ interface ShortStat {
 	learnedWords: number
 }
 
+interface LongStatWords {
+	[key: number]: string[]
+}
+
+interface LongStat {
+	newWords: LongStatWords
+	learnedWords: LongStatWords
+}
+
 interface StatisticOptional {
 	completedPages: CompletedPages
 	shortStat: ShortStat
+	longStat: LongStat
 }
 
 interface UserStatistic {
