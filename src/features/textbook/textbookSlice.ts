@@ -93,7 +93,7 @@ export const textbookSlice = createSlice({
 				state.words = state.words.filter(word => word.id !== passedWordId)
 			}
 		},
-		changeWordLearnedStatus: (state, action) => {
+		markWordAsLearned: (state, action) => {
 			const wordId = action.payload
 
 			state.words = state.words.map(word => {
@@ -152,5 +152,5 @@ export const textbookSlice = createSlice({
 	},
 })
 
-export const { changePage, changeGroup, changeWordDifficulty, changeWordLearnedStatus } = textbookSlice.actions
+export const { changePage, changeGroup, changeWordDifficulty, markWordAsLearned } = textbookSlice.actions
 export default textbookSlice.reducer

@@ -4,34 +4,20 @@ import { useTranslation } from 'react-i18next'
 import { Box, Container, Stack, Typography } from '@mui/material'
 
 import { useAppDispatch, useAppSelector } from '~/app/hooks'
-import LongChartStat from '~/components/statistics/LongChartStat'
+import LongStatChart from '~/components/statistics/LongStatChart'
 import ShortGameCard from '~/components/statistics/ShortGameCard'
 import ShortWordCard from '~/components/statistics/ShortWordCard'
-import {
-	fetchUserStatistics,
-	selectStatisticCorrectWordsPercentAudiocall,
-	selectStatisticCorrectWordsPercentSprint,
-	selectStatisticLongStat,
-	selectStatisticOptional,
-	selectStatisticTotalCorrectPercentShort,
-	selectStatisticTotalNewWordsShort,
-	sendUpdatedStatistic,
-	updateShortStatistics,
-} from '~/features/statistic'
+import { fetchUserStatistics, selectStatisticCalculated, selectStatisticOptional, sendUpdatedStatistic, updateShortStatistics } from '~/features/statistic'
 import { isTheSameDay } from '~/utils/helpers'
 
 function Statistic() {
 	const { t } = useTranslation()
 	const dispatch = useAppDispatch()
-	const statistics = useAppSelector(selectStatisticOptional)
-	const totalNewWordsShort = useAppSelector(selectStatisticTotalNewWordsShort)
-	const totalCorrectPercentShort = useAppSelector(selectStatisticTotalCorrectPercentShort)
-	const correctWordsPercentAudiocall = useAppSelector(selectStatisticCorrectWordsPercentAudiocall)
-	const correctWordsPercentSprint = useAppSelector(selectStatisticCorrectWordsPercentSprint)
-	const longStat = useAppSelector(selectStatisticLongStat)
+	const { shortStat, longStat } = useAppSelector(selectStatisticOptional)
+	const { totalNewWordsShort, totalCorrectPercentShort, correctWordsPercentAudiocall, correctWordsPercentSprint } = useAppSelector(selectStatisticCalculated)
 
-	const { date, learnedWords } = statistics.shortStat
-	const { audiocall, sprint } = statistics.shortStat.games
+	const { date, learnedWords } = shortStat
+	const { audiocall, sprint } = shortStat.games
 	const { newWords: newWordsAudiocall, longestSeries: longestSeriesAudiocall } = audiocall
 	const { newWords: newWordsSprint, longestSeries: longestSeriesSprint } = sprint
 
@@ -41,7 +27,7 @@ function Statistic() {
 	const getStatisics = async () => {
 		if (!isTheSameDay(oldDate, curDate)) {
 			dispatch(updateShortStatistics())
-			dispatch(sendUpdatedStatistic())
+			await dispatch(sendUpdatedStatistic())
 		}
 
 		await dispatch(fetchUserStatistics())
@@ -75,7 +61,7 @@ function Statistic() {
 				<Typography variant="h4" sx={{ mt: 5, mb: 5 }} align="center">
 					Statistics for all time
 				</Typography>
-				<LongChartStat longStat={longStat} />
+				<LongStatChart longStat={longStat} />
 			</Box>
 		</Container>
 	)
