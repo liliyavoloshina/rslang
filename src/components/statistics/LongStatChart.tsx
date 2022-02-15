@@ -1,43 +1,33 @@
-import { useEffect } from 'react'
+import { useMemo } from 'react'
 
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 
 import { LongStat } from '~/types/statistic'
 
-interface Data {
+type ChartData = {
 	name: string
 	learnedWords: number
 	newWords: number
-}
+}[]
 
-export default function LongChartStat({ longStat }: { longStat: LongStat }) {
-	const transformData = (oldData: LongStat) => {
-		const { learnedWords, newWords } = oldData
-		const newData: Data[] = []
-
-		const dates = Object.keys(oldData.learnedWords)
-
-		dates.forEach(date => {
+export default function LongStatChart({ longStat }: { longStat: LongStat }) {
+	const chartData = useMemo<ChartData>(() => {
+		const { learnedWords, newWords } = longStat
+		const dates = Object.keys(longStat.learnedWords)
+		return dates.map(date => {
 			const transformedDate = new Date(+date).toLocaleDateString()
 			const totalLearnedWords = learnedWords[+date].length
 			const totalNewWords = newWords[+date].length
-			const newDate = { name: transformedDate, learnedWords: totalLearnedWords, newWords: totalNewWords }
-			newData.push(newDate)
+			return { name: transformedDate, learnedWords: totalLearnedWords, newWords: totalNewWords }
 		})
-
-		return newData
-	}
-
-	useEffect(() => {
-		transformData(longStat)
-	}, [])
+	}, [longStat])
 
 	return (
 		<ResponsiveContainer width="95%" height={400}>
 			<LineChart
 				width={500}
 				height={300}
-				data={transformData(longStat)}
+				data={chartData}
 				margin={{
 					top: 5,
 					right: 30,

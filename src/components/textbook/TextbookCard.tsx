@@ -17,7 +17,7 @@ import { blue, lightGreen } from '@mui/material/colors'
 
 import { useAppDispatch, useAppSelector } from '~/app/hooks'
 import { updateCompletedPages, updateWordStatistic } from '~/features/statistic'
-import { changeWordDifficulty, changeWordLearnedStatus, selectTextbookGroup } from '~/features/textbook'
+import { changeWordDifficulty, markWordAsLearned, selectTextbookGroup } from '~/features/textbook'
 import { Word, WordDifficulty } from '~/types/word'
 import { DOMAIN_URL } from '~/utils/constants'
 
@@ -90,7 +90,7 @@ export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: Te
 		// update word stat
 		await dispatch(updateWordStatistic({ wordToUpdate: passedWord, newFields: { isLearned: true } }))
 		// update ui
-		dispatch(changeWordLearnedStatus(passedWord.id))
+		dispatch(markWordAsLearned(passedWord.id))
 
 		dispatch(updateCompletedPages({ page, group }))
 	}

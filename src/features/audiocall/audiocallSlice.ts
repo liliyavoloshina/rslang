@@ -56,7 +56,6 @@ export const fetchAudiocallWords = createAsyncThunk<{ wordsForGame: Word[]; answ
 		const { isLoggedIn, userInfo } = state.auth
 
 		let wordsForGame
-		let answers
 
 		// if there are possibly learned words
 		if (userInfo && isLoggedIn) {
@@ -73,21 +72,18 @@ export const fetchAudiocallWords = createAsyncThunk<{ wordsForGame: Word[]; answ
 						return addNotLearnedWordsFromPage(currentPage - 1, words)
 					}
 
-					const sliced = words.slice(0, WORD_PER_PAGE_AMOUNT)
-					return sliced
+					return words.slice(0, WORD_PER_PAGE_AMOUNT)
 				}
 				wordsForGame = await addNotLearnedWordsFromPage(page, [])
 			} else {
 				wordsForGame = allUserWords
 			}
-
-			// there maybe not enough answers if available words is less than 5
-			answers = allUserWords.map((word: Word) => word.wordTranslate)
 		} else {
 			const allWords = await getAllWords(group, page)
 			wordsForGame = allWords
-			answers = allWords.map((word: Word) => word.wordTranslate)
 		}
+
+		const answers = wordsForGame.map((word: Word) => word.wordTranslate)
 
 		return { wordsForGame, answers }
 	}
