@@ -24,6 +24,7 @@ export interface AudiocallState {
 	audioPath: string
 	status: 'idle' | 'loading' | 'failed' | 'success'
 	isWithSounds: boolean
+	progress: number
 }
 
 const initialState: AudiocallState = {
@@ -43,6 +44,7 @@ const initialState: AudiocallState = {
 	audioPath: '',
 	status: 'idle',
 	isWithSounds: true,
+	progress: 0,
 }
 
 interface FetchWordsParams {
@@ -91,6 +93,10 @@ export const fetchAudiocallWords = createAsyncThunk<{ wordsForGame: Word[]; answ
 	}
 )
 
+const calulateProgress = (totalLength: number, currentNumber: number) => {
+	return Math.floor((currentNumber / totalLength) * 100)
+}
+
 const getRandomAnswers = (correctAnswer: string, answers: string[]) => {
 	shuffleArray(answers)
 
@@ -127,6 +133,8 @@ export const audiocallSlice = createSlice({
 					incorrectAnswerAudio.play()
 				}
 			}
+
+			state.progress = calulateProgress(state.words.length, state.currentIdx + 1)
 
 			if (state.currentIdx === state.words.length - 1) {
 				state.isFinished = true
