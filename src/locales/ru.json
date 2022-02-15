@@ -1,117 +1,123 @@
 {
-  "HEADER": {
-    "LOGO": "ЛОГО",
-    "HOME": "Домой",
-    "TEXTBOOK": "Словарь",
-    "STATISTIC": "Статистика",
-    "GAMES": "Игры",
-    "SIGN_UP": "Зарегистрироваться",
-    "SIGN_IN": "Войти",
-    "GAME": {
-      "AUDIOCALL": "Аудиовызов",
-      "SPRINT": "Спринт"
-    },
-    "OPEN_ACCOUNT": "Настройки",
-    "WELCOME": "Привет, {{name}}!"
-  },
+	"HEADER": {
+		"LOGO": "ЛОГО",
+		"HOME": "Домой",
+		"TEXTBOOK": "Словарь",
+		"STATISTIC": "Статистика",
+		"GAMES": "Игры",
+		"SIGN_UP": "Зарегистрироваться",
+		"SIGN_IN": "Войти",
+		"GAME": {
+			"AUDIOCALL": "Аудиовызов",
+			"SPRINT": "Спринт"
+		},
+		"OPEN_ACCOUNT": "Настройки",
+		"WELCOME": "Привет, {{name}}!"
+	},
 
-  "HOME": {
-    "TITLE": "RS Lang",
-    "DESCRIPTION": "body1. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos blanditiis tenetur unde suscipit, quam beatae rerum inventore consectetur, neque doloribus, cupiditate numquam dignissimos laborum fugiat deleniti? Eum quasi quidem quibusdam.",
+	"HOME": {
+		"TITLE": "RS Lang",
+		"DESCRIPTION": "body1. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos blanditiis tenetur unde suscipit, quam beatae rerum inventore consectetur, neque doloribus, cupiditate numquam dignissimos laborum fugiat deleniti? Eum quasi quidem quibusdam.",
 
-    "ADVANTAGES": {
-      "MINI_GAMES": "Мини-игры",
-      "MINI_GAMES_DESC": "Изучать язык через игру - это весело!",
-      "TEXTBOOX": "Словарь",
-      "TEXTBOOX_DESC": "В словаре хранятся все нужные вам слова",
-      "CHOOSE_WORDS": "Выберите слова",
-      "CHOOSE_WORDS_DESC": "Выберите слова, которые вы хотели бы изучить или пометьте изученные слова",
-      "LEARNING_PROGRESS": "Прогресс обучения",
-      "LEARNING_PROGRESS_DESC": "Отслеживайте ваш прогресс!"
-    },
+		"ADVANTAGES": {
+			"MINI_GAMES": "Мини-игры",
+			"MINI_GAMES_DESC": "Изучать язык через игру - это весело!",
+			"TEXTBOOX": "Словарь",
+			"TEXTBOOX_DESC": "В словаре хранятся все нужные вам слова",
+			"CHOOSE_WORDS": "Выберите слова",
+			"CHOOSE_WORDS_DESC": "Выберите слова, которые вы хотели бы изучить или пометьте изученные слова",
+			"LEARNING_PROGRESS": "Прогресс обучения",
+			"LEARNING_PROGRESS_DESC": "Отслеживайте ваш прогресс!"
+		},
 
-    "DEVELOPER": "Разработчики",
-    "FIRST_DEVELOPER": {
-      "NICKNAME": "Lizard",
-      "DESCRIPTION": "Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging across all continents except Antarctica"
-    }
-  },
+		"DEVELOPER": "Разработчики",
+		"FIRST_DEVELOPER": {
+			"NICKNAME": "Lizard",
+			"DESCRIPTION": "Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging across all continents except Antarctica"
+		}
+	},
 
-  "TEXTBOOK": {
-    "TITLE": "Словарь",
-    "FULLY_LEARNED_SECTION": "Секция полностью изучена!",
-    "OPEN_SPRTING_GAME": "Спринт",
-    "OPEN_AUDIO_CALL_GAME": "Аудиовызов",
-    "ADD_TO_LEARNED": "Добавить в изученное",
-    "ADD_TO_DIFFICULT": "Пометить как сложное",
-    "REMOVED_FROM_DIFFICULT": "Пометить как несложное",
+	"TEXTBOOK": {
+		"TITLE": "Словарь",
+		"FULLY_LEARNED_SECTION": "Секция полностью изучена!",
+		"OPEN_SPRTING_GAME": "Спринт",
+		"OPEN_AUDIO_CALL_GAME": "Аудиовызов",
+		"ADD_TO_LEARNED": "Добавить в изученное",
+		"ADD_TO_DIFFICULT": "Пометить как сложное",
+		"REMOVED_FROM_DIFFICULT": "Пометить как несложное",
 
-    "CORRECT_ANSWER_COUNT": "Правильных ответов: {{count}}",
-    "INCORRECT_ANSWER_COUNT": "Неправильных ответов: {{count}}",
-    "LEARNED": "Выучено",
-    "DIFFICULT": "Сложное"
-  },
+		"CORRECT_ANSWER_COUNT": "Правильных ответов: {{count}}",
+		"INCORRECT_ANSWER_COUNT": "Неправильных ответов: {{count}}",
+		"LEARNED": "Выучено",
+		"DIFFICULT": "Сложное"
+	},
 
-  "STATISTIC": {
-    "TITLE": "Статистика"
-  },
+	"STATISTIC": {
+		"TITLE": "Статистика",
+		"SHORT_TITLE": "Статистика за сегодня",
+		"LONG_TITLE": "Статистика за все время",
+		"NEW_WORDS": "Новые слова",
+		"LEARNED_WORDS": "Изученные слова",
+		"CORRECT_WORDS_PERCENT": "Процент правильных ответов",
+		"LONGEST_CORRECT_SERIES": "Самая длинная серия правильных ответов"
+	},
 
-  "AUDIOCALL": {
-    "TITLE": "Аудиовызов",
-    "DESCRIPTION": "Улучши восприятие слов нас слух",
-    "NEXT": "Следующее",
-    "SKIP": "Пропустить"
-  },
+	"AUDIOCALL": {
+		"TITLE": "Аудиовызов",
+		"DESCRIPTION": "Улучши восприятие слов нас слух",
+		"NEXT": "Следующее",
+		"SKIP": "Пропустить"
+	},
 
-  "SPRINT": {
-    "TITLE": "Спринт",
-    "DESCRIPTION": "Сколько слов ты сможешь угадать за {{count}} секунд?"
-  },
+	"SPRINT": {
+		"TITLE": "Спринт",
+		"DESCRIPTION": "Сколько слов ты сможешь угадать за {{count}} секунд?"
+	},
 
-  "LEVEL_SELECTION": {
-    "SELECT_LEVEL": "Выбрать уровень",
-    "PLAY": "Играть",
-    "GROUP": "Уровень {{count}}"
-  },
+	"LEVEL_SELECTION": {
+		"SELECT_LEVEL": "Выбрать уровень",
+		"PLAY": "Играть",
+		"GROUP": "Уровень {{count}}"
+	},
 
-  "GAME_RESULT_DIALOG": {
-    "TITLE": "Ваш результат:",
-    "CORRECT": "Правильно",
-    "INCORRECT": "Неправильно"
-  },
+	"GAME_RESULT_DIALOG": {
+		"TITLE": "Ваш результат:",
+		"CORRECT": "Правильно",
+		"INCORRECT": "Неправильно"
+	},
 
-  "AUTH": {
-    "SIGN_UP": "Зарегистрироваться",
-    "SIGN_IN": "Войти",
-    "SIGN_OUT": "Выйти",
+	"AUTH": {
+		"SIGN_UP": "Зарегистрироваться",
+		"SIGN_IN": "Войти",
+		"SIGN_OUT": "Выйти",
 
-    "SIGN_IN_PROMPT": "Уже есть аккаунт?",
-    "SIGN_UP_PROMPT": "Еще нет аккаунта?",
-    
-    "NAME": "Имя",
-    "EMAIL": "почтовый адрес",
-    "PASSWORD": "Пароль",
+		"SIGN_IN_PROMPT": "Уже есть аккаунт?",
+		"SIGN_UP_PROMPT": "Еще нет аккаунта?",
 
-    "NAME_TOO_SHORT": "Имя слишком короткое!",
-    "INVALID_EMAIL": "Неверный формат адреса!",
-    "SHORT_PASSWORD": "Пароль коротковат!"
-  },
+		"NAME": "Имя",
+		"EMAIL": "почтовый адрес",
+		"PASSWORD": "Пароль",
 
-  "TIMER": {
-    "TIME_LEFT_one": "{{count}} секунда осталась",
-    "TIME_LEFT_other": "{{count}} секунд осталось"
-  },
+		"NAME_TOO_SHORT": "Имя слишком короткое!",
+		"INVALID_EMAIL": "Неверный формат адреса!",
+		"SHORT_PASSWORD": "Пароль коротковат!"
+	},
 
-  "COMMON": {
-    "BUTTON": {
-      "YES": "Да",
-      "NO": "Нет"
-    },
-    "LOADING": "Загрузка..."
-  },
+	"TIMER": {
+		"TIME_LEFT_one": "{{count}} секунда осталась",
+		"TIME_LEFT_other": "{{count}} секунд осталось"
+	},
 
-  "LANGUAGES": {
-    "EN": "English",
-    "RU": "Русский"
-  }
+	"COMMON": {
+		"BUTTON": {
+			"YES": "Да",
+			"NO": "Нет"
+		},
+		"LOADING": "Загрузка..."
+	},
+
+	"LANGUAGES": {
+		"EN": "English",
+		"RU": "Русский"
+	}
 }
