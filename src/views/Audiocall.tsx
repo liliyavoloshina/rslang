@@ -32,12 +32,16 @@ import {
 	selectAudiocallIsFinished,
 	selectAudiocallIsLevelSelection,
 	selectAudiocallIsWithSounds,
+	selectAudiocallLongestSeries,
 	selectAudiocallProgress,
 	selectAudiocallStatus,
+	selectAudiocallWords,
 	showNextWord,
 	toggleAudiocallAudio,
 	toggleSounds,
 } from '~/features/audiocall'
+import { selectAuthIsLoggedIn } from '~/features/auth'
+import { sendUpdatedStatistic, updateCompletedPagesAfterGame, updateGameStatistic, updateWordStatistic } from '~/features/statistic'
 import { DOMAIN_URL, PAGES_PER_GROUP } from '~/utils/constants'
 
 interface LocationState {
@@ -70,6 +74,9 @@ export default function Audiocall() {
 	const incorrectWords = useAppSelector(selectAudiocallIncorrectAnswers)
 	const correctWords = useAppSelector(selectAudiocallCorrectAnswers)
 	const answeredWord = useAppSelector(selectAudiocallAnsweredWord)
+	const isLoggedIn = useAppSelector(selectAuthIsLoggedIn)
+	const audiocallWords = useAppSelector(selectAudiocallWords)
+	const bestSeries = useAppSelector(selectAudiocallLongestSeries)
 	const isWithSounds = useAppSelector(selectAudiocallIsWithSounds)
 	const progress = useAppSelector(selectAudiocallProgress)
 
@@ -105,10 +112,6 @@ export default function Audiocall() {
 		return dispatch(fetchAudiocallWords({ group, page: page ?? Math.floor(Math.random() * PAGES_PER_GROUP), isFromTextbook }))
 	}, [dispatch, group, isFromTextbook, page])
 
-	const exitGame = () => {
-		dispatch(resetGame())
-	}
-
 	useEffect(() => {
 		dispatch(resetGame())
 
@@ -119,6 +122,54 @@ export default function Audiocall() {
 			window.removeEventListener('keydown', handleKeyDown)
 		}
 	}, [dispatch, fetchWords, handleKeyDown])
+
+	const getAudiocallGameStatistic = () => {
+		const newWords = audiocallWords.filter(word => !word.userWord?.optional).length
+		const correctWordsPercent = (correctWords.length / audiocallWords.length) * 100
+		const longestSeries = Math.max(...bestSeries.correctAnswers)
+
+		const newStatistic = {
+			newWords,
+			correctWordsPercent: [correctWordsPercent],
+			longestSeries,
+		}
+
+		return newStatistic
+	}
+
+	const updateEveryWordStatistic = async () => {
+		// update word statistic
+
+		const correctPromises = correctWords.map(word => dispatch(updateWordStatistic({ wordToUpdate: word, newFields: { correctAnswers: 1 } })))
+		const incorrectPromises = incorrectWords.map(word => dispatch(updateWordStatistic({ wordToUpdate: word, newFields: { incorrectAnswers: 1 } })))
+
+		await Promise.all([...correctPromises, ...incorrectPromises])
+	}
+
+	const finish = async () => {
+		// dipatch
+		if (isLoggedIn) {
+			// update every word statistic and learned words in short stat if necessary
+			await updateEveryWordStatistic()
+			// set to completed page field store
+			await dispatch(updateCompletedPagesAfterGame({ correctWords, incorrectWords }))
+
+			// caluclate and set new game statistic
+			const gameStatistic = getAudiocallGameStatistic()
+			dispatch(updateGameStatistic({ gameName: 'audiocall', newStatistic: gameStatistic }))
+
+			// send updated stat to the server
+			await dispatch(sendUpdatedStatistic())
+		}
+	}
+
+	useEffect(() => {
+		if (isFinished) {
+			console.log(isFinished, 'isFinished')
+
+			finish()
+		}
+	}, [isFinished])
 
 	if (isLevelSelection) {
 		return <LevelSelection title={t('AUDIOCALL.TITLE')} description={t('AUDIOCALL.DESCRIPTION')} />
@@ -138,7 +189,7 @@ export default function Audiocall() {
 					<IconButton aria-label="switch sounds" title="switch sounds" size="large" onClick={() => dispatch(toggleSounds())}>
 						{isWithSounds ? <MusicNoteIcon fontSize="large" color="secondary" /> : <MusicOffIcon fontSize="large" color="secondary" />}
 					</IconButton>
-					<IconButton aria-label="exit game" title="exit game" size="large" color="secondary" component={Link} to={Path.HOME} onClick={exitGame}>
+					<IconButton aria-label="exit game" title="exit game" size="large" color="secondary" component={Link} to={Path.HOME} onClick={() => dispatch(resetGame())}>
 						<CloseIcon fontSize="large" />
 					</IconButton>
 				</Box>
