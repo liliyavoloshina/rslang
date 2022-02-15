@@ -56,10 +56,13 @@
 		"TITLE": "Statistic page",
 		"SHORT_TITLE": "Statistics for today",
 		"LONG_TITLE": "Statistics for all time",
-		"NEW_WORDS": "New words",
-		"LEARNED_WORDS": "Learned words",
-		"CORRECT_WORDS_PERCENT": "Correct words percent",
-		"LONGEST_CORRECT_SERIES": "Longest correct words series"
+		"TOTAL_CORRECT_WORDS_PERCENT": "Total correct words percent",
+		"TOTAL_LEARNED_WORDS": "Total learned words",
+		"TOTAL_NEW_WORDS": "Total new words",
+		"NEW_WORDS": "New words: {{words}}",
+		"LEARNED_WORDS": "Learned words: {{words}}",
+		"CORRECT_WORDS_PERCENT": "Correct words percent: {{percent}} %",
+		"LONGEST_CORRECT_SERIES": "Longest correct words series {{series}}"
 	},
 
 	"AUDIOCALL": {

@@ -32,19 +32,19 @@ export default function ShortGameCard({ gameName, newWords, correctPercent, long
 						<ListItemIcon style={{ minWidth: '40px' }}>
 							<AddCircleIcon color="success" />
 						</ListItemIcon>
-						<ListItemText primary={`${t('STATISTIC.NEW_WORDS')}: ${newWords}`} />
+						<ListItemText primary={t('STATISTIC.NEW_WORDS', { words: `${newWords}` })} />
 					</ListItem>
 					<ListItem disablePadding>
 						<ListItemIcon style={{ minWidth: '40px' }}>
 							<PercentIcon color="primary" />
 						</ListItemIcon>
-						<ListItemText primary={`${t('STATISTIC.CORRECT_WORDS_PERCENT')}: ${correctPercent}%`} />
+						<ListItemText primary={t('STATISTIC.CORRECT_WORDS_PERCENT', { percent: `${correctPercent}` })} />
 					</ListItem>
 					<ListItem disablePadding>
 						<ListItemIcon style={{ minWidth: '40px' }}>
 							<LocalFireDepartmentIcon color="error" />
 						</ListItemIcon>
-						<ListItemText primary={`${t('STATISTIC.LONGEST_CORRECT_SERIES')}: ${longestSeries}`} />
+						<ListItemText primary={t('STATISTIC.LONGEST_CORRECT_SERIES', { series: `${longestSeries}` })} />
 					</ListItem>
 				</List>
 			</CardContent>

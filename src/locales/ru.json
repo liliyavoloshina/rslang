@@ -56,10 +56,13 @@
 		"TITLE": "Статистика",
 		"SHORT_TITLE": "Статистика за сегодня",
 		"LONG_TITLE": "Статистика за все время",
-		"NEW_WORDS": "Новые слова",
-		"LEARNED_WORDS": "Изученные слова",
-		"CORRECT_WORDS_PERCENT": "Процент правильных ответов",
-		"LONGEST_CORRECT_SERIES": "Самая длинная серия правильных ответов"
+		"TOTAL_CORRECT_WORDS_PERCENT": "Общий процент правильных ответов",
+		"TOTAL_LEARNED_WORDS": "Всего изучено слов",
+		"TOTAL_NEW_WORDS": "Всего новых слов",
+		"NEW_WORDS": "Новыx слов: {{words}}",
+		"LEARNED_WORDS": "Изученныx слов: {{words}}",
+		"CORRECT_WORDS_PERCENT": "Процент правильных ответов: {{percent}}%",
+		"LONGEST_CORRECT_SERIES": "Самая длинная серия правильных ответов: {{series}}"
 	},
 
 	"AUDIOCALL": {
