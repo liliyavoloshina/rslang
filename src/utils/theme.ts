@@ -1,5 +1,7 @@
-import { green, grey, indigo, red } from '@mui/material/colors'
+import { green, grey, indigo, lightGreen, red } from '@mui/material/colors'
 import { createTheme } from '@mui/material/styles'
+
+const { palette } = createTheme()
 
 const theme = createTheme({
 	text: {
@@ -12,8 +14,10 @@ const theme = createTheme({
 			main: indigo[800],
 		},
 		secondary: {
-			main: '#edf2ff',
+			main: indigo[300],
 		},
+		correct: palette.augmentColor({ color: lightGreen, mainShade: 400 }),
+		incorrect: palette.augmentColor({ color: red, mainShade: 400 }),
 	},
 })
 

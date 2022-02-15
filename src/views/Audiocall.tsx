@@ -6,7 +6,7 @@ import CloseIcon from '@mui/icons-material/Close'
 import MusicNoteIcon from '@mui/icons-material/MusicNote'
 import MusicOffIcon from '@mui/icons-material/MusicOff'
 import VolumeUp from '@mui/icons-material/VolumeUp'
-import { Theme, styled } from '@mui/material'
+import { styled, useTheme } from '@mui/material'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
@@ -15,7 +15,7 @@ import IconButton from '@mui/material/IconButton'
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { lightGreen } from '@mui/material/colors'
+import { yellow } from '@mui/material/colors'
 
 import { useAppDispatch, useAppSelector } from '~/app/hooks'
 import { GameResultDialog, LevelSelection } from '~/components/game'
@@ -44,18 +44,19 @@ interface LocationState {
 	fromTextbook: boolean
 }
 
-const CustomLinearProgress = styled(LinearProgress)(({ theme }: { theme: Theme }) => ({
+const CustomLinearProgress = styled(LinearProgress)(() => ({
 	height: 10,
 	[`&.${linearProgressClasses.colorPrimary}`]: {
-		backgroundColor: lightGreen[500],
+		backgroundColor: '#fff',
 	},
 	[`& .${linearProgressClasses.bar}`]: {
-		backgroundColor: lightGreen.A700,
+		backgroundColor: yellow.A700,
 	},
 }))
 
-function Audiocall() {
+export default function Audiocall() {
 	const { t } = useTranslation()
+	const theme = useTheme()
 
 	const location = useLocation()
 	const dispatch = useAppDispatch()
@@ -128,22 +129,23 @@ function Audiocall() {
 	}
 
 	return (
-		<Box sx={{ height: '100%' }}>
+		<Box sx={{ height: '100%', background: `linear-gradient(to right bottom, #c5cae9, #fff)` }}>
 			<Box sx={{ width: '100%' }}>
-				<CustomLinearProgress variant="determinate" value={progress} color="success" />
+				<CustomLinearProgress variant="determinate" value={progress} />
 			</Box>
 			<Container maxWidth="lg" sx={{ position: 'relative', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'center', height: '100%' }}>
 				<Box justifyContent="space-between" sx={{ alignSelf: 'flex-start', display: 'flex', width: '100%', marginTop: '20px' }}>
 					<IconButton aria-label="switch sounds" title="switch sounds" size="large" onClick={() => dispatch(toggleSounds())}>
-						{isWithSounds ? <MusicNoteIcon fontSize="large" /> : <MusicOffIcon fontSize="large" />}
+						{isWithSounds ? <MusicNoteIcon fontSize="large" color="secondary" /> : <MusicOffIcon fontSize="large" color="secondary" />}
 					</IconButton>
-					<IconButton aria-label="exit game" title="exit game" size="large" component={Link} to={Path.HOME} onClick={exitGame}>
+					<IconButton aria-label="exit game" title="exit game" size="large" color="secondary" component={Link} to={Path.HOME} onClick={exitGame}>
 						<CloseIcon fontSize="large" />
 					</IconButton>
 				</Box>
 
-				<Stack alignItems="center" justifyContent="center" gap="20px" marginBottom="50px">
-					<Box
+				<Stack alignItems="center" justifyContent="center" gap="20px" marginBottom="150px">
+					<Stack
+						alignItems="center"
 						sx={{
 							visibility: answeredWord ? 'visible' : 'hidden',
 						}}
@@ -154,62 +156,68 @@ function Audiocall() {
 						<Typography variant="subtitle1" sx={{ fontWeight: '700' }}>
 							{currentWord?.word ?? ''}
 						</Typography>
+					</Stack>
+
+					<Box marginBottom="30px">
+						{!answeredWord ? (
+							<Button
+								variant="outlined"
+								onClick={() => dispatch(toggleAudiocallAudio())}
+								sx={{
+									width: 150,
+									height: 150,
+									borderRadius: '100%',
+								}}
+							>
+								<VolumeUp sx={{ fontSize: 80 }} />
+							</Button>
+						) : (
+							<Box
+								sx={{
+									width: 150,
+									height: 150,
+								}}
+							>
+								<img
+									style={{
+										width: '100%',
+										height: '100%',
+										borderRadius: '100%',
+										borderWidth: '2px',
+										borderStyle: 'solid',
+										borderColor: theme.palette.primary.main,
+										objectFit: 'cover',
+									}}
+									src={`${DOMAIN_URL}/${currentWord!.image}`}
+									alt=""
+								/>
+							</Box>
+						)}
 					</Box>
 
-					{!answeredWord ? (
-						<Button
-							variant="outlined"
-							onClick={() => dispatch(toggleAudiocallAudio())}
-							sx={{
-								width: 150,
-								height: 150,
-								borderRadius: '100%',
-							}}
-						>
-							<VolumeUp sx={{ fontSize: 80 }} />
-						</Button>
-					) : (
-						<Box
-							sx={{
-								width: 150,
-								height: 150,
-								borderRadius: '100%',
-							}}
-						>
-							<img
-								style={{
-									width: '100%',
-									height: '100%',
-									borderRadius: '100%',
-									objectFit: 'cover',
-								}}
-								src={`${DOMAIN_URL}/${currentWord!.image}`}
-								alt=""
-							/>
-						</Box>
-					)}
-
 					<Grid container spacing={2}>
-						{answers.map(answer => (
-							<Grid key={answer} item>
-								<Button
-									onClick={() => dispatch(checkAnswer({ answer, isKeyboard: false }))}
-									variant="contained"
-									sx={{ pointerEvents: answeredWord ? 'none' : 'all' }}
-									color={
-										answer === currentWord!.wordTranslate && answeredWord
-											? 'success'
-											: answeredWord === answer
-											? answer === currentWord!.wordTranslate
-												? 'success'
-												: 'error'
-											: 'primary'
-									}
-								>
-									{answer}
-								</Button>
-							</Grid>
-						))}
+						{answers.map(answer => {
+							return (
+								<Grid key={answer} item>
+									<Button
+										onClick={() => dispatch(checkAnswer({ answer, isKeyboard: false }))}
+										variant="contained"
+										sx={{ pointerEvents: answeredWord ? 'none' : 'all', color: '#fff' }}
+										color={
+											answer === currentWord!.wordTranslate && answeredWord
+												? 'correct'
+												: answeredWord === answer
+												? answer === currentWord!.wordTranslate
+													? 'correct'
+													: 'incorrect'
+												: 'primary'
+										}
+									>
+										{answer}
+									</Button>
+								</Grid>
+							)
+						})}
 					</Grid>
 
 					<Button onClick={() => dispatch(showNextWord())} tabIndex={0} variant="contained" color="secondary" fullWidth>
@@ -222,5 +230,3 @@ function Audiocall() {
 		</Box>
 	)
 }
-
-export default Audiocall
