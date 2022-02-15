@@ -1,17 +1,17 @@
-import { useCallback, useEffect, useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-
-/* eslint-disable no-await-in-loop */
-
-/* eslint-disable no-restricted-syntax */
 import { useLocation, useMatch, useNavigate } from 'react-router-dom'
 
-import { VolumeUp } from '@mui/icons-material'
+import CloseIcon from '@mui/icons-material/Close'
+import MusicNoteIcon from '@mui/icons-material/MusicNote'
+import MusicOffIcon from '@mui/icons-material/MusicOff'
+import VolumeUp from '@mui/icons-material/VolumeUp'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
 import Grid from '@mui/material/Grid'
 import IconButton from '@mui/material/IconButton'
+import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 
 import { useAppDispatch, useAppSelector } from '~/app/hooks'
@@ -28,14 +28,12 @@ import {
 	selectAudiocallIncorrectAnswers,
 	selectAudiocallIsFinished,
 	selectAudiocallIsLevelSelection,
-	selectAudiocallLongestSeries,
+	selectAudiocallIsWithSounds,
 	selectAudiocallStatus,
-	selectAudiocallWords,
 	showNextWord,
 	toggleAudiocallAudio,
+	toggleSounds,
 } from '~/features/audiocall'
-import { selectAuthIsLoggedIn } from '~/features/auth'
-import { sendUpdatedStatistic, updateCompletedPagesAfterGame, updateGameStatistic, updateWordStatistic } from '~/features/statistic'
 import { DOMAIN_URL, PAGES_PER_GROUP } from '~/utils/constants'
 
 interface LocationState {
@@ -57,9 +55,7 @@ function Audiocall() {
 	const incorrectWords = useAppSelector(selectAudiocallIncorrectAnswers)
 	const correctWords = useAppSelector(selectAudiocallCorrectAnswers)
 	const answeredWord = useAppSelector(selectAudiocallAnsweredWord)
-	const isLoggedIn = useAppSelector(selectAuthIsLoggedIn)
-	const audiocallWords = useAppSelector(selectAudiocallWords)
-	const bestSeries = useAppSelector(selectAudiocallLongestSeries)
+	const isWithSounds = useAppSelector(selectAudiocallIsWithSounds)
 
 	const groupMatch = useMatch(Path.AUDIOCALL_WITH_GROUP)
 	const pageMatch = useMatch(Path.AUDIOCALL_WITH_GROUP_AND_PAGE)
@@ -93,6 +89,10 @@ function Audiocall() {
 		return dispatch(fetchAudiocallWords({ group, page: page ?? Math.floor(Math.random() * PAGES_PER_GROUP), isFromTextbook }))
 	}, [dispatch, group, isFromTextbook, page])
 
+	const exitGame = () => {
+		console.log('exit game')
+	}
+
 	useEffect(() => {
 		dispatch(resetGame())
 
@@ -100,56 +100,9 @@ function Audiocall() {
 
 		window.addEventListener('keydown', handleKeyDown)
 		return () => {
-			dispatch(resetGame())
 			window.removeEventListener('keydown', handleKeyDown)
 		}
 	}, [dispatch, fetchWords, handleKeyDown])
-
-	const getAudiocallGameStatistic = () => {
-		const newWords = audiocallWords.filter(word => !word.userWord?.optional).length
-		const correctWordsPercent = (correctWords.length / audiocallWords.length) * 100
-		const longestSeries = Math.max(...bestSeries.correctAnswers)
-
-		const newStatistic = {
-			newWords,
-			correctWordsPercent: [correctWordsPercent],
-			longestSeries,
-		}
-
-		return newStatistic
-	}
-
-	const updateEveryWordStatistic = async () => {
-		// update word statistic
-
-		const correctPromises = correctWords.map(word => dispatch(updateWordStatistic({ wordToUpdate: word, newFields: { correctAnswers: 1 } })))
-		const incorrectPromises = incorrectWords.map(word => dispatch(updateWordStatistic({ wordToUpdate: word, newFields: { incorrectAnswers: 1 } })))
-
-		await Promise.all([...correctPromises, ...incorrectPromises])
-	}
-
-	const finish = async () => {
-		// dipatch
-		if (isLoggedIn) {
-			// update every word statistic and learned words in short stat if necessary
-			await updateEveryWordStatistic()
-			// set to completed page field store
-			await dispatch(updateCompletedPagesAfterGame({ correctWords, incorrectWords }))
-
-			// caluclate and set new game statistic
-			const gameStatistic = getAudiocallGameStatistic()
-			dispatch(updateGameStatistic({ gameName: 'audiocall', newStatistic: gameStatistic }))
-
-			// send updated stat to the server
-			await dispatch(sendUpdatedStatistic())
-		}
-	}
-
-	useEffect(() => {
-		if (isFinished) {
-			finish()
-		}
-	}, [isFinished])
 
 	if (isLevelSelection) {
 		return <LevelSelection title={t('AUDIOCALL.TITLE')} description={t('AUDIOCALL.DESCRIPTION')} />
@@ -160,8 +113,17 @@ function Audiocall() {
 	}
 
 	return (
-		<Container maxWidth="lg" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-			<Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '20px' }}>
+		<Container maxWidth="lg" sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'center', height: '100%' }}>
+			<Box justifyContent="space-between" sx={{ alignSelf: 'flex-start', display: 'flex', width: '100%', marginTop: '20px' }}>
+				<IconButton aria-label="exit game" onClick={() => dispatch(toggleSounds())}>
+					{isWithSounds ? <MusicNoteIcon /> : <MusicOffIcon />}
+				</IconButton>
+				<IconButton aria-label="exit game" onClick={() => exitGame()}>
+					<CloseIcon />
+				</IconButton>
+			</Box>
+
+			<Stack alignItems="center" justifyContent="center" gap="20px" marginBottom="50px">
 				<Box
 					sx={{
 						visibility: answeredWord ? 'visible' : 'hidden',
@@ -212,7 +174,6 @@ function Audiocall() {
 					{answers.map(answer => (
 						<Grid key={answer} item>
 							<Button
-								disabled={isFinished}
 								onClick={() => dispatch(checkAnswer({ answer, isKeyboard: false }))}
 								variant="contained"
 								sx={{ pointerEvents: answeredWord ? 'none' : 'all' }}
@@ -235,7 +196,7 @@ function Audiocall() {
 				<Button onClick={() => dispatch(showNextWord())} tabIndex={0} variant="contained" color="secondary" fullWidth>
 					{t(answeredWord ? 'AUDIOCALL.NEXT' : 'AUDIOCALL.SKIP')}
 				</Button>
-			</Box>
+			</Stack>
 
 			<GameResultDialog isOpen={isFinished} correctWords={correctWords} incorrectWords={incorrectWords} />
 		</Container>

@@ -12,3 +12,4 @@ export const selectAudiocallCorrectAnswers = (state: RootState) => state.audioca
 export const selectAudiocallIncorrectAnswers = (state: RootState) => state.audiocall.incorrectAnswers
 export const selectAudiocallAnsweredWord = (state: RootState) => state.audiocall.answeredWord
 export const selectAudiocallLongestSeries = (state: RootState) => state.audiocall.longestSeries
+export const selectAudiocallIsWithSounds = (state: RootState) => state.audiocall.isWithSounds

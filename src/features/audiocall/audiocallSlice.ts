@@ -23,6 +23,7 @@ export interface AudiocallState {
 	isFinished: boolean
 	audioPath: string
 	status: 'idle' | 'loading' | 'failed' | 'success'
+	isWithSounds: boolean
 }
 
 const initialState: AudiocallState = {
@@ -41,6 +42,7 @@ const initialState: AudiocallState = {
 	isFinished: false,
 	audioPath: '',
 	status: 'idle',
+	isWithSounds: true,
 }
 
 interface FetchWordsParams {
@@ -118,6 +120,12 @@ export const audiocallSlice = createSlice({
 				const updatedWord = { ...currentWord, id: currentWord._id! }
 				state.incorrectAnswers = [...state.incorrectAnswers, updatedWord]
 				state.longestSeries.stopped = true
+
+				const incorrectAnswerAudio = new Audio('/assets/audio/incorrect_answer_audiocall.mp3')
+
+				if (state.isWithSounds) {
+					incorrectAnswerAudio.play()
+				}
 			}
 
 			if (state.currentIdx === state.words.length - 1) {
@@ -151,6 +159,9 @@ export const audiocallSlice = createSlice({
 			Object.assign(state, initialState)
 		},
 		checkAnswer: (state, action) => {
+			const correctAnswerAudio = new Audio('/assets/audio/correct_answer_audiocall.mp3')
+			const incorrectAnswerAudio = new Audio('/assets/audio/incorrect_answer_audiocall.mp3')
+
 			const { answer, isKeyboard } = action.payload
 			const { currentWord } = state
 			let actualWord
@@ -169,6 +180,10 @@ export const audiocallSlice = createSlice({
 			if (actualWord !== currentWord!.wordTranslate) {
 				state.incorrectAnswers = [...state.incorrectAnswers, updatedWord]
 				state.longestSeries.stopped = true
+
+				if (state.isWithSounds) {
+					incorrectAnswerAudio.play()
+				}
 			} else {
 				if (state.longestSeries.stopped) {
 					state.longestSeries.correctAnswers = [...state.longestSeries.correctAnswers, 1]
@@ -178,7 +193,14 @@ export const audiocallSlice = createSlice({
 				}
 
 				state.correctAnswers = [...state.correctAnswers, updatedWord]
+
+				if (state.isWithSounds) {
+					correctAnswerAudio.play()
+				}
 			}
+		},
+		toggleSounds: state => {
+			state.isWithSounds = !state.isWithSounds
 		},
 	},
 	extraReducers: builder => {
@@ -206,5 +228,5 @@ export const audiocallSlice = createSlice({
 	},
 })
 
-export const { showNextWord, toggleAudiocallAudio, toggleLevelSelection, resetGame, checkAnswer } = audiocallSlice.actions
+export const { showNextWord, toggleAudiocallAudio, toggleLevelSelection, resetGame, checkAnswer, toggleSounds } = audiocallSlice.actions
 export default audiocallSlice.reducer
