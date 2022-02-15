@@ -42,12 +42,12 @@ function Statistic() {
 			<Stack gap="20px">
 				<Box>
 					<Typography variant="h4" sx={{ mt: 3, mb: 3 }} align="center">
-						{t('STATISTIC.TITLE')} for today ({curDate.toLocaleDateString()})
+						{t('STATISTIC.SHORT_TITLE')} ({curDate.toLocaleDateString()})
 					</Typography>
 					<Stack flexDirection="row" alignItems="center" justifyContent="center" gap="20px">
-						<ShortWordCard value={`${totalNewWordsShort}`} text="Number of new words" />
-						<ShortWordCard value={`${learnedWords}`} text="Number of learned words" />
-						<ShortWordCard value={`${totalCorrectPercentShort}%`} text="Percentage of correct answers" />
+						<ShortWordCard value={`${totalNewWordsShort}`} text={t('STATISTIC.NEW_WORDS')} />
+						<ShortWordCard value={`${learnedWords}`} text={t('STATISTIC.LEARNED_WORDS')} />
+						<ShortWordCard value={`${totalCorrectPercentShort}%`} text={t('STATISTIC.CORRECT_WORDS_PERCENT')} />
 					</Stack>
 				</Box>
 
@@ -59,7 +59,7 @@ function Statistic() {
 
 			<Box>
 				<Typography variant="h4" sx={{ mt: 5, mb: 5 }} align="center">
-					Statistics for all time
+					{t('STATISTIC.LONG_TITLE')}
 				</Typography>
 				<LongStatChart longStat={longStat} />
 			</Box>

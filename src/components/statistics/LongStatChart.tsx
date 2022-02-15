@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 
@@ -11,6 +12,7 @@ type ChartData = {
 }[]
 
 export default function LongStatChart({ longStat }: { longStat: LongStat }) {
+	const { t } = useTranslation()
 	const chartData = useMemo<ChartData>(() => {
 		const { learnedWords, newWords } = longStat
 		const dates = Object.keys(longStat.learnedWords)
@@ -40,8 +42,8 @@ export default function LongStatChart({ longStat }: { longStat: LongStat }) {
 				<YAxis />
 				<Tooltip />
 				<Legend />
-				<Line type="monotone" name="New words" dataKey="newWords" stroke="#8884d8" activeDot={{ r: 8 }} />
-				<Line type="monotone" name="Learned words" dataKey="learnedWords" stroke="#82ca9d" />
+				<Line type="monotone" name={t('STATISTIC.NEW_WORDS')} dataKey="newWords" stroke="#8884d8" activeDot={{ r: 8 }} />
+				<Line type="monotone" name={t('STATISTIC.LEARNED_WORDS')} dataKey="learnedWords" stroke="#82ca9d" />
 			</LineChart>
 		</ResponsiveContainer>
 	)

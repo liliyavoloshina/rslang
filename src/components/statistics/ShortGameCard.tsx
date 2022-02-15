@@ -1,4 +1,5 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 
 import AddCircleIcon from '@mui/icons-material/AddCircle'
 import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment'
@@ -19,30 +20,31 @@ interface ShortGameCardProps {
 }
 
 export default function ShortGameCard({ gameName, newWords, correctPercent, longestSeries }: ShortGameCardProps) {
+	const { t } = useTranslation()
 	return (
 		<Card>
 			<CardContent>
 				<Typography variant="h5" color="text.secondary" gutterBottom>
-					{gameName}
+					{gameName === 'audiocall' ? t('AUDIOCALL.TITLE') : t('SPRINT.TITLE')}
 				</Typography>
 				<List>
 					<ListItem disablePadding>
 						<ListItemIcon style={{ minWidth: '40px' }}>
 							<AddCircleIcon color="success" />
 						</ListItemIcon>
-						<ListItemText primary={`New words: ${newWords}`} />
+						<ListItemText primary={`${t('STATISTIC.NEW_WORDS')}: ${newWords}`} />
 					</ListItem>
 					<ListItem disablePadding>
 						<ListItemIcon style={{ minWidth: '40px' }}>
 							<PercentIcon color="primary" />
 						</ListItemIcon>
-						<ListItemText primary={`Correct words percent: ${correctPercent}%`} />
+						<ListItemText primary={`${t('STATISTIC.CORRECT_WORDS_PERCENT')}: ${correctPercent}%`} />
 					</ListItem>
 					<ListItem disablePadding>
 						<ListItemIcon style={{ minWidth: '40px' }}>
 							<LocalFireDepartmentIcon color="error" />
 						</ListItemIcon>
-						<ListItemText primary={`Longest correct words series: ${longestSeries}`} />
+						<ListItemText primary={`${t('STATISTIC.LONGEST_CORRECT_SERIES')}: ${longestSeries}`} />
 					</ListItem>
 				</List>
 			</CardContent>
