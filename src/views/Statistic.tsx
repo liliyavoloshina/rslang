@@ -45,9 +45,9 @@ function Statistic() {
 						{t('STATISTIC.SHORT_TITLE')} ({curDate.toLocaleDateString()})
 					</Typography>
 					<Stack flexDirection="row" alignItems="center" justifyContent="center" gap="20px">
-						<ShortWordCard value={`${totalNewWordsShort}`} text={t('STATISTIC.NEW_WORDS')} />
-						<ShortWordCard value={`${learnedWords}`} text={t('STATISTIC.LEARNED_WORDS')} />
-						<ShortWordCard value={`${totalCorrectPercentShort}%`} text={t('STATISTIC.CORRECT_WORDS_PERCENT')} />
+						<ShortWordCard value={`${totalNewWordsShort}`} text={t('STATISTIC.TOTAL_NEW_WORDS')} />
+						<ShortWordCard value={`${learnedWords}`} text={t('STATISTIC.TOTAL_LEARNED_WORDS')} />
+						<ShortWordCard value={`${totalCorrectPercentShort}%`} text={t('STATISTIC.TOTAL_CORRECT_WORDS_PERCENT')} />
 					</Stack>
 				</Box>
 
