@@ -12,11 +12,11 @@ import Container from '@mui/material/Container'
 import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 
-import { GameResultDialog, LevelSelection } from '~/components/game'
+import { CountdownToStart, GameResultDialog, LevelSelection } from '~/components/game'
 import { Path } from '~/components/router'
 import { Timer } from '~/components/timer'
 import { playWordAudio, toggleMute } from '~/features/sprint'
-import { BASE_CORRECT_ANSWER_POINTS, GAME_TIME } from '~/utils/constants'
+import { SPRINT_BASE_CORRECT_ANSWER_POINTS, SPRINT_GAME_TIME } from '~/utils/constants'
 
 import { useSprintGame } from './useSprintGame'
 
@@ -28,8 +28,22 @@ const Sprint = () => {
 	const questionBlockRef = useRef<HTMLDivElement>(null)
 	const answerAnimationTimeout = useRef<NodeJS.Timeout>()
 
-	const { group, status, word, suggestedTranslation, selectOption, correctWords, incorrectWords, correctAnswersInRow, gameRound, totalPoints, onTimeout, onTimeAlmostUp, isMute } =
-		useSprintGame()
+	const {
+		startGame,
+		group,
+		status,
+		word,
+		suggestedTranslation,
+		selectOption,
+		correctWords,
+		incorrectWords,
+		correctAnswersInRow,
+		gameRound,
+		totalPoints,
+		onTimeout,
+		onTimeAlmostUp,
+		isMute,
+	} = useSprintGame()
 
 	const animateAnswer = useCallback(
 		(color: string) => {
@@ -73,19 +87,27 @@ const Sprint = () => {
 
 	if (Number.isNaN(group)) {
 		return (
-			<LevelSelection title={t('SPRINT.TITLE')} description={t('SPRINT.DESCRIPTION', { count: GAME_TIME })} onLevelSelected={value => navigate(`${Path.SPRINT}?group=${value}`)} />
+			<LevelSelection
+				title={t('SPRINT.TITLE')}
+				description={t('SPRINT.DESCRIPTION', { count: SPRINT_GAME_TIME })}
+				onLevelSelected={value => navigate(`${Path.SPRINT}?group=${value}`)}
+			/>
 		)
 	}
 
 	return (
-		<Container maxWidth="lg" sx={{ display: 'flex', alignItems: 'baseline-position', justifyContent: 'space-between', height: '100%' }}>
-			<Box sx={{ width: 50, height: 50, alignSelf: 'start', marginTop: 3 }}>
-				{status === 'game-running' && <Timer duration={GAME_TIME} onTimeout={onTimeout} onTimeAlmostUp={onTimeAlmostUp} />}
-			</Box>
-
-			<Container maxWidth="sm" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-				{status === 'game-running' && word && (
-					<Box sx={{ width: '100%' }}>
+		<Container maxWidth="lg" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+			{status === 'countdown' && (
+				<Box maxWidth="sm" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+					<CountdownToStart onComplete={startGame} />
+				</Box>
+			)}
+			{status === 'game-running' && word && (
+				<Container maxWidth="lg" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '100%' }}>
+					<Box sx={{ width: 50, height: 50, alignSelf: 'start', marginTop: 3 }}>
+						{status === 'game-running' && <Timer duration={SPRINT_GAME_TIME} onTimeout={onTimeout} onTimeAlmostUp={onTimeAlmostUp} />}
+					</Box>
+					<Box maxWidth="sm" sx={{ width: '100%' }}>
 						<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
 							<IconButton aria-label="play audio" onClick={() => dispatch(playWordAudio())} sx={{ width: 40, height: 40, borderRadius: 5 }}>
 								<VolumeUp fontSize="inherit" />
@@ -117,7 +139,7 @@ const Sprint = () => {
 								<Box sx={{ width: 15, height: 15, borderRadius: '50%', backgroundColor: (correctAnswersInRow - 3) % 4 === 0 ? '#2e7d32' : '#cccccc' }} />
 							</Box>
 							<Typography variant="subtitle1" color="GrayText" style={{ textAlign: 'center' }}>
-								{t('SPRINT.SCORE_PER_WORD', { count: gameRound * BASE_CORRECT_ANSWER_POINTS })}
+								{t('SPRINT.SCORE_PER_WORD', { count: gameRound * SPRINT_BASE_CORRECT_ANSWER_POINTS })}
 							</Typography>
 							<Box sx={{ width: '50%', height: 100, margin: '0 auto', padding: '10px 0' }}>
 								<img
@@ -152,12 +174,12 @@ const Sprint = () => {
 							<img style={{ width: 30, height: 10, objectFit: 'contain' }} src="/assets/svg/arrow.png" alt="" />
 						</Box>
 					</Box>
-				)}
-				<GameResultDialog isOpen={status === 'game-over'} incorrectWords={incorrectWords} correctWords={correctWords} />
-			</Container>
-			<IconButton size="large" onClick={() => navigate(Path.HOME)} sx={{ width: 40, height: 40, alignSelf: 'start' }}>
-				<CloseOutlined />
-			</IconButton>
+					<IconButton size="large" onClick={() => navigate(Path.HOME)} sx={{ width: 40, height: 40, alignSelf: 'start' }}>
+						<CloseOutlined />
+					</IconButton>
+				</Container>
+			)}
+			<GameResultDialog isOpen={status === 'game-over'} incorrectWords={incorrectWords} correctWords={correctWords} />
 		</Container>
 	)
 }

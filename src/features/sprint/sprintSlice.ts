@@ -4,7 +4,7 @@ import { RootState } from '~/app/store'
 import { Word } from '~/types/word'
 import { getAllWords, getNotLearnedWord, getUserWords } from '~/utils/api'
 // TODO: uncomment and use this instead of hardcoded temp test value
-import { BASE_CORRECT_ANSWER_POINTS, DOMAIN_URL, MAX_WORDS_GAME_AMOUNT, WORD_PER_PAGE_AMOUNT } from '~/utils/constants'
+import { DOMAIN_URL, MAX_WORDS_GAME_AMOUNT, SPRINT_BASE_CORRECT_ANSWER_POINTS, WORD_PER_PAGE_AMOUNT } from '~/utils/constants'
 import { shuffleArray } from '~/utils/helpers'
 
 type SprintState = {
@@ -20,7 +20,7 @@ type SprintState = {
 	totalPoints: number
 	audioPath: string
 	isMute: boolean
-	status: 'idle' | 'loading' | 'failed' | 'game-running' | 'game-over'
+	status: 'idle' | 'loading' | 'failed' | 'countdown' | 'game-running' | 'game-over'
 }
 
 const initialState: SprintState = {
@@ -58,7 +58,7 @@ interface FetchWordsParams {
 	isFromTextbook: boolean
 }
 
-export const startGame = createAsyncThunk<Word[], FetchWordsParams, { state: RootState }>('sprint/startGame', async ({ group, page, isFromTextbook }, { getState }) => {
+const loadWords = createAsyncThunk<Word[], FetchWordsParams, { state: RootState }>('sprint/loadWords', async ({ group, page, isFromTextbook }, { getState }) => {
 	const state = getState()
 	const { isLoggedIn, userInfo } = state.auth
 
@@ -106,7 +106,7 @@ export const sprintSlice = createSlice({
 				if (action.payload === correctOption) {
 					state.correctWords = [...state.correctWords, state.currentWord]
 					state.correctAnswersInRow += 1
-					state.totalPoints += BASE_CORRECT_ANSWER_POINTS * state.gameRound
+					state.totalPoints += SPRINT_BASE_CORRECT_ANSWER_POINTS * state.gameRound
 					if (!state.isMute) {
 						correctAnswerAudio.play()
 					}
@@ -162,14 +162,17 @@ export const sprintSlice = createSlice({
 		toggleMute: state => {
 			state.isMute = !state.isMute
 		},
+		startSprint: state => {
+			state.status = 'game-running'
+		},
 	},
 	extraReducers: builder => {
 		builder
-			.addCase(startGame.pending, state => {
+			.addCase(loadWords.pending, state => {
 				state.status = 'loading'
 			})
-			.addCase(startGame.fulfilled, (state, action) => {
-				state.status = 'game-running'
+			.addCase(loadWords.fulfilled, (state, action) => {
+				state.status = 'countdown'
 				state.words = action.payload
 				shuffleArray(state.words)
 				state.currentWord = state.words[state.currentIdx]
@@ -179,6 +182,6 @@ export const sprintSlice = createSlice({
 	},
 })
 
-export const { answer, reset, gameTimeAlmostUp, gameTimeout, playWordAudio, toggleMute } = sprintSlice.actions
-
+export const { answer, reset, gameTimeAlmostUp, gameTimeout, playWordAudio, toggleMute, startSprint } = sprintSlice.actions
+export { loadWords }
 export default sprintSlice.reducer

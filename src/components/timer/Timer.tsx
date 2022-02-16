@@ -1,14 +1,14 @@
 import { useCallback } from 'react'
 import { CountdownCircleTimer } from 'react-countdown-circle-timer'
 
-import { TIME_ALMOST_UP_THRESHOLD } from '~/utils/constants'
+import { SPRINT_TIME_ALMOST_UP_THRESHOLD } from '~/utils/constants'
 
 import { TimerProps } from './Timer.types'
 
 const Timer = ({ duration, onTimeout, onTimeAlmostUp }: TimerProps) => {
 	const onUpdate = useCallback(
 		(timeLeft: number) => {
-			if (timeLeft > 0 && timeLeft <= TIME_ALMOST_UP_THRESHOLD) {
+			if (timeLeft > 0 && timeLeft <= SPRINT_TIME_ALMOST_UP_THRESHOLD) {
 				onTimeAlmostUp?.(timeLeft)
 			}
 		},
