@@ -120,6 +120,7 @@ export default function Audiocall() {
 		window.addEventListener('keydown', handleKeyDown)
 		return () => {
 			window.removeEventListener('keydown', handleKeyDown)
+			dispatch(resetGame())
 		}
 	}, [dispatch, fetchWords, handleKeyDown])
 
@@ -165,6 +166,8 @@ export default function Audiocall() {
 
 	useEffect(() => {
 		if (isFinished) {
+			console.log(isFinished, 'isFinished')
+
 			finish()
 		}
 	}, [isFinished])
