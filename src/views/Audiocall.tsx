@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useLocation, useMatch, useNavigate } from 'react-router-dom'
 
@@ -18,7 +18,7 @@ import Typography from '@mui/material/Typography'
 import { yellow } from '@mui/material/colors'
 
 import { useAppDispatch, useAppSelector } from '~/app/hooks'
-import { GameResultDialog, LevelSelection } from '~/components/game'
+import { GameResultDialog } from '~/components/game'
 import { Path } from '~/components/router'
 import {
 	checkAnswer,
@@ -30,7 +30,6 @@ import {
 	selectAudiocallCurrentWord,
 	selectAudiocallIncorrectAnswers,
 	selectAudiocallIsFinished,
-	selectAudiocallIsLevelSelection,
 	selectAudiocallIsWithSounds,
 	selectAudiocallLongestSeries,
 	selectAudiocallProgress,
@@ -70,7 +69,6 @@ export default function Audiocall() {
 	const currentWord = useAppSelector(selectAudiocallCurrentWord)
 	const answers = useAppSelector(selectAudiocallAnswers)
 	const isFinished = useAppSelector(selectAudiocallIsFinished)
-	const isLevelSelection = useAppSelector(selectAudiocallIsLevelSelection)
 	const incorrectWords = useAppSelector(selectAudiocallIncorrectAnswers)
 	const correctWords = useAppSelector(selectAudiocallCorrectAnswers)
 	const answeredWord = useAppSelector(selectAudiocallAnsweredWord)
@@ -92,20 +90,36 @@ export default function Audiocall() {
 		navigate(Path.AUDIOCALL)
 	}
 
+	const handleKeyAnswers = useCallback(
+		(event: KeyboardEvent) => {
+			event.preventDefault()
+
+			const { key } = event
+			if (['1', '2', '3', '4', '5'].includes(key)) {
+				dispatch(checkAnswer({ answer: key, isKeyboard: true }))
+				window.removeEventListener('keydown', handleKeyAnswers)
+			}
+		},
+		[dispatch]
+	)
+
+	const nextWord = useCallback(() => {
+		dispatch(showNextWord())
+		window.addEventListener('keydown', handleKeyAnswers)
+	}, [dispatch, handleKeyAnswers])
+
 	const handleKeyDown = useCallback(
 		(event: KeyboardEvent) => {
 			event.preventDefault()
 			const { key } = event
 
-			if (key === '') {
+			if (key === ' ') {
 				dispatch(toggleAudiocallAudio())
-			} else if (['1', '2', '3', '4', '5'].includes(key)) {
-				dispatch(checkAnswer({ answer: key, isKeyboard: true }))
 			} else if (key === 'Enter') {
-				dispatch(showNextWord())
+				nextWord()
 			}
 		},
-		[dispatch]
+		[dispatch, nextWord]
 	)
 
 	const fetchWords = useCallback(() => {
@@ -118,11 +132,13 @@ export default function Audiocall() {
 		fetchWords()
 
 		window.addEventListener('keydown', handleKeyDown)
+		window.addEventListener('keydown', handleKeyAnswers)
 		return () => {
 			window.removeEventListener('keydown', handleKeyDown)
+			window.removeEventListener('keydown', handleKeyAnswers)
 			dispatch(resetGame())
 		}
-	}, [dispatch, fetchWords, handleKeyDown])
+	}, [dispatch, fetchWords, handleKeyDown, handleKeyAnswers])
 
 	const getAudiocallGameStatistic = () => {
 		const newWords = audiocallWords.filter(word => !word.userWord?.optional).length
@@ -166,8 +182,6 @@ export default function Audiocall() {
 
 	useEffect(() => {
 		if (isFinished) {
-			console.log(isFinished, 'isFinished')
-
 			finish()
 		}
 	}, [isFinished])
@@ -268,7 +282,7 @@ export default function Audiocall() {
 						})}
 					</Grid>
 
-					<Button onClick={() => dispatch(showNextWord())} tabIndex={0} variant="contained" color="secondary" fullWidth>
+					<Button onClick={() => nextWord()} tabIndex={0} variant="contained" color="secondary" fullWidth>
 						{t(answeredWord ? 'AUDIOCALL.NEXT' : 'AUDIOCALL.SKIP')}
 					</Button>
 				</Stack>

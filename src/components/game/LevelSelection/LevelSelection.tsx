@@ -57,6 +57,7 @@ const LevelSelection = ({ title, description, controls, type, onLevelSelected }:
 										primary={control}
 										primaryTypographyProps={{
 											fontSize: 18,
+											textAlign: 'center',
 										}}
 									/>
 								</ListItem>

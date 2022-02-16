@@ -78,7 +78,8 @@
 		"SKIP": "Skip",
 		"CONTROLS_1": "Use the mouse to select",
 		"CONTROLS_2": "Use keys 1 to 5 to select an answer",
-		"CONTROLS_3": "Use the Enter key to move to the next word"
+		"CONTROLS_3": "Use the Enter key to move to the next word",
+		"CONTROLS_4": "Use the Space key to repeat word's audio"
 	},
 
 	"SPRINT": {
