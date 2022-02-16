@@ -165,15 +165,9 @@ export default function Audiocall() {
 
 	useEffect(() => {
 		if (isFinished) {
-			console.log(isFinished, 'isFinished')
-
 			finish()
 		}
 	}, [isFinished])
-
-	if (isLevelSelection) {
-		return <LevelSelection title={t('AUDIOCALL.TITLE')} description={t('AUDIOCALL.DESCRIPTION')} />
-	}
 
 	if (status !== 'success') {
 		return <div>{t('COMMON.LOADING')}</div>
