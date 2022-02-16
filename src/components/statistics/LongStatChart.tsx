@@ -22,7 +22,7 @@ export default function LongStatChart({ longStat }: { longStat: LongStat }) {
 			const totalNewWords = newWords[+date].length
 			return { name: transformedDate, learnedWords: totalLearnedWords, newWords: totalNewWords }
 		})
-	}, [longStat])
+	}, [longStat, t])
 
 	return (
 		<ResponsiveContainer width="95%" height={400}>
