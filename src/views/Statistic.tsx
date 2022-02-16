@@ -1,16 +1,21 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Box, Container, Stack, Typography } from '@mui/material'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Container from '@mui/material/Container'
+import Modal from '@mui/material/Modal'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 
 import { useAppDispatch, useAppSelector } from '~/app/hooks'
 import LongStatChart from '~/components/statistics/LongStatChart'
 import ShortGameCard from '~/components/statistics/ShortGameCard'
 import ShortWordCard from '~/components/statistics/ShortWordCard'
-import { fetchUserStatistics, selectStatisticCalculated, selectStatisticOptional, sendUpdatedStatistic, updateShortStatistics } from '~/features/statistic'
+import { fetchUserStatistics, resetStatistic, selectStatisticCalculated, selectStatisticOptional, sendUpdatedStatistic, updateShortStatistics } from '~/features/statistic'
 import { isTheSameDay } from '~/utils/helpers'
 
-function Statistic() {
+export default function Statistic() {
 	const { t } = useTranslation()
 	const dispatch = useAppDispatch()
 	const { shortStat, longStat } = useAppSelector(selectStatisticOptional)
@@ -24,6 +29,10 @@ function Statistic() {
 	const oldDate = new Date(date)
 	const curDate = new Date()
 
+	const [open, setOpen] = useState(false)
+	const handleOpen = () => setOpen(true)
+	const handleClose = () => setOpen(false)
+
 	const getStatisics = async () => {
 		if (!isTheSameDay(oldDate, curDate)) {
 			dispatch(updateShortStatistics())
@@ -33,9 +42,26 @@ function Statistic() {
 		await dispatch(fetchUserStatistics())
 	}
 
+	const resetStatistics = async () => {
+		await dispatch(resetStatistic())
+		setOpen(false)
+	}
+
 	useEffect(() => {
 		getStatisics()
 	}, [dispatch])
+
+	const modalStyle = {
+		position: 'absolute' as const,
+		top: '50%',
+		left: '50%',
+		transform: 'translate(-50%, -50%)',
+		width: 400,
+		bgcolor: 'background.paper',
+		borderRadius: '10px',
+		boxShadow: 24,
+		p: 4,
+	}
 
 	return (
 		<Container maxWidth="lg">
@@ -63,8 +89,31 @@ function Statistic() {
 				</Typography>
 				<LongStatChart longStat={longStat} />
 			</Box>
+
+			<Box display="flex" justifyContent="center" marginTop="50px">
+				<Button variant="contained" color="error" onClick={handleOpen}>
+					Reset statistic
+				</Button>
+			</Box>
+
+			<Modal open={open} onClose={handleClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
+				<Box sx={modalStyle}>
+					<Typography id="modal-modal-title" variant="h6" component="h2">
+						{t('STATISTIC.MODAL_TITLE')}
+					</Typography>
+					<Typography id="modal-modal-description" sx={{ mt: 2 }}>
+						{t('STATISTIC.MODAL_DESCRIPTION')}
+					</Typography>
+					<Stack spacing={2} direction="row" justifyContent="space-between" marginTop="20px">
+						<Button variant="contained" color="secondary" onClick={handleClose}>
+							{t('STATISTIC.MODAL_CANCEL')}
+						</Button>
+						<Button variant="contained" color="success" onClick={resetStatistics}>
+							{t('STATISTIC.MODAL_AGREE')}
+						</Button>
+					</Stack>
+				</Box>
+			</Modal>
 		</Container>
 	)
 }
-
-export default Statistic

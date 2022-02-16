@@ -327,6 +327,37 @@ export const createNewStatistic = createAsyncThunk('statistic/createNewStatistic
 	}
 
 	await setNewStatistic(userInfo.userId, newStatistic)
+	return newStatistic
+})
+
+export const resetStatistic = createAsyncThunk('statistic/resetStatistic', async (arg, { getState }) => {
+	const state = getState() as RootState
+	const { statistics } = state.statistic
+	const { learnedWords, optional } = statistics
+	const { completedPages } = optional
+	const { userInfo } = state.auth
+
+	if (!userInfo) {
+		throw new Error('Not permitted')
+	}
+
+	// we set yesterday with 0 answers for more demontrative statistics graphics
+	const yesterday = new Date(new Date().setDate(new Date().getDate() - 1)).getTime()
+
+	const resettedStatistic: UserStatistic = {
+		learnedWords,
+		optional: {
+			completedPages,
+			shortStat: INITIAL_SHORT_STATISTICS,
+			longStat: {
+				newWords: { [yesterday]: [] },
+				learnedWords: { [yesterday]: [] },
+			},
+		},
+	}
+
+	await setNewStatistic(userInfo.userId, resettedStatistic)
+	return resettedStatistic
 })
 
 const updateStatisticCalulated = (newWordsAudiocall: number, correctWordsPercentAudiocall: number[], newWordsSprint: number, correctWordsPercentSprint: number[]) => {
@@ -376,6 +407,10 @@ export const statisticSlice = createSlice({
 				const { updatedCompletedPages } = action.payload
 
 				state.statistics.optional.completedPages = updatedCompletedPages
+			})
+			.addCase(resetStatistic.fulfilled, (state, action) => {
+				state.statistics = action.payload
+				state.statisticsCalculated = { totalCorrectPercentShort: '0', totalNewWordsShort: 0, correctWordsPercentAudiocall: '0', correctWordsPercentSprint: '0' }
 			})
 			.addCase(fetchUserStatistics.fulfilled, (state, action) => {
 				state.statistics.optional = { ...action.payload.optional }

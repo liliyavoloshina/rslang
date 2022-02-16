@@ -62,7 +62,11 @@
 		"NEW_WORDS": "Новыx слов: {{words}}",
 		"LEARNED_WORDS": "Изученныx слов: {{words}}",
 		"CORRECT_WORDS_PERCENT": "Процент правильных ответов: {{percent}}%",
-		"LONGEST_CORRECT_SERIES": "Самая длинная серия правильных ответов: {{series}}"
+		"LONGEST_CORRECT_SERIES": "Самая длинная серия правильных ответов: {{series}}",
+		"MODAL_TITLE": "Вы уверены, что хотите сбросить статистику?",
+		"MODAL_DESCRIPTION": "Это удалит всю вашу статистику за сегодня и за длительный период!",
+		"MODAL_AGREE": "Да, сбросьте её",
+		"MODAL_CANCEL": "Отмена"
 	},
 
 	"AUDIOCALL": {
