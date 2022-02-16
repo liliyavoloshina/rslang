@@ -39,7 +39,7 @@ function SignIn() {
 	useEffect(() => {
 		if (!passwordData) return
 
-		setPasswordError(passwordData.length < 7 ? t('AUTH.SHORT_PASSWORD') : '')
+		setPasswordError(passwordData.length < 8 ? t('AUTH.SHORT_PASSWORD') : '')
 	}, [passwordData, t])
 
 	useEffect(() => {
