@@ -98,13 +98,16 @@ export default function Statistic() {
 
 			<Modal open={open} onClose={handleClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
 				<Box sx={modalStyle}>
-					<Typography id="modal-modal-title" variant="h6" component="h2">
+					<Typography textAlign="center" id="modal-modal-title" variant="h6" component="h2">
 						{t('STATISTIC.MODAL_TITLE')}
 					</Typography>
-					<Typography id="modal-modal-description" sx={{ mt: 2 }}>
+					<Typography textAlign="center" id="modal-modal-description" sx={{ mt: 5 }}>
 						{t('STATISTIC.MODAL_DESCRIPTION')}
 					</Typography>
-					<Stack spacing={2} direction="row" justifyContent="space-between" marginTop="20px">
+					<Typography textAlign="right" variant="subtitle2" color="slategray" sx={{ mt: 3 }}>
+						* {t('STATISTIC.MODAL_DESCRIPTION_SHORT')}
+					</Typography>
+					<Stack spacing={2} direction="row" justifyContent="space-between" marginTop="40px">
 						<Button variant="contained" color="secondary" onClick={handleClose}>
 							{t('STATISTIC.MODAL_CANCEL')}
 						</Button>
