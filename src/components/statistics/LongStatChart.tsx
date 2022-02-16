@@ -16,8 +16,8 @@ export default function LongStatChart({ longStat }: { longStat: LongStat }) {
 	const chartData = useMemo<ChartData>(() => {
 		const { learnedWords, newWords } = longStat
 		const dates = Object.keys(longStat.learnedWords)
-		return dates.map(date => {
-			const transformedDate = new Date(+date).toLocaleDateString()
+		return dates.map((date, i) => {
+			const transformedDate = i === 0 ? t('STATISTIC.START_DATE') : new Date(+date).toLocaleDateString()
 			const totalLearnedWords = learnedWords[+date].length
 			const totalNewWords = newWords[+date].length
 			return { name: transformedDate, learnedWords: totalLearnedWords, newWords: totalNewWords }

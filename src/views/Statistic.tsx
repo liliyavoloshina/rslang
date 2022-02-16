@@ -92,7 +92,7 @@ export default function Statistic() {
 
 			<Box display="flex" justifyContent="center" marginTop="50px">
 				<Button variant="contained" color="error" onClick={handleOpen}>
-					Reset statistic
+					{t('COMMON.BUTTON.RESET_STATISTICS')}
 				</Button>
 			</Box>
 

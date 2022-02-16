@@ -66,7 +66,8 @@
 		"MODAL_TITLE": "Are you sure you want to reset your statistics?",
 		"MODAL_DESCRIPTION": "It will delete all your statistics for today and for a long period!",
 		"MODAL_AGREE": "Yes, reset it",
-		"MODAL_CANCEL": "Cancel"
+		"MODAL_CANCEL": "Cancel",
+		"START_DATE": "Start of learning"
 	},
 
 	"AUDIOCALL": {
@@ -118,7 +119,8 @@
 	"COMMON": {
 		"BUTTON": {
 			"YES": "Yes",
-			"NO": "No"
+			"NO": "No",
+			"RESET_STATISTICS": "Reset statistics"
 		},
 		"LOADING": "Loading..."
 	},
