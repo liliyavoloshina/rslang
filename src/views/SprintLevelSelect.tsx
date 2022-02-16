@@ -14,7 +14,9 @@ function Sprint() {
 
 	const controls = [t('SPRINT.CONTROLS_1'), t('SPRINT.CONTROLS_2')]
 
-	return <LevelSelection title={t('SPRINT.TITLE')} description={t('SPRINT.DESCRIPTION', { count: GAME_TIME })} onLevelSelected={onLevelSelected} controls={controls} />
+	return (
+		<LevelSelection title={t('SPRINT.TITLE')} description={t('SPRINT.DESCRIPTION', { count: GAME_TIME })} onLevelSelected={onLevelSelected} controls={controls} type="sprint" />
+	)
 }
 
 export default Sprint

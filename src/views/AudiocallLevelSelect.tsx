@@ -14,7 +14,7 @@ function AudiocallLevelSelect() {
 
 	const controls = [t('AUDIOCALL.CONTROLS_1'), t('AUDIOCALL.CONTROLS_2'), t('AUDIOCALL.CONTROLS_3')]
 
-	return <LevelSelection title={t('AUDIOCALL.TITLE')} description={t('AUDIOCALL.DESCRIPTION')} onLevelSelected={onLevelSelected} controls={controls} />
+	return <LevelSelection title={t('AUDIOCALL.TITLE')} description={t('AUDIOCALL.DESCRIPTION')} onLevelSelected={onLevelSelected} controls={controls} type="audiocall" />
 }
 
 export default AudiocallLevelSelect

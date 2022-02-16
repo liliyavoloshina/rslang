@@ -13,13 +13,14 @@ import ListItemText from '@mui/material/ListItemText'
 import MenuItem from '@mui/material/MenuItem'
 import Select from '@mui/material/Select'
 import Typography from '@mui/material/Typography'
+import { indigo, lightGreen } from '@mui/material/colors'
 
 import { useAppDispatch } from '~/app/hooks'
 import { toggleLevelSelection } from '~/features/audiocall'
 
 import { LevelSelectionProps } from './LevelSelection.types'
 
-const LevelSelection = ({ title, description, controls, onLevelSelected }: LevelSelectionProps) => {
+const LevelSelection = ({ title, description, controls, type, onLevelSelected }: LevelSelectionProps) => {
 	const { t } = useTranslation()
 
 	const [group, setGroup] = useState(0)
@@ -36,42 +37,51 @@ const LevelSelection = ({ title, description, controls, onLevelSelected }: Level
 		dispatch(toggleLevelSelection(false))
 	}
 
+	const bgColor = type === 'audiocall' ? `linear-gradient(to right top, ${indigo[100]}, #fff)` : `linear-gradient(to right bottom, ${lightGreen[100]}, #fff)`
+
 	return (
-		<Container maxWidth="lg" sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-			<Box>
-				<Typography variant="h3">{title}</Typography>
-				<Typography variant="subtitle2" gutterBottom component="div">
-					{description}
-				</Typography>
-			</Box>
-			<Box>
-				<List>
-					{controls.map((control, i) => {
-						return (
-							<ListItem key={i} disablePadding>
-								<ListItemText primary={control} />
-							</ListItem>
-						)
-					})}
-				</List>
-			</Box>
-			<Box display="flex" gap="20px">
-				<FormControl>
-					<InputLabel>{t('LEVEL_SELECTION.SELECT_LEVEL')}</InputLabel>
-					<Select<number> value={group} label={t('LEVEL_SELECTION.SELECT_LEVEL')} onChange={handleChange}>
-						<MenuItem value={0}>{t('LEVEL_SELECTION.GROUP', { count: 1 })}</MenuItem>
-						<MenuItem value={1}>{t('LEVEL_SELECTION.GROUP', { count: 2 })}</MenuItem>
-						<MenuItem value={2}>{t('LEVEL_SELECTION.GROUP', { count: 3 })}</MenuItem>
-						<MenuItem value={3}>{t('LEVEL_SELECTION.GROUP', { count: 4 })}</MenuItem>
-						<MenuItem value={4}>{t('LEVEL_SELECTION.GROUP', { count: 5 })}</MenuItem>
-						<MenuItem value={5}>{t('LEVEL_SELECTION.GROUP', { count: 6 })}</MenuItem>
-					</Select>
-				</FormControl>
-				<Button variant="contained" onClick={handlePlay}>
-					{t('LEVEL_SELECTION.PLAY')}
-				</Button>
-			</Box>
-		</Container>
+		<Box sx={{ height: '100%', background: bgColor }}>
+			<Container maxWidth="lg" sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+				<Box sx={{ textAlign: 'center' }}>
+					<Typography variant="h3">{title}</Typography>
+					<Typography variant="subtitle1" gutterBottom marginTop="10px">
+						{description}
+					</Typography>
+				</Box>
+				<Box>
+					<List>
+						{controls.map((control, i) => {
+							return (
+								<ListItem key={i} dense>
+									<ListItemText
+										primary={control}
+										primaryTypographyProps={{
+											fontSize: 18,
+										}}
+									/>
+								</ListItem>
+							)
+						})}
+					</List>
+				</Box>
+				<Box display="flex" gap="20px" marginTop="20px">
+					<FormControl>
+						<InputLabel>{t('LEVEL_SELECTION.SELECT_LEVEL')}</InputLabel>
+						<Select<number> value={group} label={t('LEVEL_SELECTION.SELECT_LEVEL')} onChange={handleChange}>
+							<MenuItem value={0}>{t('LEVEL_SELECTION.GROUP', { count: 1 })}</MenuItem>
+							<MenuItem value={1}>{t('LEVEL_SELECTION.GROUP', { count: 2 })}</MenuItem>
+							<MenuItem value={2}>{t('LEVEL_SELECTION.GROUP', { count: 3 })}</MenuItem>
+							<MenuItem value={3}>{t('LEVEL_SELECTION.GROUP', { count: 4 })}</MenuItem>
+							<MenuItem value={4}>{t('LEVEL_SELECTION.GROUP', { count: 5 })}</MenuItem>
+							<MenuItem value={5}>{t('LEVEL_SELECTION.GROUP', { count: 6 })}</MenuItem>
+						</Select>
+					</FormControl>
+					<Button variant="contained" onClick={handlePlay}>
+						{t('LEVEL_SELECTION.PLAY')}
+					</Button>
+				</Box>
+			</Container>
+		</Box>
 	)
 }
 
