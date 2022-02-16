@@ -12,7 +12,9 @@ function AudiocallLevelSelect() {
 
 	const onLevelSelected = (group: number) => navigate(`${Path.AUDIOCALL}/${group}`)
 
-	return <LevelSelection title={t('AUDIOCALL.TITLE')} description={t('AUDIOCALL.DESCRIPTION')} onLevelSelected={onLevelSelected} />
+	const controls = [t('AUDIOCALL.CONTROLS_1'), t('AUDIOCALL.CONTROLS_2'), t('AUDIOCALL.CONTROLS_3')]
+
+	return <LevelSelection title={t('AUDIOCALL.TITLE')} description={t('AUDIOCALL.DESCRIPTION')} onLevelSelected={onLevelSelected} controls={controls} />
 }
 
 export default AudiocallLevelSelect

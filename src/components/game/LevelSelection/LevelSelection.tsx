@@ -7,6 +7,9 @@ import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
 import FormControl from '@mui/material/FormControl'
 import InputLabel from '@mui/material/InputLabel'
+import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
+import ListItemText from '@mui/material/ListItemText'
 import MenuItem from '@mui/material/MenuItem'
 import Select from '@mui/material/Select'
 import Typography from '@mui/material/Typography'
@@ -16,7 +19,7 @@ import { toggleLevelSelection } from '~/features/audiocall'
 
 import { LevelSelectionProps } from './LevelSelection.types'
 
-const LevelSelection = ({ title, description, onLevelSelected }: LevelSelectionProps) => {
+const LevelSelection = ({ title, description, controls, onLevelSelected }: LevelSelectionProps) => {
 	const { t } = useTranslation()
 
 	const [group, setGroup] = useState(0)
@@ -36,25 +39,38 @@ const LevelSelection = ({ title, description, onLevelSelected }: LevelSelectionP
 	return (
 		<Container maxWidth="lg" sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
 			<Box>
-				<Typography variant="h2">{title}</Typography>
+				<Typography variant="h3">{title}</Typography>
 				<Typography variant="subtitle2" gutterBottom component="div">
 					{description}
 				</Typography>
 			</Box>
-			<FormControl>
-				<InputLabel>{t('LEVEL_SELECTION.SELECT_LEVEL')}</InputLabel>
-				<Select<number> value={group} label={t('LEVEL_SELECTION.SELECT_LEVEL')} onChange={handleChange}>
-					<MenuItem value={0}>{t('LEVEL_SELECTION.GROUP', { count: 1 })}</MenuItem>
-					<MenuItem value={1}>{t('LEVEL_SELECTION.GROUP', { count: 2 })}</MenuItem>
-					<MenuItem value={2}>{t('LEVEL_SELECTION.GROUP', { count: 3 })}</MenuItem>
-					<MenuItem value={3}>{t('LEVEL_SELECTION.GROUP', { count: 4 })}</MenuItem>
-					<MenuItem value={4}>{t('LEVEL_SELECTION.GROUP', { count: 5 })}</MenuItem>
-					<MenuItem value={5}>{t('LEVEL_SELECTION.GROUP', { count: 6 })}</MenuItem>
-				</Select>
-			</FormControl>
-			<Button variant="contained" onClick={handlePlay}>
-				{t('LEVEL_SELECTION.PLAY')}
-			</Button>
+			<Box>
+				<List>
+					{controls.map((control, i) => {
+						return (
+							<ListItem key={i} disablePadding>
+								<ListItemText primary={control} />
+							</ListItem>
+						)
+					})}
+				</List>
+			</Box>
+			<Box display="flex" gap="20px">
+				<FormControl>
+					<InputLabel>{t('LEVEL_SELECTION.SELECT_LEVEL')}</InputLabel>
+					<Select<number> value={group} label={t('LEVEL_SELECTION.SELECT_LEVEL')} onChange={handleChange}>
+						<MenuItem value={0}>{t('LEVEL_SELECTION.GROUP', { count: 1 })}</MenuItem>
+						<MenuItem value={1}>{t('LEVEL_SELECTION.GROUP', { count: 2 })}</MenuItem>
+						<MenuItem value={2}>{t('LEVEL_SELECTION.GROUP', { count: 3 })}</MenuItem>
+						<MenuItem value={3}>{t('LEVEL_SELECTION.GROUP', { count: 4 })}</MenuItem>
+						<MenuItem value={4}>{t('LEVEL_SELECTION.GROUP', { count: 5 })}</MenuItem>
+						<MenuItem value={5}>{t('LEVEL_SELECTION.GROUP', { count: 6 })}</MenuItem>
+					</Select>
+				</FormControl>
+				<Button variant="contained" onClick={handlePlay}>
+					{t('LEVEL_SELECTION.PLAY')}
+				</Button>
+			</Box>
 		</Container>
 	)
 }

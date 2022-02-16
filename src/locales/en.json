@@ -75,13 +75,18 @@
 		"TITLE": "Audiocall",
 		"DESCRIPTION": "Improve your word listening skills",
 		"NEXT": "Next",
-		"SKIP": "Skip"
+		"SKIP": "Skip",
+		"CONTROLS_1": "Use the mouse to select",
+		"CONTROLS_2": "Use keys 1 to 5 to select an answer",
+		"CONTROLS_3": "Use the Enter key to move to the next word"
 	},
 
 	"SPRINT": {
 		"TITLE": "Sprint",
 		"DESCRIPTION": "How many words you can guess in {{count}} seconds?",
-    "SCORE_PER_WORD": "Score points per correct answer {{count}}"
+		"SCORE_PER_WORD": "Score points per correct answer {{count}}",
+		"CONTROLS_1": "Use the mouse to select",
+		"CONTROLS_2": "Use the left and right keys to select an answer"
 	},
 
 	"LEVEL_SELECTION": {
