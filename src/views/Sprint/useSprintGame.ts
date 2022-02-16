@@ -1,10 +1,10 @@
-import { useCallback, useEffect, useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useLocation, useSearchParams } from 'react-router-dom'
 
 import { useAppSelector } from '~/app/hooks'
 import { selectAuthIsLoggedIn } from '~/features/auth'
-import { answer, gameTimeAlmostUp, gameTimeout, reset, selectSprintState, startGame } from '~/features/sprint'
+import { answer, gameTimeAlmostUp, gameTimeout, loadWords, reset, selectSprintState, startSprint } from '~/features/sprint'
 import { sendUpdatedStatistic, updateCompletedPagesAfterGame, updateGameStatistic, updateWordStatistic } from '~/features/statistic'
 import { Word } from '~/types/word'
 import { PAGES_PER_GROUP } from '~/utils/constants'
@@ -76,7 +76,7 @@ const useSprintGame = () => {
 	// start on mount or when group/page changes
 	useEffect(() => {
 		if (!Number.isNaN(group)) {
-			dispatch(startGame({ group, page: page ?? Math.floor(Math.random() * PAGES_PER_GROUP), isFromTextbook }))
+			dispatch(loadWords({ group, page: page ?? Math.floor(Math.random() * PAGES_PER_GROUP), isFromTextbook }))
 		}
 	}, [dispatch, group, page, isFromTextbook])
 
@@ -117,6 +117,10 @@ const useSprintGame = () => {
 		}
 	}, [status, selectOption])
 
+	const startGame = useCallback(() => {
+		dispatch(startSprint())
+	}, [dispatch])
+
 	const onTimeout = useCallback(() => {
 		dispatch(gameTimeout())
 	}, [dispatch])
@@ -125,7 +129,22 @@ const useSprintGame = () => {
 		dispatch(gameTimeAlmostUp())
 	}, [dispatch])
 
-	return { group, status, word, suggestedTranslation, selectOption, correctWords, incorrectWords, correctAnswersInRow, gameRound, totalPoints, onTimeout, onTimeAlmostUp, isMute }
+	return {
+		startGame,
+		group,
+		status,
+		word,
+		suggestedTranslation,
+		selectOption,
+		correctWords,
+		incorrectWords,
+		correctAnswersInRow,
+		gameRound,
+		totalPoints,
+		onTimeout,
+		onTimeAlmostUp,
+		isMute,
+	}
 }
 
 export { useSprintGame }
