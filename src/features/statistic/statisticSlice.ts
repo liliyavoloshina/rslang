@@ -366,7 +366,15 @@ const updateStatisticCalulated = (newWordsAudiocall: number, correctWordsPercent
 	const averagePercentAudiocall = correctWordsPercentAudiocall.length ? correctWordsPercentAudiocall.reduce((a, b) => a + b) / correctWordsPercentAudiocall.length : 0
 	const averagePercentSprint = correctWordsPercentSprint.length ? correctWordsPercentSprint.reduce((a, b) => a + b) / correctWordsPercentSprint.length : 0
 
-	const totalCorrectPercentShort = ((averagePercentAudiocall + averagePercentSprint) / 2).toFixed(0)
+	let totalCorrectPercentShort
+
+	if (averagePercentAudiocall === 0) {
+		totalCorrectPercentShort = averagePercentSprint.toFixed(0)
+	} else if (averagePercentSprint === 0) {
+		totalCorrectPercentShort = averagePercentAudiocall.toFixed(0)
+	} else {
+		totalCorrectPercentShort = ((averagePercentAudiocall + averagePercentSprint) / 2).toFixed(0)
+	}
 
 	const correctAudiocall = averagePercentAudiocall.toFixed(0)
 	const correctSprint = averagePercentSprint.toFixed(0)

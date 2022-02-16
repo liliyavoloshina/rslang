@@ -65,6 +65,7 @@
 		"LONGEST_CORRECT_SERIES": "Longest correct words series {{series}}",
 		"MODAL_TITLE": "Are you sure you want to reset your statistics?",
 		"MODAL_DESCRIPTION": "It will delete all your statistics for today and for a long period!",
+		"MODAL_DESCRIPTION_SHORT": "but it won't reset word stats",
 		"MODAL_AGREE": "Yes, reset it",
 		"MODAL_CANCEL": "Cancel",
 		"START_DATE": "Start of learning"
