@@ -102,7 +102,15 @@ const getRandomAnswers = (correctAnswer: string, answers: string[]) => {
 
 	const randomAnswers: string[] = [correctAnswer]
 
-	for (let i = 0; randomAnswers.length < MAX_AUDIOCALL_ANSWERS_AMOUNT; i += 1) {
+	let answersAmount
+
+	if (answers.length < 5) {
+		answersAmount = answers.length
+	} else {
+		answersAmount = MAX_AUDIOCALL_ANSWERS_AMOUNT
+	}
+
+	for (let i = 0; randomAnswers.length < answersAmount; i += 1) {
 		const possibleAnswer = answers[i]
 		if (possibleAnswer !== correctAnswer && !randomAnswers.includes(possibleAnswer)) {
 			randomAnswers.push(possibleAnswer)
