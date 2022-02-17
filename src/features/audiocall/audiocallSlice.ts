@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 
 import { RootState } from '~/app/store'
 import { Word } from '~/types/word'
-import { getNotLearnedWord, getUserWords } from '~/utils/api/userWords'
+import { getDifficultWords, getNotLearnedWord, getUserWords } from '~/utils/api/userWords'
 import { getAllWords } from '~/utils/api/words'
 import { DOMAIN_URL, MAX_AUDIOCALL_ANSWERS_AMOUNT, WORD_PER_PAGE_AMOUNT } from '~/utils/constants'
 import { shuffleArray } from '~/utils/helpers'
@@ -61,26 +61,31 @@ export const fetchAudiocallWords = createAsyncThunk<{ wordsForGame: Word[]; answ
 
 		let wordsForGame
 
-		// if there are possibly learned words
 		if (userInfo && isLoggedIn) {
 			const allUserWordsResponse = await getUserWords(userInfo.userId, group, page)
 			const allUserWords = allUserWordsResponse[0].paginatedResults
 
-			if (isFromTextbook) {
-				const addNotLearnedWordsFromPage = async (currentPage: number, words: Word[]): Promise<Word[]> => {
-					const response = await getNotLearnedWord(userInfo.userId, group, currentPage)
-					const wordsFromPage = response[0].paginatedResults
-					words.unshift(...wordsFromPage)
+			if (group !== 6) {
+				if (isFromTextbook) {
+					const addNotLearnedWordsFromPage = async (currentPage: number, words: Word[]): Promise<Word[]> => {
+						const response = await getNotLearnedWord(userInfo.userId, group, currentPage)
+						const wordsFromPage = response[0].paginatedResults
+						words.unshift(...wordsFromPage)
 
-					if (words.length < WORD_PER_PAGE_AMOUNT && currentPage !== 0) {
-						return addNotLearnedWordsFromPage(currentPage - 1, words)
+						if (words.length < WORD_PER_PAGE_AMOUNT && currentPage !== 0) {
+							return addNotLearnedWordsFromPage(currentPage - 1, words)
+						}
+
+						return words.slice(0, WORD_PER_PAGE_AMOUNT)
 					}
-
-					return words.slice(0, WORD_PER_PAGE_AMOUNT)
+					wordsForGame = await addNotLearnedWordsFromPage(page, [])
+				} else {
+					wordsForGame = allUserWords
 				}
-				wordsForGame = await addNotLearnedWordsFromPage(page, [])
+				// if from difficult page
 			} else {
-				wordsForGame = allUserWords
+				const allWords = await getDifficultWords(userInfo!.userId)
+				wordsForGame = allWords[0].paginatedResults
 			}
 		} else {
 			const allWords = await getAllWords(group, page)
