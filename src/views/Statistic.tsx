@@ -5,6 +5,7 @@ import LoadingButton from '@mui/lab/LoadingButton'
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import CircularProgress from '@mui/material/CircularProgress'
 import Container from '@mui/material/Container'
 import Modal from '@mui/material/Modal'
 import Stack from '@mui/material/Stack'
@@ -21,6 +22,7 @@ import {
 	selectStatisticCalculated,
 	selectStatisticOptional,
 	selectStatisticResetStatus,
+	selectStatisticUpdateStatus,
 	sendUpdatedStatistic,
 	updateShortStatistics,
 } from '~/features/statistic'
@@ -30,6 +32,7 @@ export default function Statistic() {
 	const { t } = useTranslation()
 	const dispatch = useAppDispatch()
 	const isLoggedIn = useAppSelector(selectAuthIsLoggedIn)
+	const updateStatus = useAppSelector(selectStatisticUpdateStatus)
 
 	const { shortStat, longStat } = useAppSelector(selectStatisticOptional)
 	const { totalNewWordsShort, totalCorrectPercentShort, correctWordsPercentAudiocall, correctWordsPercentSprint } = useAppSelector(selectStatisticCalculated)
@@ -73,6 +76,10 @@ export default function Statistic() {
 				</Alert>
 			</Container>
 		)
+	}
+
+	if (updateStatus === 'loading') {
+		return <CircularProgress />
 	}
 
 	const modalStyle = {

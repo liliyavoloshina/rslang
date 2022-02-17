@@ -1,7 +1,8 @@
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 
-import { CircularProgress } from '@mui/material'
+import CircularProgress from '@mui/material/CircularProgress'
+import Container from '@mui/material/Container'
 
 import { useAppSelector } from '~/app/hooks'
 import { Path } from '~/components/router'
@@ -21,7 +22,11 @@ const Logoff = () => {
 		}
 	}, [isLoggedIn, dispatch])
 
-	return <CircularProgress />
+	return (
+		<Container maxWidth="lg" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+			<CircularProgress />
+		</Container>
+	)
 }
 
 export { Logoff }

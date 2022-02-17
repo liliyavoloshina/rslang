@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Link as RouterLink } from 'react-router-dom'
 
 import VolumeUp from '@mui/icons-material/VolumeUp'
-import Button from '@mui/material/Button'
+import LoadingButton from '@mui/lab/LoadingButton'
 import Chip from '@mui/material/Chip'
 import Dialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
@@ -18,6 +18,8 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { TransitionProps } from '@mui/material/transitions'
 
+import { useAppSelector } from '~/app/hooks'
+import { selectStatisticUpdateStatus } from '~/features/statistic'
 import { Word } from '~/types/word'
 import { DOMAIN_URL } from '~/utils/constants'
 
@@ -40,6 +42,8 @@ const Transition = forwardRef(function Transition(
 
 export function GameResultDialog({ isOpen, incorrectWords, correctWords }: GameResultDialogProps) {
 	const { t } = useTranslation()
+
+	const updateStatus = useAppSelector(selectStatisticUpdateStatus)
 
 	const toggleAudio = (word: Word) => {
 		const audio = new Audio(`${DOMAIN_URL}/${word.audio}`)
@@ -83,9 +87,9 @@ export function GameResultDialog({ isOpen, incorrectWords, correctWords }: GameR
 					</List>
 				</DialogContent>
 				<DialogActions>
-					<Button component={RouterLink} to={Path.HOME}>
+					<LoadingButton component={RouterLink} to={Path.HOME} disabled={updateStatus === 'loading'} loading={updateStatus === 'loading'} variant="contained">
 						{t('HEADER.HOME')}
-					</Button>
+					</LoadingButton>
 				</DialogActions>
 			</Dialog>
 		</div>

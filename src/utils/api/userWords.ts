@@ -3,7 +3,8 @@ import { UserWord, Word } from '~/types/word'
 
 import { get, post, put } from './base'
 
-export const getUserWords = (id: string, group: number, page: number) => get<GetUserWordsResponse[]>(`users/${id}/aggregatedWords`, { params: { group, page, wordsPerPage: 20 } })
+export const getUserWords = (id: string, group: number, page: number) =>
+	get<GetUserWordsResponse[]>(`users/${id}/aggregatedWords?filter={"group":${group},"page":${page}}&wordsPerPage=20`)
 
 export const getNotLearnedWord = (id: string, group: number, page: number) =>
 	get<GetUserWordsResponse[]>(
