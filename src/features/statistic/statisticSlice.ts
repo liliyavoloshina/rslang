@@ -28,7 +28,7 @@ interface StatisticsState {
 		correctWordsPercentSprint: string
 	}
 	resetStatus: 'idle' | 'loading'
-	updateStatus: 'idle' | 'loading'
+	isUpdating: boolean
 }
 
 const initialState: StatisticsState = {
@@ -50,7 +50,7 @@ const initialState: StatisticsState = {
 		correctWordsPercentSprint: '0',
 	},
 	resetStatus: 'idle',
-	updateStatus: 'idle',
+	isUpdating: false,
 }
 
 const updateWordCorrectAnswers = (difficulty: WordDifficulty, oldAnswers: number, correctStrike: number) => {
@@ -414,6 +414,9 @@ export const statisticSlice = createSlice({
 		updateShortStatistics: state => {
 			state.statistics.optional.shortStat = INITIAL_SHORT_STATISTICS
 		},
+		toggleIsUpdating: (state, action) => {
+			state.isUpdating = action.payload
+		},
 	},
 
 	extraReducers: builder => {
@@ -425,12 +428,6 @@ export const statisticSlice = createSlice({
 			})
 			.addCase(resetStatistic.pending, state => {
 				state.resetStatus = 'loading'
-			})
-			.addCase(sendUpdatedStatistic.pending, state => {
-				state.updateStatus = 'loading'
-			})
-			.addCase(sendUpdatedStatistic.fulfilled, state => {
-				state.updateStatus = 'idle'
 			})
 			.addCase(resetStatistic.fulfilled, (state, action) => {
 				state.resetStatus = 'idle'
@@ -484,5 +481,5 @@ export const statisticSlice = createSlice({
 	},
 })
 
-export const { updateGameStatistic, updateShortStatistics } = statisticSlice.actions
+export const { updateGameStatistic, updateShortStatistics, toggleIsUpdating } = statisticSlice.actions
 export default statisticSlice.reducer

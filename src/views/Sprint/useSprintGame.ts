@@ -5,7 +5,7 @@ import { useLocation, useSearchParams } from 'react-router-dom'
 import { useAppSelector } from '~/app/hooks'
 import { selectAuthIsLoggedIn } from '~/features/auth'
 import { answer, gameTimeAlmostUp, gameTimeout, loadWords, reset, selectSprintState, startSprint } from '~/features/sprint'
-import { sendUpdatedStatistic, updateCompletedPagesAfterGame, updateGameStatistic, updateWordStatistic } from '~/features/statistic'
+import { sendUpdatedStatistic, toggleIsUpdating, updateCompletedPagesAfterGame, updateGameStatistic, updateWordStatistic } from '~/features/statistic'
 import { Word } from '~/types/word'
 import { PAGES_PER_GROUP } from '~/utils/constants'
 
@@ -53,6 +53,7 @@ const useSprintGame = () => {
 
 	const finish = useCallback(async () => {
 		if (isLoggedIn) {
+			dispatch(toggleIsUpdating(true))
 			// update every word statistic and learned words in short stat if necessary
 			await updateEveryWordStatistic()
 			// set to completed page field store
@@ -64,6 +65,7 @@ const useSprintGame = () => {
 
 			// send updated stat to the server
 			await dispatch(sendUpdatedStatistic())
+			dispatch(toggleIsUpdating(false))
 		}
 	}, [correctWords, dispatch, getSprintGameStatistic, incorrectWords, isLoggedIn, updateEveryWordStatistic])
 

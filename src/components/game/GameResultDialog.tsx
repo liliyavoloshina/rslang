@@ -19,7 +19,7 @@ import Typography from '@mui/material/Typography'
 import { TransitionProps } from '@mui/material/transitions'
 
 import { useAppSelector } from '~/app/hooks'
-import { selectStatisticUpdateStatus } from '~/features/statistic'
+import { selectStatisticIsUpdating } from '~/features/statistic'
 import { Word } from '~/types/word'
 import { DOMAIN_URL } from '~/utils/constants'
 
@@ -43,7 +43,7 @@ const Transition = forwardRef(function Transition(
 export function GameResultDialog({ isOpen, incorrectWords, correctWords }: GameResultDialogProps) {
 	const { t } = useTranslation()
 
-	const updateStatus = useAppSelector(selectStatisticUpdateStatus)
+	const isUpdating = useAppSelector(selectStatisticIsUpdating)
 
 	const toggleAudio = (word: Word) => {
 		const audio = new Audio(`${DOMAIN_URL}/${word.audio}`)
@@ -87,7 +87,7 @@ export function GameResultDialog({ isOpen, incorrectWords, correctWords }: GameR
 					</List>
 				</DialogContent>
 				<DialogActions>
-					<LoadingButton component={RouterLink} to={Path.HOME} disabled={updateStatus === 'loading'} loading={updateStatus === 'loading'} variant="contained">
+					<LoadingButton component={RouterLink} to={Path.HOME} disabled={isUpdating} loading={isUpdating} variant="contained">
 						{t('HEADER.HOME')}
 					</LoadingButton>
 				</DialogActions>
