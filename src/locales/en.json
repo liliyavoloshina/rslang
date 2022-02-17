@@ -116,7 +116,9 @@
 
 		"NAME_TOO_SHORT": "Name is too short!",
 		"INVALID_EMAIL": "Invalid E-mail!",
-		"SHORT_PASSWORD": "Password is too short!"
+		"SHORT_PASSWORD": "Password is too short!",
+
+		"NOT_ALLOWED": "You need to login to view this page!"
 	},
 
 	"TIMER": {
