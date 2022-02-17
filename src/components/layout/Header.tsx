@@ -58,7 +58,7 @@ const SETTINGS: { name: TFuncKey; path: Path }[] = [
 	},
 ]
 
-function Header() {
+export default function Header() {
 	const { t } = useTranslation()
 
 	const navigate = useNavigate()
@@ -221,4 +221,3 @@ function Header() {
 		</AppBar>
 	)
 }
-export default Header

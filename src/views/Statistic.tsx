@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import LoadingButton from '@mui/lab/LoadingButton'
+import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
@@ -13,6 +14,7 @@ import { useAppDispatch, useAppSelector } from '~/app/hooks'
 import LongStatChart from '~/components/statistics/LongStatChart'
 import ShortGameCard from '~/components/statistics/ShortGameCard'
 import ShortWordCard from '~/components/statistics/ShortWordCard'
+import { selectAuthIsLoggedIn } from '~/features/auth'
 import {
 	fetchUserStatistics,
 	resetStatistic,
@@ -27,6 +29,8 @@ import { isTheSameDay } from '~/utils/helpers'
 export default function Statistic() {
 	const { t } = useTranslation()
 	const dispatch = useAppDispatch()
+	const isLoggedIn = useAppSelector(selectAuthIsLoggedIn)
+
 	const { shortStat, longStat } = useAppSelector(selectStatisticOptional)
 	const { totalNewWordsShort, totalCorrectPercentShort, correctWordsPercentAudiocall, correctWordsPercentSprint } = useAppSelector(selectStatisticCalculated)
 	const resetStatus = useAppSelector(selectStatisticResetStatus)
@@ -60,6 +64,16 @@ export default function Statistic() {
 	useEffect(() => {
 		getStatisics()
 	}, [dispatch])
+
+	if (!isLoggedIn) {
+		return (
+			<Container maxWidth="lg">
+				<Alert severity="warning" sx={{ marginTop: 5 }}>
+					{t('AUTH.NOT_ALLOWED')}
+				</Alert>
+			</Container>
+		)
+	}
 
 	const modalStyle = {
 		position: 'absolute' as const,

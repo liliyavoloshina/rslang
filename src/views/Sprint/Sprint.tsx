@@ -91,6 +91,8 @@ const Sprint = () => {
 			<LevelSelection
 				title={t('SPRINT.TITLE')}
 				description={t('SPRINT.DESCRIPTION', { count: SPRINT_GAME_TIME })}
+				type="sprint"
+				controls={controls}
 				onLevelSelected={value => navigate(`${Path.SPRINT}?group=${value}`)}
 				controls={controls}
 				type="sprint"
