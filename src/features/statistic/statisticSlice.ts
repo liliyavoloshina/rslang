@@ -27,6 +27,7 @@ interface StatisticsState {
 		correctWordsPercentAudiocall: string
 		correctWordsPercentSprint: string
 	}
+	resetStatus: 'idle' | 'loading'
 }
 
 const initialState: StatisticsState = {
@@ -47,6 +48,7 @@ const initialState: StatisticsState = {
 		correctWordsPercentAudiocall: '0',
 		correctWordsPercentSprint: '0',
 	},
+	resetStatus: 'idle',
 }
 
 const updateWordCorrectAnswers = (difficulty: WordDifficulty, oldAnswers: number, correctStrike: number) => {
@@ -416,7 +418,11 @@ export const statisticSlice = createSlice({
 
 				state.statistics.optional.completedPages = updatedCompletedPages
 			})
+			.addCase(resetStatistic.pending, (state, action) => {
+				state.resetStatus = 'loading'
+			})
 			.addCase(resetStatistic.fulfilled, (state, action) => {
+				state.resetStatus = 'idle'
 				state.statistics = action.payload
 				state.statisticsCalculated = { totalCorrectPercentShort: '0', totalNewWordsShort: 0, correctWordsPercentAudiocall: '0', correctWordsPercentSprint: '0' }
 			})
