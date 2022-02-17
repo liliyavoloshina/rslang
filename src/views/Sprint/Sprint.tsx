@@ -94,8 +94,6 @@ const Sprint = () => {
 				type="sprint"
 				controls={controls}
 				onLevelSelected={value => navigate(`${Path.SPRINT}?group=${value}`)}
-				controls={controls}
-				type="sprint"
 			/>
 		)
 	}
