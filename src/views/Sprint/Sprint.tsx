@@ -86,11 +86,14 @@ const Sprint = () => {
 	}, [status, incorrectWords, animateAnswer, theme])
 
 	if (Number.isNaN(group)) {
+		const controls = [t('SPRINT.CONTROLS_1'), t('SPRINT.CONTROLS_2')]
 		return (
 			<LevelSelection
 				title={t('SPRINT.TITLE')}
 				description={t('SPRINT.DESCRIPTION', { count: SPRINT_GAME_TIME })}
 				onLevelSelected={value => navigate(`${Path.SPRINT}?group=${value}`)}
+				controls={controls}
+				type="sprint"
 			/>
 		)
 	}
