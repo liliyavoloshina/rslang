@@ -18,7 +18,7 @@ import { blue, lightGreen } from '@mui/material/colors'
 
 import { useAppDispatch, useAppSelector } from '~/app/hooks'
 import { updateCompletedPages, updateWordStatistic } from '~/features/statistic'
-import { changeWordDifficulty, markWordAsLearned, selectTextbookGroup } from '~/features/textbook'
+import { changeWordDifficulty, markWordAsLearned, selectTextbookGroup, selectTextbookIsAudioPlaying, toggleAudioStatus } from '~/features/textbook'
 import { Word, WordDifficulty } from '~/types/word'
 import { DOMAIN_URL } from '~/utils/constants'
 
@@ -36,6 +36,8 @@ export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: Te
 	const dispatch = useAppDispatch()
 
 	const currentGroup = useAppSelector(selectTextbookGroup)
+	const isAudioPlaying = useAppSelector(selectTextbookIsAudioPlaying)
+
 	const {
 		page,
 		group,
@@ -65,6 +67,7 @@ export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: Te
 	const [isUpdating, setIsUpdating] = useState(false)
 
 	const toggleAudio = () => {
+		dispatch(toggleAudioStatus(true))
 		let curUrl = 0
 		const audioToPlay = new Audio()
 		audioToPlay.src = audioUrls[curUrl]
@@ -74,6 +77,8 @@ export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: Te
 				curUrl += 1
 				audioToPlay.src = audioUrls[curUrl]
 				audioToPlay.play()
+			} else {
+				dispatch(toggleAudioStatus(false))
 			}
 		}
 	}
@@ -116,7 +121,7 @@ export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: Te
 							{wordTranslate}
 						</Typography>
 					</Box>
-					<IconButton aria-label="delete" sx={{ color: activeColor }} onClick={toggleAudio}>
+					<IconButton aria-label="delete" sx={{ color: activeColor }} onClick={toggleAudio} disabled={isAudioPlaying}>
 						<VolumeUpIcon />
 					</IconButton>
 				</Box>

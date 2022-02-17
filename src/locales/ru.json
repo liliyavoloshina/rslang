@@ -68,7 +68,8 @@
 		"MODAL_DESCRIPTION_SHORT": "но это не сбросит статистику слов",
 		"MODAL_AGREE": "Да, сбросьте её",
 		"MODAL_CANCEL": "Отмена",
-		"START_DATE": "Начало обучения"
+		"START_DATE": "Начало обучения",
+		"DIFFICULT_WORDS_EMPTY_PAGE": "У вас пока нет сложных слов..."
 	},
 
 	"AUDIOCALL": {

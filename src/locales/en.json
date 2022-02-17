@@ -68,7 +68,8 @@
 		"MODAL_DESCRIPTION_SHORT": "but it won't reset word stats",
 		"MODAL_AGREE": "Yes, reset it",
 		"MODAL_CANCEL": "Cancel",
-		"START_DATE": "Start of learning"
+		"START_DATE": "Start of learning",
+		"DIFFICULT_WORDS_EMPTY_PAGE": "You don't have difficult words yet..."
 	},
 
 	"AUDIOCALL": {

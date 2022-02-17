@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link as RouterLink } from 'react-router-dom'
 
-import { Box, Container, Grid, Typography } from '@mui/material'
+import { Alert, Box, Container, Grid, Typography } from '@mui/material'
 import Button from '@mui/material/Button'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
@@ -42,6 +42,7 @@ function Textbook() {
 	const activeColor = groupColors[group]
 
 	const isPageCompleted = group in completedPages && completedPages[group][page]
+	const isDifficultWordsEmpty = group === 6 && words.length < 1
 
 	useEffect(() => {
 		const storedPagination = localStorageGetPagination()
@@ -77,14 +78,21 @@ function Textbook() {
 				)}
 
 				<Stack spacing={2} direction="row" justifyContent="space-between">
-					<Button component={RouterLink} to={`${Path.SPRINT}?group=${group}&page=${page}`} disabled={isPageCompleted || status === 'loading'}>
+					<Button component={RouterLink} to={`${Path.SPRINT}?group=${group}&page=${page}`} disabled={isPageCompleted || status === 'loading' || isDifficultWordsEmpty}>
 						{t('TEXTBOOK.OPEN_SPRTING_GAME')}
 					</Button>
-					<Button component={RouterLink} to={`${Path.AUDIOCALL}/${group}/${page}`} state={{ fromTextbook: true }} disabled={isPageCompleted || status === 'loading'}>
+					<Button
+						component={RouterLink}
+						to={`${Path.AUDIOCALL}/${group}/${page}`}
+						state={{ fromTextbook: true }}
+						disabled={isPageCompleted || status === 'loading' || isDifficultWordsEmpty}
+					>
 						{t('TEXTBOOK.OPEN_AUDIO_CALL_GAME')}
 					</Button>
 				</Stack>
 			</Stack>
+
+			{isDifficultWordsEmpty && <Alert severity="info">{t('STATISTIC.DIFFICULT_WORDS_EMPTY_PAGE')}</Alert>}
 
 			<Grid container spacing={2} sx={{ flex: '1 0 auto', marginBottom: '50px' }}>
 				{status === 'loading'
