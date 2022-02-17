@@ -252,6 +252,10 @@ export const updateWordStatistic = createAsyncThunk<
 
 	if (newDifficulty) {
 		statisticToUpdate.difficulty = newDifficulty
+
+		if (newDifficulty === WordDifficulty.Normal && correctStrike >= 3) {
+			statisticToUpdate.optional.isLearned = true
+		}
 	}
 
 	if (newCorrectAnswers) {
