@@ -20,9 +20,9 @@ import {
 	fetchUserStatistics,
 	resetStatistic,
 	selectStatisticCalculated,
+	selectStatisticIsUpdating,
 	selectStatisticOptional,
 	selectStatisticResetStatus,
-	selectStatisticUpdateStatus,
 	sendUpdatedStatistic,
 	updateShortStatistics,
 } from '~/features/statistic'
@@ -32,7 +32,7 @@ export default function Statistic() {
 	const { t } = useTranslation()
 	const dispatch = useAppDispatch()
 	const isLoggedIn = useAppSelector(selectAuthIsLoggedIn)
-	const updateStatus = useAppSelector(selectStatisticUpdateStatus)
+	const isUpdating = useAppSelector(selectStatisticIsUpdating)
 
 	const { shortStat, longStat } = useAppSelector(selectStatisticOptional)
 	const { totalNewWordsShort, totalCorrectPercentShort, correctWordsPercentAudiocall, correctWordsPercentSprint } = useAppSelector(selectStatisticCalculated)
@@ -78,7 +78,7 @@ export default function Statistic() {
 		)
 	}
 
-	if (updateStatus === 'loading') {
+	if (isUpdating) {
 		return <CircularProgress />
 	}
 

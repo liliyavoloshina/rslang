@@ -40,7 +40,7 @@ import {
 	toggleSounds,
 } from '~/features/audiocall'
 import { selectAuthIsLoggedIn } from '~/features/auth'
-import { sendUpdatedStatistic, updateCompletedPagesAfterGame, updateGameStatistic, updateWordStatistic } from '~/features/statistic'
+import { sendUpdatedStatistic, toggleIsUpdating, updateCompletedPagesAfterGame, updateGameStatistic, updateWordStatistic } from '~/features/statistic'
 import { DOMAIN_URL, PAGES_PER_GROUP } from '~/utils/constants'
 
 interface LocationState {
@@ -164,8 +164,12 @@ export default function Audiocall() {
 	}
 
 	const finish = async () => {
+		window.removeEventListener('keydown', handleKeyDown)
+		window.removeEventListener('keydown', handleKeyAnswers)
+
 		// dipatch
 		if (isLoggedIn) {
+			dispatch(toggleIsUpdating(true))
 			// update every word statistic and learned words in short stat if necessary
 			await updateEveryWordStatistic()
 			// set to completed page field store
@@ -177,6 +181,7 @@ export default function Audiocall() {
 
 			// send updated stat to the server
 			await dispatch(sendUpdatedStatistic())
+			dispatch(toggleIsUpdating(false))
 		}
 	}
 
