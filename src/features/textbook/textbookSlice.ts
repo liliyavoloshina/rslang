@@ -11,6 +11,7 @@ export interface TextbookState {
 	page: number
 	group: number
 	status: 'idle' | 'loading' | 'failed' | 'success'
+	isAudioPlaying: boolean
 }
 
 const initialState: TextbookState = {
@@ -18,6 +19,7 @@ const initialState: TextbookState = {
 	page: 0,
 	group: 0,
 	status: 'idle',
+	isAudioPlaying: false,
 }
 
 export const fetchTextbookWords = createAsyncThunk<Word[], void, { state: RootState }>('textbook/fetchWords', async (_arg, { getState }) => {
@@ -58,6 +60,9 @@ export const textbookSlice = createSlice({
 			const newPage = action.payload
 			state.page = newPage
 			localStorageSetPagination({ name: 'page', value: newPage })
+		},
+		toggleAudioStatus: (state, action) => {
+			state.isAudioPlaying = action.payload
 		},
 		changeGroup: (state, action) => {
 			const newGroup = action.payload
@@ -152,5 +157,5 @@ export const textbookSlice = createSlice({
 	},
 })
 
-export const { changePage, changeGroup, changeWordDifficulty, markWordAsLearned } = textbookSlice.actions
+export const { changePage, changeGroup, changeWordDifficulty, markWordAsLearned, toggleAudioStatus } = textbookSlice.actions
 export default textbookSlice.reducer
