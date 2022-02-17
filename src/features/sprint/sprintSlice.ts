@@ -2,9 +2,9 @@ import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 
 import { RootState } from '~/app/store'
 import { Word } from '~/types/word'
-import { getAllWords, getNotLearnedWord, getUserWords } from '~/utils/api'
+import { getAllWords, getDifficultWords, getNotLearnedWord, getUserWords } from '~/utils/api'
 // TODO: uncomment and use this instead of hardcoded temp test value
-import { DOMAIN_URL, MAX_WORDS_GAME_AMOUNT, SPRINT_BASE_CORRECT_ANSWER_POINTS, WORD_PER_PAGE_AMOUNT } from '~/utils/constants'
+import { DOMAIN_URL, SPRINT_BASE_CORRECT_ANSWER_POINTS, WORD_PER_PAGE_AMOUNT } from '~/utils/constants'
 import { shuffleArray } from '~/utils/helpers'
 
 type SprintState = {
@@ -49,49 +49,57 @@ const getSuggestedTranslation = (currentWord: Word, words: Word[]) => {
 	return otherWords[Math.floor(Math.random() * otherWords.length)].wordTranslate
 }
 
-// TODO: we need to get aggregated words here, so we will have userWord field
-// export const startGame = createAsyncThunk('sprint/startGame', ({ group, page }: { group: number; page: number }) => getAllWords(group, page))
-
 interface FetchWordsParams {
 	group: number
 	page: number
 	isFromTextbook: boolean
 }
 
-const loadWords = createAsyncThunk<Word[], FetchWordsParams, { state: RootState }>('sprint/loadWords', async ({ group, page, isFromTextbook }, { getState }) => {
-	const state = getState()
-	const { isLoggedIn, userInfo } = state.auth
+const loadWords = createAsyncThunk<{ wordsForGame: Word[]; answers: string[] }, FetchWordsParams, { state: RootState }>(
+	'sprint/loadWords',
+	async ({ group, page, isFromTextbook }, { getState }) => {
+		const state = getState()
+		const { isLoggedIn, userInfo } = state.auth
 
-	let wordsForGame
+		let wordsForGame
 
-	// if there are possibly learned words
-	if (userInfo && isLoggedIn) {
-		const allUserWordsResponse = await getUserWords(userInfo.userId, group, page)
-		const allUserWords = allUserWordsResponse[0].paginatedResults
+		// if there are possibly learned words
+		if (userInfo && isLoggedIn) {
+			if (group !== 6) {
+				const allUserWordsResponse = await getUserWords(userInfo.userId, group, page)
+				const allUserWords = allUserWordsResponse[0].paginatedResults
 
-		if (isFromTextbook) {
-			const addNotLearnedWordsFromPage = async (currentPage: number, words: Word[]): Promise<Word[]> => {
-				const response = await getNotLearnedWord(userInfo.userId, group, currentPage)
-				const wordsFromPage = response[0].paginatedResults
-				words.unshift(...wordsFromPage)
+				if (isFromTextbook) {
+					const addNotLearnedWordsFromPage = async (currentPage: number, words: Word[]): Promise<Word[]> => {
+						const response = await getNotLearnedWord(userInfo.userId, group, currentPage)
+						const wordsFromPage = response[0].paginatedResults
+						words.unshift(...wordsFromPage)
 
-				if (words.length < WORD_PER_PAGE_AMOUNT && currentPage !== 0) {
-					return addNotLearnedWordsFromPage(currentPage - 1, words)
+						if (words.length < WORD_PER_PAGE_AMOUNT && currentPage !== 0) {
+							return addNotLearnedWordsFromPage(currentPage - 1, words)
+						}
+
+						const sliced = words.slice(0, WORD_PER_PAGE_AMOUNT)
+						return sliced
+					}
+					wordsForGame = await addNotLearnedWordsFromPage(page, [])
+				} else {
+					wordsForGame = allUserWords
 				}
-
-				const sliced = words.slice(0, WORD_PER_PAGE_AMOUNT)
-				return sliced
+				// if from difficult page
+			} else {
+				const allWords = await getDifficultWords(userInfo!.userId)
+				wordsForGame = allWords[0].paginatedResults
 			}
-			wordsForGame = await addNotLearnedWordsFromPage(page, [])
 		} else {
-			wordsForGame = allUserWords
+			wordsForGame = await getAllWords(group, page)
 		}
-	} else {
-		wordsForGame = await getAllWords(group, page)
-	}
 
-	return wordsForGame
-})
+		const answers = wordsForGame.map((word: Word) => word.wordTranslate)
+
+		return { wordsForGame, answers }
+	}
+)
 
 export const sprintSlice = createSlice({
 	name: 'sprint',
@@ -101,6 +109,7 @@ export const sprintSlice = createSlice({
 			const correctAnswerAudio = new Audio('/assets/audio/correct_answer2.mp3')
 			const incorrectAnswerAudio = new Audio('/assets/audio/incorrect_answer2.mp3')
 			const newRoundAudio = new Audio('/assets/audio/new_round.mp3')
+
 			if (state.currentWord) {
 				const correctOption = state.suggestedTranslation === state.currentWord.wordTranslate
 				if (action.payload === correctOption) {
@@ -127,20 +136,13 @@ export const sprintSlice = createSlice({
 				}
 			}
 
-			// TODO: uncomment me
-			if (state.currentIdx < MAX_WORDS_GAME_AMOUNT - 1) {
-				// if (state.currentIdx < 19) {
+			if (state.currentIdx < state.words.length - 1) {
 				state.currentIdx += 1
 				state.currentWord = state.words[state.currentIdx]
 				state.suggestedTranslation = getSuggestedTranslation(state.currentWord!, state.words)
 				state.audioPath = `${DOMAIN_URL}/${state.currentWord!.audio}`
 			} else {
 				state.status = 'game-over'
-				// TODO: для всех слов - проверить word.userWord?, если нет, то добавить в статистику +1 новое слово с таймстемпом
-				// TODO: для всех неугаданных слов - сделать неизученными, сбросить на ноль количество правильных ответов для этого слова (и в сложных и в обычных)
-				// TODO: для всех угаданных слов - если слово было обычным/сложным и 3/5 раз подряд угаданно, То сделать изученным
-
-				// state.incorrectWords.map(word => word.userWord?.optional?.isLearned === false)
 			}
 		},
 		reset: state => {
@@ -172,8 +174,9 @@ export const sprintSlice = createSlice({
 				state.status = 'loading'
 			})
 			.addCase(loadWords.fulfilled, (state, action) => {
+				const { wordsForGame, answers } = action.payload
 				state.status = 'countdown'
-				state.words = action.payload
+				state.words = wordsForGame
 				shuffleArray(state.words)
 				state.currentWord = state.words[state.currentIdx]
 				state.suggestedTranslation = getSuggestedTranslation(state.currentWord!, state.words)
