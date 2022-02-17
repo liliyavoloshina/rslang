@@ -141,7 +141,7 @@ export default function Audiocall() {
 	}, [dispatch, fetchWords, handleKeyDown, handleKeyAnswers])
 
 	const getAudiocallGameStatistic = () => {
-		const newWords = audiocallWords.filter(word => !word.userWord?.optional).length
+		const newWords = audiocallWords.filter(word => !word.userWord?.optional.correctAnswers || !word.userWord?.optional.incorrectAnswers).length
 		const correctWordsPercent = (correctWords.length / audiocallWords.length) * 100
 		const longestSeries = Math.max(...bestSeries.correctAnswers)
 
@@ -173,7 +173,7 @@ export default function Audiocall() {
 
 			// caluclate and set new game statistic
 			const gameStatistic = getAudiocallGameStatistic()
-			dispatch(updateGameStatistic({ gameName: 'audiocall', newStatistic: gameStatistic }))
+			await dispatch(updateGameStatistic({ gameName: 'audiocall', newStatistic: gameStatistic }))
 
 			// send updated stat to the server
 			await dispatch(sendUpdatedStatistic())

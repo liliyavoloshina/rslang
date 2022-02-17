@@ -112,12 +112,12 @@ const transformExistingCompletedPages = (completedPages: CompletedPages, group: 
 }
 
 // send updated statistic to the server
-export const sendUpdatedStatistic = createAsyncThunk('statistic/sendUpdatedStatistic', (arg, { getState }) => {
+export const sendUpdatedStatistic = createAsyncThunk('statistic/sendUpdatedStatistic', async (arg, { getState }) => {
 	const state = getState() as RootState
 	const statisticToSend = state.statistic.statistics
 	const { userId } = state.auth.userInfo!
 
-	setNewStatistic(userId, statisticToSend)
+	await setNewStatistic(userId, statisticToSend)
 })
 
 // updates completed pages after game
@@ -222,12 +222,11 @@ export const updateWordStatistic = createAsyncThunk<
 	const learnedWordsIds = []
 
 	let statisticToUpdate: UserWord
-	let isNew = false
+	const isNew = !word.userWord?.optional.correctAnswers || !word.userWord?.optional.incorrectAnswers
 
 	if (isStatisticExist) {
 		statisticToUpdate = word.userWord!
 	} else {
-		isNew = true
 		statisticToUpdate = {
 			difficulty: WordDifficulty.Normal,
 			optional: {
