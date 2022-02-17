@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import LoadingButton from '@mui/lab/LoadingButton'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
@@ -12,7 +13,15 @@ import { useAppDispatch, useAppSelector } from '~/app/hooks'
 import LongStatChart from '~/components/statistics/LongStatChart'
 import ShortGameCard from '~/components/statistics/ShortGameCard'
 import ShortWordCard from '~/components/statistics/ShortWordCard'
-import { fetchUserStatistics, resetStatistic, selectStatisticCalculated, selectStatisticOptional, sendUpdatedStatistic, updateShortStatistics } from '~/features/statistic'
+import {
+	fetchUserStatistics,
+	resetStatistic,
+	selectStatisticCalculated,
+	selectStatisticOptional,
+	selectStatisticResetStatus,
+	sendUpdatedStatistic,
+	updateShortStatistics,
+} from '~/features/statistic'
 import { isTheSameDay } from '~/utils/helpers'
 
 export default function Statistic() {
@@ -20,6 +29,7 @@ export default function Statistic() {
 	const dispatch = useAppDispatch()
 	const { shortStat, longStat } = useAppSelector(selectStatisticOptional)
 	const { totalNewWordsShort, totalCorrectPercentShort, correctWordsPercentAudiocall, correctWordsPercentSprint } = useAppSelector(selectStatisticCalculated)
+	const resetStatus = useAppSelector(selectStatisticResetStatus)
 
 	const { date, learnedWords } = shortStat
 	const { audiocall, sprint } = shortStat.games
@@ -111,9 +121,9 @@ export default function Statistic() {
 						<Button variant="contained" color="secondary" onClick={handleClose}>
 							{t('STATISTIC.MODAL_CANCEL')}
 						</Button>
-						<Button variant="contained" color="success" onClick={resetStatistics}>
+						<LoadingButton disabled={resetStatus === 'loading'} loading={resetStatus === 'loading'} onClick={resetStatistics} variant="contained">
 							{t('STATISTIC.MODAL_AGREE')}
-						</Button>
+						</LoadingButton>
 					</Stack>
 				</Box>
 			</Modal>
