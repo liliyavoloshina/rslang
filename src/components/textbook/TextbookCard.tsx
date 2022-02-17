@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import BookmarkAddedIcon from '@mui/icons-material/BookmarkAdded'
@@ -61,6 +62,8 @@ export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: Te
 	const imageUrl = `${DOMAIN_URL}/${image}`
 	const audioUrls = [`${DOMAIN_URL}/${audio}`, `${DOMAIN_URL}/${audioMeaning}`, `${DOMAIN_URL}/${audioExample}`]
 
+	const [isUpdating, setIsUpdating] = useState(false)
+
 	const toggleAudio = () => {
 		let curUrl = 0
 		const audioToPlay = new Audio()
@@ -76,6 +79,7 @@ export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: Te
 	}
 
 	const toggleWordDifficulty = async () => {
+		setIsUpdating(true)
 		const difficulty = userWord?.difficulty === WordDifficulty.Difficult ? WordDifficulty.Normal : WordDifficulty.Difficult
 
 		// update word stat
@@ -84,15 +88,19 @@ export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: Te
 		dispatch(changeWordDifficulty({ passedWord, difficulty }))
 
 		dispatch(updateCompletedPages({ page, group }))
+
+		setIsUpdating(false)
 	}
 
 	const addToLearned = async () => {
+		setIsUpdating(true)
 		// update word stat
 		await dispatch(updateWordStatistic({ wordToUpdate: passedWord, newFields: { isLearned: true } }))
 		// update ui
 		dispatch(markWordAsLearned(passedWord.id))
 
 		dispatch(updateCompletedPages({ page, group }))
+		setIsUpdating(false)
 	}
 
 	return (
@@ -144,12 +152,12 @@ export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: Te
 					{isLoggedIn && (
 						<Stack>
 							<Tooltip title={isLearned ? '' : t('TEXTBOOK.ADD_TO_LEARNED')} placement="top">
-								<IconButton sx={{ color: learnedBtnColor }} onClick={addToLearned} disabled={isLearned}>
+								<IconButton sx={{ color: learnedBtnColor }} onClick={addToLearned} disabled={isLearned || isUpdating}>
 									<BookmarkAddedIcon />
 								</IconButton>
 							</Tooltip>
 							<Tooltip title={isDifficultDisable ? '' : t(isDifficult ? 'TEXTBOOK.REMOVED_FROM_DIFFICULT' : 'TEXTBOOK.ADD_TO_DIFFICULT')}>
-								<IconButton sx={{ color: difficultBtnColor }} onClick={toggleWordDifficulty} disabled={isDifficultDisable}>
+								<IconButton sx={{ color: difficultBtnColor }} onClick={toggleWordDifficulty} disabled={isDifficultDisable || isUpdating}>
 									<DiamondIcon />
 								</IconButton>
 							</Tooltip>
