@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import { useDispatch } from 'react-redux'
 import { useLocation, useSearchParams } from 'react-router-dom'
 
@@ -30,7 +30,7 @@ const useSprintGame = () => {
 
 	const isFromTextbook = !!(location.state as LocationState)?.fromTextbook
 
-	const getSprintGameStatistic = useCallback(() => {
+	const getSprintGameStatistic = useCallback(async () => {
 		const newWords = words.filter((newWord: Word) => !newWord.userWord?.optional).length
 		const correctWordsPercent = (correctWords.length / words.length) * 100
 
@@ -59,8 +59,8 @@ const useSprintGame = () => {
 			await dispatch(updateCompletedPagesAfterGame({ correctWords, incorrectWords }))
 
 			// caluclate and set new game statistic
-			const gameStatistic = getSprintGameStatistic()
-			dispatch(updateGameStatistic({ gameName: 'sprint', newStatistic: gameStatistic }))
+			const gameStatistic = await getSprintGameStatistic()
+			await dispatch(updateGameStatistic({ gameName: 'sprint', newStatistic: gameStatistic }))
 
 			// send updated stat to the server
 			await dispatch(sendUpdatedStatistic())
