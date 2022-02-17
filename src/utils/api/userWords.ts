@@ -12,7 +12,7 @@ export const getNotLearnedWord = (id: string, group: number, page: number) =>
 
 export const getUserWord = (userId: string, wordId: string) => get<Word>(`users/${userId}/words/${wordId}`)
 
-export const getDifficultWords = (id: string) => get<GetUserWordsResponse[]>(`users/${id}/aggregatedWords?filter={"$and":[{"userWord.difficulty":"difficult"}]}`)
+export const getDifficultWords = (id: string) => get<GetUserWordsResponse[]>(`users/${id}/aggregatedWords?filter={"$and":[{"userWord.difficulty":"difficult"}]}&wordsPerPage=600`)
 
 export const addWordToDifficult = (userId: string, wordId: string, difficulty: string) => post<UserWord>(`users/${userId}/words/${wordId}`, { difficulty })
 
