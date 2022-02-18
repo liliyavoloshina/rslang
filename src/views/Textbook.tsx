@@ -6,7 +6,7 @@ import { Alert, Box, Color, Container, Grid, Typography } from '@mui/material'
 import Button, { ButtonProps } from '@mui/material/Button'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
-import { deepPurple, lightBlue, lightGreen, orange, pink, yellow } from '@mui/material/colors'
+import { deepPurple, lightBlue, lightGreen, orange, pink, red, yellow } from '@mui/material/colors'
 import { styled } from '@mui/material/styles'
 
 import { useAppDispatch, useAppSelector } from '~/app/hooks'
@@ -55,7 +55,7 @@ function Textbook() {
 	const status = useAppSelector(selectTextbookStatus)
 	const { completedPages } = useAppSelector(selectStatisticOptional)
 
-	const groupColors = [lightGreen, pink, orange, lightBlue, yellow, deepPurple]
+	const groupColors = [lightGreen, pink, orange, lightBlue, yellow, deepPurple, red]
 	const activeColor = groupColors[group]
 
 	const isPageCompleted = group in completedPages && completedPages[group][page]
@@ -79,7 +79,7 @@ function Textbook() {
 
 	return (
 		<Container maxWidth="lg" sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-			<Typography variant="h4" sx={{ mt: 3, mb: 3 }}>
+			<Typography variant="h3" sx={{ mt: 3, mb: 3 }}>
 				{t('TEXTBOOK.TITLE')}
 			</Typography>
 
@@ -88,7 +88,7 @@ function Textbook() {
 
 				{isPageCompleted && (
 					<Box>
-						<Typography variant="h6" sx={{ color: lightGreen[500] }}>
+						<Typography variant="h5" sx={{ color: lightGreen[500] }}>
 							{t('TEXTBOOK.FULLY_LEARNED_SECTION')}
 						</Typography>
 					</Box>

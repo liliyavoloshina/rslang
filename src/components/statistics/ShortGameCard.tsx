@@ -17,34 +17,44 @@ interface ShortGameCardProps {
 	newWords: number
 	correctPercent: string
 	longestSeries: number
+	bgColor: string
 }
 
-export default function ShortGameCard({ gameName, newWords, correctPercent, longestSeries }: ShortGameCardProps) {
+export default function ShortGameCard({ gameName, newWords, correctPercent, longestSeries, bgColor }: ShortGameCardProps) {
 	const { t } = useTranslation()
 	return (
-		<Card>
+		<Card style={{ backgroundColor: bgColor }}>
 			<CardContent>
-				<Typography variant="h5" color="text.secondary" gutterBottom>
+				<Typography variant="h4" textAlign="center" gutterBottom>
 					{gameName === 'audiocall' ? t('AUDIOCALL.TITLE') : t('SPRINT.TITLE')}
 				</Typography>
 				<List>
 					<ListItem disablePadding>
-						<ListItemIcon style={{ minWidth: '40px' }}>
-							<AddCircleIcon color="success" />
-						</ListItemIcon>
-						<ListItemText primary={t('STATISTIC.NEW_WORDS', { words: `${newWords}` })} />
+						<ListItemText
+							primary={t('STATISTIC.NEW_WORDS', { words: `${newWords}` })}
+							primaryTypographyProps={{
+								fontSize: 18,
+								textAlign: 'center',
+							}}
+						/>
 					</ListItem>
 					<ListItem disablePadding>
-						<ListItemIcon style={{ minWidth: '40px' }}>
-							<PercentIcon color="primary" />
-						</ListItemIcon>
-						<ListItemText primary={t('STATISTIC.CORRECT_WORDS_PERCENT', { percent: `${correctPercent}` })} />
+						<ListItemText
+							primary={t('STATISTIC.CORRECT_WORDS_PERCENT', { percent: `${correctPercent}` })}
+							primaryTypographyProps={{
+								fontSize: 18,
+								textAlign: 'center',
+							}}
+						/>
 					</ListItem>
 					<ListItem disablePadding>
-						<ListItemIcon style={{ minWidth: '40px' }}>
-							<LocalFireDepartmentIcon color="error" />
-						</ListItemIcon>
-						<ListItemText primary={t('STATISTIC.LONGEST_CORRECT_SERIES', { series: `${longestSeries}` })} />
+						<ListItemText
+							primary={t('STATISTIC.LONGEST_CORRECT_SERIES', { series: `${longestSeries}` })}
+							primaryTypographyProps={{
+								fontSize: 18,
+								textAlign: 'center',
+							}}
+						/>
 					</ListItem>
 				</List>
 			</CardContent>

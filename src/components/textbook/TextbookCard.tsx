@@ -14,7 +14,7 @@ import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
-import { blue, lightGreen } from '@mui/material/colors'
+import { blue, lightGreen, red } from '@mui/material/colors'
 
 import { useAppDispatch, useAppSelector } from '~/app/hooks'
 import { updateCompletedPages, updateWordStatistic } from '~/features/statistic'
@@ -58,7 +58,6 @@ export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: Te
 	const isLearned = !!userWord?.optional?.isLearned
 	const isDifficult = userWord?.difficulty === WordDifficulty.Difficult
 	const isDifficultDisable = (isDifficult && currentGroup !== 6) || isLearned
-	const difficultBtnColor = blue.A200
 	const learnedBtnColor = lightGreen[500]
 
 	const imageUrl = `${DOMAIN_URL}/${image}`
@@ -162,7 +161,7 @@ export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: Te
 								</IconButton>
 							</Tooltip>
 							<Tooltip title={isDifficultDisable ? '' : t(isDifficult ? 'TEXTBOOK.REMOVED_FROM_DIFFICULT' : 'TEXTBOOK.ADD_TO_DIFFICULT')}>
-								<IconButton sx={{ color: difficultBtnColor }} onClick={toggleWordDifficulty} disabled={isDifficultDisable || isUpdating}>
+								<IconButton sx={{ color: blue.A200 }} onClick={toggleWordDifficulty} disabled={isDifficultDisable || isUpdating}>
 									<DiamondIcon />
 								</IconButton>
 							</Tooltip>
@@ -182,7 +181,7 @@ export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: Te
 						</Box>
 						<Stack flexDirection="row" columnGap="10px">
 							<Chip sx={{ display: isLearned ? 'flex' : 'none', backgroundColor: learnedBtnColor, color: '#fff' }} label={t('TEXTBOOK.LEARNED')} />
-							<Chip sx={{ display: isDifficult ? 'flex' : 'none', backgroundColor: difficultBtnColor, color: '#fff' }} label={t('TEXTBOOK.DIFFICULT')} />
+							<Chip sx={{ display: isDifficult ? 'flex' : 'none', backgroundColor: red[300], color: '#fff' }} label={t('TEXTBOOK.DIFFICULT')} />
 						</Stack>
 					</Stack>
 				)}
