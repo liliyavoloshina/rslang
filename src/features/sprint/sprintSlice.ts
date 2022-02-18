@@ -143,6 +143,11 @@ export const sprintSlice = createSlice({
 				state.audioPath = `${DOMAIN_URL}/${state.currentWord!.audio}`
 			} else {
 				state.status = 'game-over'
+
+				// if all answers were correct
+				if (state.maxCorrectAnswersSequence === 0) {
+					state.maxCorrectAnswersSequence = state.correctAnswersInRow
+				}
 			}
 		},
 		reset: state => {
