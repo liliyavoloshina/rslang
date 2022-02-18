@@ -5,16 +5,17 @@ import Typography from '@mui/material/Typography'
 interface ShortWordCardProps {
 	value: string
 	text: string
+	bgColor: string
 }
 
-export default function ShortWordCard({ value, text }: ShortWordCardProps) {
+export default function ShortWordCard({ value, text, bgColor }: ShortWordCardProps) {
 	return (
-		<Card>
+		<Card style={{ backgroundColor: bgColor }}>
 			<CardContent>
 				<Typography variant="h3" gutterBottom align="center">
 					{value}
 				</Typography>
-				<Typography sx={{ fontSize: 16 }} color="text.secondary" align="center">
+				<Typography sx={{ fontSize: 18 }} color="text.secondary" align="center">
 					{text}
 				</Typography>
 			</CardContent>
