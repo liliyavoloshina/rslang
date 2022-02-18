@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import LoadingButton from '@mui/lab/LoadingButton'
@@ -43,21 +43,21 @@ export default function Statistic() {
 	const { newWords: newWordsAudiocall, longestSeries: longestSeriesAudiocall } = audiocall
 	const { newWords: newWordsSprint, longestSeries: longestSeriesSprint } = sprint
 
-	const oldDate = new Date(date)
-	const curDate = new Date()
-
 	const [open, setOpen] = useState(false)
 	const handleOpen = () => setOpen(true)
 	const handleClose = () => setOpen(false)
 
-	const getStatisics = async () => {
+	const curDate = useMemo(() => new Date(), [])
+
+	const getStatisics = useCallback(async () => {
+		const oldDate = new Date(date)
+		await dispatch(fetchUserStatistics())
+
 		if (!isTheSameDay(oldDate, curDate)) {
 			dispatch(updateShortStatistics())
 			await dispatch(sendUpdatedStatistic())
 		}
-
-		await dispatch(fetchUserStatistics())
-	}
+	}, [dispatch, curDate, date])
 
 	const resetStatistics = async () => {
 		await dispatch(resetStatistic())
@@ -66,7 +66,7 @@ export default function Statistic() {
 
 	useEffect(() => {
 		getStatisics()
-	}, [dispatch])
+	}, [dispatch, getStatisics])
 
 	if (!isLoggedIn) {
 		return (

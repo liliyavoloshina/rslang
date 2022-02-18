@@ -10,7 +10,8 @@ export const selectSprintState = ({ sprint }: RootState) => ({
 	status: sprint.status,
 	correctAnswersInRow: sprint.correctAnswersInRow,
 	gameRound: sprint.gameRound,
-	bestSeries: sprint.correctAnswersInRow,
+	bestSeries: sprint.maxCorrectAnswersSequence,
+	// bestSeries: sprint.correctAnswersInRow,
 	totalPoints: sprint.totalPoints,
 	isMute: sprint.isMute,
 })
