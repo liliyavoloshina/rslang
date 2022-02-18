@@ -222,7 +222,7 @@ export const updateWordStatistic = createAsyncThunk<
 	const learnedWordsIds = []
 
 	let statisticToUpdate: UserWord
-	const isNew = !word.userWord?.optional.correctAnswers || !word.userWord?.optional.incorrectAnswers
+	const isNew = !word.userWord?.optional.correctAnswers && !word.userWord?.optional.incorrectAnswers
 
 	if (isStatisticExist) {
 		statisticToUpdate = word.userWord!

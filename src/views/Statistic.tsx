@@ -44,12 +44,14 @@ export default function Statistic() {
 	const { newWords: newWordsSprint, longestSeries: longestSeriesSprint } = sprint
 
 	const [open, setOpen] = useState(false)
+	const [isLoading, setIsLoading] = useState(false)
 	const handleOpen = () => setOpen(true)
 	const handleClose = () => setOpen(false)
 
 	const curDate = useMemo(() => new Date(), [])
 
 	const getStatisics = useCallback(async () => {
+		setIsLoading(true)
 		const oldDate = new Date(date)
 		await dispatch(fetchUserStatistics())
 
@@ -57,6 +59,8 @@ export default function Statistic() {
 			dispatch(updateShortStatistics())
 			await dispatch(sendUpdatedStatistic())
 		}
+
+		setIsLoading(false)
 	}, [dispatch, curDate, date])
 
 	const resetStatistics = async () => {
@@ -78,8 +82,12 @@ export default function Statistic() {
 		)
 	}
 
-	if (isUpdating) {
-		return <CircularProgress />
+	if (isUpdating || isLoading) {
+		return (
+			<Container maxWidth="lg" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+				<CircularProgress />
+			</Container>
+		)
 	}
 
 	const modalStyle = {
