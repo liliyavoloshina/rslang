@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import BookmarkAddedIcon from '@mui/icons-material/BookmarkAdded'
 import DiamondIcon from '@mui/icons-material/Diamond'
 import VolumeUpIcon from '@mui/icons-material/VolumeUp'
-import { Theme } from '@mui/material'
+import { Color, Theme } from '@mui/material'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
@@ -25,7 +25,7 @@ import { DOMAIN_URL } from '~/utils/constants'
 import styles from './Textbook.module.css'
 
 interface TextbookCardProps {
-	activeColor: string
+	activeColor: Color
 	passedWord: Word
 	isLoggedIn: boolean
 }
@@ -109,7 +109,7 @@ export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: Te
 	}
 
 	return (
-		<Card sx={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+		<Card sx={{ display: 'flex', flexWrap: 'wrap', gap: '10px', backgroundColor: activeColor[50] }}>
 			<CardMedia sx={{ flex: '1 1 150px', minHeight: '200px' }} image={imageUrl} />
 			<CardContent sx={{ flex: '1 1 500px', display: 'flex', flexDirection: 'column', rowGap: '10px' }}>
 				<Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -121,7 +121,7 @@ export default function TextbookCard({ activeColor, passedWord, isLoggedIn }: Te
 							{wordTranslate}
 						</Typography>
 					</Box>
-					<IconButton aria-label="delete" sx={{ color: activeColor }} onClick={toggleAudio} disabled={isAudioPlaying}>
+					<IconButton aria-label="delete" sx={{ color: activeColor[500] }} onClick={toggleAudio} disabled={isAudioPlaying}>
 						<VolumeUpIcon />
 					</IconButton>
 				</Box>
