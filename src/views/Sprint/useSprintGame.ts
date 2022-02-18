@@ -31,7 +31,7 @@ const useSprintGame = () => {
 	const isFromTextbook = !!(location.state as LocationState)?.fromTextbook
 
 	const getSprintGameStatistic = useCallback(async () => {
-		const newWords = words.filter(newWord => !newWord.userWord?.optional.correctAnswers || !newWord.userWord?.optional.incorrectAnswers).length
+		const newWords = words.filter(newWord => !newWord.userWord?.optional.correctAnswers && !newWord.userWord?.optional.incorrectAnswers).length
 		const correctWordsPercent = (correctWords.length / words.length) * 100
 
 		const newStatistic = {

@@ -141,7 +141,7 @@ export default function Audiocall() {
 	}, [dispatch, fetchWords, handleKeyDown, handleKeyAnswers])
 
 	const getAudiocallGameStatistic = () => {
-		const newWords = audiocallWords.filter(word => !word.userWord?.optional.correctAnswers || !word.userWord?.optional.incorrectAnswers).length
+		const newWords = audiocallWords.filter(word => !word.userWord?.optional.correctAnswers && !word.userWord?.optional.incorrectAnswers).length
 		const correctWordsPercent = (correctWords.length / audiocallWords.length) * 100
 		const longestSeries = Math.max(...bestSeries.correctAnswers)
 
