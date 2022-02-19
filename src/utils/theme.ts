@@ -15,6 +15,9 @@ const theme = createTheme({
 		h3: {
 			fontFamily: `'Oswald', sans-serif`,
 		},
+		h4: {
+			fontFamily: `'Oswald', sans-serif`,
+		},
 		h5: {
 			fontFamily: `'Oswald', sans-serif`,
 		},

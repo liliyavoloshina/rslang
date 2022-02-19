@@ -29,18 +29,18 @@ import {
 import { localStorageGetPagination } from '~/utils/localStorage'
 
 interface GameButtonProps {
-	customColor: Color
+	customcolor: Color
 	component: typeof RouterLink
 	to: string
 	state?: { fromTextbook: true }
 }
 
-const GameButton = styled(Button)<GameButtonProps & ButtonProps>(({ theme, customColor }) => ({
-	color: theme.palette.getContrastText(customColor[100]),
-	backgroundColor: customColor[100],
-	border: `1px solid ${customColor[300]}`,
+const GameButton = styled(Button)<GameButtonProps & ButtonProps>(({ theme, customcolor }) => ({
+	color: theme.palette.getContrastText(customcolor[100]),
+	backgroundColor: customcolor[100],
+	border: `1px solid ${customcolor[300]}`,
 	'&:hover': {
-		backgroundColor: customColor[300],
+		backgroundColor: customcolor[300],
 	},
 }))
 
@@ -99,7 +99,7 @@ function Textbook() {
 						component={RouterLink}
 						to={`${Path.SPRINT}?group=${group}&page=${page}`}
 						disabled={isPageCompleted || status === 'loading' || isDifficultWordsEmpty}
-						customColor={activeColor}
+						customcolor={activeColor}
 					>
 						{t('TEXTBOOK.OPEN_SPRTING_GAME')}
 					</GameButton>
@@ -108,7 +108,7 @@ function Textbook() {
 						to={`${Path.AUDIOCALL}/${group}/${page}`}
 						state={{ fromTextbook: true }}
 						disabled={isPageCompleted || status === 'loading' || isDifficultWordsEmpty}
-						customColor={activeColor}
+						customcolor={activeColor}
 					>
 						{t('TEXTBOOK.OPEN_AUDIO_CALL_GAME')}
 					</GameButton>
