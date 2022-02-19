@@ -179,7 +179,7 @@ export const sprintSlice = createSlice({
 				state.status = 'loading'
 			})
 			.addCase(loadWords.fulfilled, (state, action) => {
-				const { wordsForGame, answers } = action.payload
+				const { wordsForGame } = action.payload
 				state.status = 'countdown'
 				state.words = wordsForGame
 				shuffleArray(state.words)
