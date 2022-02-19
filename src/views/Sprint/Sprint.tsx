@@ -11,8 +11,10 @@ import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
+import { green, red, teal } from '@mui/material/colors'
 
 import { CountdownToStart, GameResultDialog, LevelSelection } from '~/components/game'
+import CustomButton from '~/components/layout/CustomButton'
 import { Path } from '~/components/router'
 import { Timer } from '~/components/timer'
 import { playWordAudio, toggleMute } from '~/features/sprint'
@@ -63,7 +65,7 @@ const Sprint = () => {
 
 			answerAnimationTimeout.current = setTimeout(() => {
 				if (questionBlockRef.current) {
-					questionBlockRef.current.style.borderColor = theme.palette.secondary.main
+					questionBlockRef.current.style.borderColor = '#fff'
 				}
 			}, 400)
 
@@ -99,91 +101,121 @@ const Sprint = () => {
 	}
 
 	return (
-		<Container maxWidth="lg" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-			{status === 'countdown' && (
-				<Box maxWidth="sm" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-					<CountdownToStart onComplete={startGame} />
-				</Box>
-			)}
-			{status === 'game-running' && word && (
-				<Container maxWidth="lg" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '100%' }}>
-					<Box sx={{ width: 50, height: 50, alignSelf: 'start', marginTop: 3 }}>
-						{status === 'game-running' && <Timer duration={SPRINT_GAME_TIME} onTimeout={onTimeout} onTimeAlmostUp={onTimeAlmostUp} />}
+		<Box sx={{ height: '100%', background: `linear-gradient(to right top, ${green[500]}, ${teal[500]})` }}>
+			<Container maxWidth="lg" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+				{status === 'countdown' && (
+					<Box maxWidth="sm" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', fontFamily: 'Open Sans', fontSize: '36px', color: '#fff' }}>
+						<CountdownToStart onComplete={startGame} />
 					</Box>
-					<Box maxWidth="sm" sx={{ width: '100%' }}>
-						<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-							<IconButton aria-label="play audio" onClick={() => dispatch(playWordAudio())} sx={{ width: 40, height: 40, borderRadius: 5 }}>
-								<VolumeUp fontSize="inherit" />
-							</IconButton>
-							<Typography variant="h3" style={{ textAlign: 'center', padding: 20 }}>
-								{totalPoints}
-							</Typography>
-							{isMute ? (
-								<IconButton aria-label="volume" size="medium" onClick={() => dispatch(toggleMute())} sx={{ width: 40, height: 40, borderRadius: 5 }}>
-									<MusicOff />
-								</IconButton>
-							) : (
-								<IconButton aria-label="volume" size="medium" onClick={() => dispatch(toggleMute())} sx={{ width: 40, height: 40, borderRadius: 5 }}>
-									<MusicNote />
-								</IconButton>
-							)}
+				)}
+				{status === 'game-running' && word && (
+					<Container maxWidth="lg" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '100%' }}>
+						<Box sx={{ width: 50, height: 50, alignSelf: 'start', marginTop: 3, fontFamily: 'Open Sans', fontSize: '36px', color: '#fff' }}>
+							{status === 'game-running' && <Timer duration={SPRINT_GAME_TIME} onTimeout={onTimeout} onTimeAlmostUp={onTimeAlmostUp} />}
 						</Box>
-						<Box ref={questionBlockRef} sx={{ width: '100%', height: 410, border: `4px solid ${theme.palette.primary.main}`, borderRadius: 5, transition: 'border-color 400ms' }}>
-							<Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, padding: 2 }}>
-								<Box sx={{ width: 15, height: 15, borderRadius: '50%', backgroundColor: !(correctAnswersInRow % 4 === 0) ? '#2e7d32' : '#cccccc' }} />
-								<Box
-									sx={{
-										width: 15,
-										height: 15,
-										borderRadius: '50%',
-										backgroundColor: (correctAnswersInRow - 2) % 4 === 0 || (correctAnswersInRow - 3) % 4 === 0 ? '#2e7d32' : '#cccccc',
-									}}
-								/>
-								<Box sx={{ width: 15, height: 15, borderRadius: '50%', backgroundColor: (correctAnswersInRow - 3) % 4 === 0 ? '#2e7d32' : '#cccccc' }} />
-							</Box>
-							<Typography variant="subtitle1" color="GrayText" style={{ textAlign: 'center' }}>
-								{t('SPRINT.SCORE_PER_WORD', { count: gameRound * SPRINT_BASE_CORRECT_ANSWER_POINTS })}
-							</Typography>
-							<Box sx={{ width: '50%', height: 100, margin: '0 auto', padding: '10px 0' }}>
-								<img
-									style={{
-										width: '100%',
-										height: '100%',
-										objectFit: 'cover',
-									}}
-									src={`/assets/${gameRound}birds_sprint.png`}
-									alt=""
-								/>
-							</Box>
-							<Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
-								<Typography variant="h3" textTransform="capitalize">
-									{word}
+						<Box maxWidth="sm" sx={{ width: '100%' }}>
+							<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+								<IconButton aria-label="play audio" size="large" onClick={() => dispatch(playWordAudio())} sx={{ width: 40, height: 40, borderRadius: 5 }}>
+									<VolumeUp
+										fontSize="large"
+										color="secondary"
+										sx={{
+											color: '#fff',
+										}}
+									/>
+								</IconButton>
+								<Typography variant="h3" style={{ textAlign: 'center', padding: 20, color: '#fff' }}>
+									{totalPoints}
 								</Typography>
-								<Typography variant="h4" textTransform="capitalize">
-									{suggestedTranslation}
+								{isMute ? (
+									<IconButton aria-label="volume" size="large" onClick={() => dispatch(toggleMute())} sx={{ width: 40, height: 40, borderRadius: 5 }}>
+										<MusicOff
+											fontSize="large"
+											color="secondary"
+											sx={{
+												color: '#fff',
+											}}
+										/>
+									</IconButton>
+								) : (
+									<IconButton aria-label="volume" size="large" onClick={() => dispatch(toggleMute())} sx={{ width: 40, height: 40, borderRadius: 5 }}>
+										<MusicNote
+											fontSize="large"
+											color="secondary"
+											sx={{
+												color: '#fff',
+											}}
+										/>
+									</IconButton>
+								)}
+							</Box>
+							<Box
+								ref={questionBlockRef}
+								sx={{
+									width: '100%',
+									height: 450,
+									border: `4px solid #fff`,
+									borderRadius: 5,
+									transition: 'border-color 400ms',
+								}}
+							>
+								<Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, padding: 3 }}>
+									<Box sx={{ width: 15, height: 15, borderRadius: '50%', backgroundColor: !(correctAnswersInRow % 4 === 0) ? '#2e7d32' : '#cccccc' }} />
+									<Box
+										sx={{
+											width: 15,
+											height: 15,
+											borderRadius: '50%',
+											backgroundColor: (correctAnswersInRow - 2) % 4 === 0 || (correctAnswersInRow - 3) % 4 === 0 ? '#2e7d32' : '#cccccc',
+										}}
+									/>
+									<Box sx={{ width: 15, height: 15, borderRadius: '50%', backgroundColor: (correctAnswersInRow - 3) % 4 === 0 ? '#2e7d32' : '#cccccc' }} />
+								</Box>
+								<Typography variant="subtitle1" color="GrayText" style={{ textAlign: 'center', color: '#fff' }}>
+									{t('SPRINT.SCORE_PER_WORD', { count: gameRound * SPRINT_BASE_CORRECT_ANSWER_POINTS })}
 								</Typography>
+								<Box sx={{ width: '50%', height: 100, margin: '0 auto', padding: '10px 0' }}>
+									<img
+										style={{
+											width: '100%',
+											height: '100%',
+											objectFit: 'cover',
+										}}
+										src={`/assets/${gameRound}birds_sprint.png`}
+										alt=""
+									/>
+								</Box>
+								<Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
+									<Typography variant="h3" textTransform="capitalize" sx={{ color: '#fff' }}>
+										{word}
+									</Typography>
+									<Typography variant="h4" textTransform="capitalize" sx={{ color: '#fff' }}>
+										{suggestedTranslation}
+									</Typography>
+								</Box>
+								<Box sx={{ display: 'flex', justifyContent: 'center', gap: 3, mt: 7 }}>
+									<CustomButton onClick={() => selectOption(false)} customcolor={red} isbright sx={{ minWidth: '100px', gap: 1 }}>
+										<NoIcon />
+										{t('COMMON.BUTTON.NO')}
+									</CustomButton>
+									<CustomButton onClick={() => selectOption(true)} customcolor={green} isbright sx={{ minWidth: '100px', gap: 1 }}>
+										<YesIcon /> {t('COMMON.BUTTON.YES')}
+									</CustomButton>
+								</Box>
 							</Box>
-							<Box sx={{ display: 'flex', justifyContent: 'center', gap: 3, mt: 2 }}>
-								<IconButton color="error" size="large" onClick={() => selectOption(false)}>
-									<NoIcon /> {t('COMMON.BUTTON.NO')}
-								</IconButton>
-								<IconButton color="success" size="large" onClick={() => selectOption(true)}>
-									<YesIcon /> {t('COMMON.BUTTON.YES')}
-								</IconButton>
+							<Box sx={{ display: 'flex', justifyContent: 'center', gap: 15, mt: 2 }}>
+								<img style={{ width: 30, height: 10, objectFit: 'contain', transform: 'rotate(180deg)' }} src="/assets/svg/arrow.png" alt="" />
+								<img style={{ width: 30, height: 10, objectFit: 'contain' }} src="/assets/svg/arrow.png" alt="" />
 							</Box>
 						</Box>
-						<Box sx={{ display: 'flex', justifyContent: 'center', gap: 15, mt: 2 }}>
-							<img style={{ width: 30, height: 10, objectFit: 'contain', transform: 'rotate(180deg)' }} src="/assets/svg/arrow.png" alt="" />
-							<img style={{ width: 30, height: 10, objectFit: 'contain' }} src="/assets/svg/arrow.png" alt="" />
-						</Box>
-					</Box>
-					<IconButton size="large" onClick={() => navigate(Path.HOME)} sx={{ width: 40, height: 40, alignSelf: 'start' }}>
-						<CloseOutlined />
-					</IconButton>
-				</Container>
-			)}
-			<GameResultDialog isOpen={status === 'game-over'} incorrectWords={incorrectWords} correctWords={correctWords} />
-		</Container>
+						<IconButton size="large" color="secondary" onClick={() => navigate(Path.HOME)} sx={{ width: 40, height: 40, alignSelf: 'start', marginTop: '20px', color: '#fff' }}>
+							<CloseOutlined fontSize="large" />
+						</IconButton>
+					</Container>
+				)}
+				<GameResultDialog isOpen={status === 'game-over'} incorrectWords={incorrectWords} correctWords={correctWords} />
+			</Container>
+		</Box>
 	)
 }
 

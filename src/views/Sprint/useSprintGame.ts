@@ -6,7 +6,6 @@ import { useAppSelector } from '~/app/hooks'
 import { selectAuthIsLoggedIn } from '~/features/auth'
 import { answer, gameTimeAlmostUp, gameTimeout, loadWords, reset, selectSprintState, startSprint } from '~/features/sprint'
 import { sendUpdatedStatistic, toggleIsUpdating, updateCompletedPagesAfterGame, updateGameStatistic, updateWordStatistic } from '~/features/statistic'
-import { Word } from '~/types/word'
 import { PAGES_PER_GROUP } from '~/utils/constants'
 
 interface LocationState {

@@ -253,7 +253,6 @@ export default function Audiocall() {
 							onClick={() => dispatch(toggleAudiocallAudio())}
 							sx={{
 								color: '#fff',
-								borderColor: '#fff',
 							}}
 						>
 							<VolumeUp fontSize="inherit" />
