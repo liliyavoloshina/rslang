@@ -183,7 +183,11 @@ export default function Header() {
 					<LanguageMenu />
 
 					<Stack flexDirection="row" alignItems="center" sx={{ flexGrow: 0 }}>
-						{userInfo?.token && <Typography variant="h6">{t('HEADER.WELCOME', { name: userInfo.name })}</Typography>}
+						{userInfo?.token && (
+							<Typography variant="h6" color="white">
+								{t('HEADER.WELCOME', { name: userInfo.name })}
+							</Typography>
+						)}
 						<Tooltip title={t('HEADER.OPEN_ACCOUNT')}>
 							<IconButton onClick={handleOpenUserMenu} sx={{ color: 'white' }}>
 								<PersonIcon />
