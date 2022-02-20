@@ -17,23 +17,41 @@
 
 	"HOME": {
 		"TITLE": "RS Lang",
-		"DESCRIPTION": "body1. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos blanditiis tenetur unde suscipit, quam beatae rerum inventore consectetur, neque doloribus, cupiditate numquam dignissimos laborum fugiat deleniti? Eum quasi quidem quibusdam.",
+		"DESCRIPTION": "Who said education was boring?",
 
 		"ADVANTAGES": {
-			"MINI_GAMES": "Mini-games",
-			"MINI_GAMES_DESC": "Games make learning fun",
-			"TEXTBOOX": "Textbook",
-			"TEXTBOOX_DESC": "Dictionary stores all the words you need",
-			"CHOOSE_WORDS": "Сhoose your words",
-			"CHOOSE_WORDS_DESC": "Сhoose words to study or mark as studied",
-			"LEARNING_PROGRESS": "Learning Progress",
-			"LEARNING_PROGRESS_DESC": "Track your progress"
+			"SPRINT": "Sprint",
+			"SPRINT_DESC": "Games make learning fun",
+			"TEXTBOOK": "Textbook",
+			"TEXTBOOK_DESC": "Dictionary stores all the words you need",
+			"AUDIOCALL": "Audiocall",
+			"AUDIOCALL_DESC": "Improve your word listening skills",
+			"STATISTIC": "Statistic",
+			"STATISTIC_DESC": "Track your progress"
 		},
 
-		"DEVELOPER": "Developer",
+		"PHILOSOPHY": {
+			"TITLE": "Check out the benefits of the app",
+			"TEXTBOOK": "Textbook",
+			"TEXTBOOK_DESC": "More than 3500 thousand words to learn, divided into sections according to your level with easy navigation.",
+			"DICTIONARY": "Difficult words",
+			"DICTIONARY_DESC": "Create your own personal dictionary for learning words - add words you want to pay special attention to and delete if you already know the word.",
+			"STATISTIC": "Statistic",
+			"STATISTIC_DESC": "Track your progress in individual statistics, set goals and get inspired to achieve new results every day!",
+			"GAMES": "Games",
+			"GAMES_DESC": "Two exciting games for the development of memorizing words and improving listening skills."
+		},
+
+		"ABOUT_US": "About us",
 		"FIRST_DEVELOPER": {
-			"NICKNAME": "Lizard",
-			"DESCRIPTION": "Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging across all continents except Antarctica"
+			"NICKNAME": "Lilia",
+			"TASKS": "What's done?",
+			"TASKS_DESCRIPTION": "Game 'Audiocall', textbook, word list, learning progress, learned words, statistic, authorization, API."
+		},
+		"SECOND_DEVELOPER": {
+			"NICKNAME": "Lena",
+			"TASKS": "What's done?",
+			"TASKS_DESCRIPTION": "Game 'Sprint', home page, internationalization."
 		}
 	},
 
