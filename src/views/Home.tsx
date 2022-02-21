@@ -1,7 +1,8 @@
 import { TFuncKey, useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
-import { Box, Card, CardContent, CardMedia, Container, Grid, IconButton, Link, Typography, colors } from '@mui/material'
+import { Box, Card, CardContent, CardMedia, Container, Grid, Link, Typography } from '@mui/material'
+import { amber, lightBlue, pink, teal } from '@mui/material/colors'
 
 import AdvantageCard from '~/components/home/AdvantageCard'
 import PhilosophyCard from '~/components/home/PhilosophyCard'
@@ -28,19 +29,15 @@ export default function Home() {
 	return (
 		<>
 			<Container>
-				<Box maxWidth="lg">
+				<Box maxWidth="lg" sx={{ marginTop: 10 }}>
 					<Grid container style={{ position: 'relative', marginTop: 40 }}>
 						<Grid item xs={5}>
 							<img style={{ width: 450, height: 490, objectFit: 'contain', borderRadius: 5 }} src="/assets/images/home_page_learning.jpg" alt="learning" />
-							<Box sx={{ width: 420, height: 430, backgroundImage: 'linear-gradient(45deg, #feca02, #fe7ec9)', margin: '-345px auto 0 75px', borderRadius: 1 }} />
+							<Box sx={{ width: 420, height: 430, backgroundImage: `linear-gradient(45deg, ${amber[300]}, ${pink[300]})`, margin: '-345px auto 0 75px', borderRadius: 1 }} />
 						</Grid>
 
 						<Grid item xs={7}>
-							<Typography
-								variant="h3"
-								gutterBottom
-								sx={{ mb: 5, textAlign: 'center', color: '#488df4', verticalAlign: 'center', textTransform: 'uppercase', fontWeight: 800, padding: 8 }}
-							>
+							<Typography variant="h3" sx={{ mt: 5, textAlign: 'center', color: '#488df4', verticalAlign: 'center', textTransform: 'uppercase', fontWeight: 800, padding: 8 }}>
 								{t('HOME.DESCRIPTION')}
 							</Typography>
 						</Grid>
@@ -55,9 +52,9 @@ export default function Home() {
 					</Grid>
 				</Box>
 			</Container>
-			<Box sx={{ width: 'calc(100% - 80px)', bgcolor: '#38c4c1', margin: '100px auto', padding: 5 }}>
+			<Box sx={{ width: 'calc(100% - 80px)', bgcolor: teal[300], margin: '100px auto', paddingX: 5, paddingY: 10 }}>
 				<Container>
-					<Typography variant="h4" sx={{ mt: 3, mb: 3, textAlign: 'center', fontWeight: 800, color: 'white' }}>
+					<Typography variant="h4" sx={{ mt: 3, mb: 5, textAlign: 'center', fontWeight: 800, color: 'white' }}>
 						{t('HOME.PHILOSOPHY.TITLE')}
 					</Typography>
 
@@ -72,14 +69,14 @@ export default function Home() {
 			</Box>
 
 			<Box position="relative" style={{ marginBottom: 80 }}>
-				<Box sx={{ position: 'absolute', width: '100%', height: 144, top: 260, background: '#488df4' }} />
+				<Box sx={{ position: 'absolute', width: '100%', height: 300, top: 150, background: lightBlue[500] }} />
 				<Container>
-					<Typography variant="h4" sx={{ mt: 3, mb: 3, textAlign: 'center', fontWeight: 800, color: '#488df4' }}>
+					<Typography variant="h4" sx={{ mt: 3, mb: 3, textAlign: 'center', fontWeight: 800, color: lightBlue[500] }}>
 						{t('HOME.ABOUT_US')}
 					</Typography>
 					<Grid container spacing={5} sx={{ justifyContent: 'space-between', height: 430 }}>
 						<Grid item xs={6} position="relative">
-							<Box sx={{ position: 'absolute', width: '75%', height: '100%', backgroundImage: 'linear-gradient( #feca02, #fe7ec9 )', borderRadius: 1 }} />
+							<Box sx={{ position: 'absolute', width: '75%', height: '100%', backgroundImage: `linear-gradient( ${amber[300]}, ${pink[300]})`, borderRadius: 1 }} />
 							<Card sx={{ width: '75%', transform: 'translate(25%, 80px)' }}>
 								<CardMedia
 									component="img"
@@ -91,9 +88,8 @@ export default function Home() {
 								/>
 								<CardContent>
 									<Typography gutterBottom variant="h5" component="div" textAlign="center">
-										<Link href="https://github.com/liliyavoloshina" underline="hover" color="#488df4">
+										<Link href="https://github.com/liliyavoloshina" underline="hover" color={lightBlue[500]}>
 											{t('HOME.FIRST_DEVELOPER.NICKNAME')}
-											{/* <img style={{ width: 20, height: 20, objectFit: 'contain' }} src="/assets/svg/github.png" alt="" /> */}
 										</Link>
 									</Typography>
 									<Typography variant="body2" color="text.secondary">
@@ -103,7 +99,7 @@ export default function Home() {
 							</Card>
 						</Grid>
 						<Grid item xs={6} position="relative">
-							<Box sx={{ position: 'absolute', width: '75%', height: '100%', right: 0, backgroundImage: 'linear-gradient( #fe7ec9, #feca02 )', borderRadius: 1 }} />
+							<Box sx={{ position: 'absolute', width: '75%', height: '100%', right: 0, backgroundImage: `linear-gradient(${pink[300]}, ${amber[300]})`, borderRadius: 1 }} />
 							<Card sx={{ width: '75%', transform: 'translate(10%, 25px)' }}>
 								<CardMedia
 									component="img"
@@ -115,7 +111,7 @@ export default function Home() {
 								/>
 								<CardContent>
 									<Typography gutterBottom variant="h5" component="div" textAlign="center">
-										<Link href="https://github.com/ElenaBezro" underline="hover" color="#488df4">
+										<Link href="https://github.com/ElenaBezro" underline="hover" color={lightBlue[600]}>
 											{t('HOME.SECOND_DEVELOPER.NICKNAME')}
 										</Link>
 									</Typography>

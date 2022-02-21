@@ -1,6 +1,8 @@
 import { useCallback } from 'react'
 import { CountdownCircleTimer } from 'react-countdown-circle-timer'
 
+import { green, orange, red, yellow } from '@mui/material/colors'
+
 import { SPRINT_TIME_ALMOST_UP_THRESHOLD } from '~/utils/constants'
 
 import { TimerProps } from './Timer.types'
@@ -19,8 +21,8 @@ const Timer = ({ duration, onTimeout, onTimeAlmostUp }: TimerProps) => {
 		<CountdownCircleTimer
 			isPlaying
 			duration={duration}
-			colors={['#004777', '#F7B801', '#A30000', '#A30000']}
-			colorsTime={[60, 50, 20, 0]}
+			colors={[green[400], yellow[500], orange[500], red[500]]}
+			colorsTime={[60, 30, 20, 0]}
 			size={100}
 			onUpdate={onUpdate}
 			onComplete={onTimeout}

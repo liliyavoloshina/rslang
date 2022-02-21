@@ -2,11 +2,12 @@ import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link as RouterLink } from 'react-router-dom'
 
-import { Alert, Box, Container, Grid, Typography } from '@mui/material'
-import Button from '@mui/material/Button'
+import { Alert, Box, Color, Container, Grid, Typography } from '@mui/material'
+import Button, { ButtonProps } from '@mui/material/Button'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
-import { cyan, deepPurple, lightBlue, lightGreen, orange, pink } from '@mui/material/colors'
+import { deepPurple, indigo, lightBlue, lightGreen, orange, pink, red, yellow } from '@mui/material/colors'
+import { styled } from '@mui/material/styles'
 
 import { useAppDispatch, useAppSelector } from '~/app/hooks'
 import { Path } from '~/components/router'
@@ -27,6 +28,21 @@ import {
 } from '~/features/textbook'
 import { localStorageGetPagination } from '~/utils/localStorage'
 
+interface GameButtonProps {
+	customcolor: Color
+	component: typeof RouterLink
+	to: string
+	state?: { fromTextbook: true }
+}
+
+const GameButton = styled(Button)<GameButtonProps & ButtonProps>(({ theme, customcolor }) => ({
+	color: theme.palette.getContrastText(customcolor[100]),
+	backgroundColor: customcolor[100],
+	'&:hover': {
+		backgroundColor: customcolor[300],
+	},
+}))
+
 function Textbook() {
 	const { t } = useTranslation()
 	const dispatch = useAppDispatch()
@@ -38,7 +54,7 @@ function Textbook() {
 	const status = useAppSelector(selectTextbookStatus)
 	const { completedPages } = useAppSelector(selectStatisticOptional)
 
-	const groupColors = [pink[500], orange[500], lightGreen[500], lightBlue[500], cyan[500], deepPurple[500]]
+	const groupColors = [indigo, pink, orange, lightBlue, yellow, deepPurple, red]
 	const activeColor = groupColors[group]
 
 	const isPageCompleted = group in completedPages && completedPages[group][page]
@@ -62,7 +78,7 @@ function Textbook() {
 
 	return (
 		<Container maxWidth="lg" sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-			<Typography variant="h4" sx={{ mt: 3, mb: 3 }}>
+			<Typography variant="h3" sx={{ mt: 3, mb: 3 }}>
 				{t('TEXTBOOK.TITLE')}
 			</Typography>
 
@@ -71,24 +87,30 @@ function Textbook() {
 
 				{isPageCompleted && (
 					<Box>
-						<Typography variant="h6" sx={{ color: lightGreen[500] }}>
+						<Typography variant="h5" sx={{ color: lightGreen[500] }}>
 							{t('TEXTBOOK.FULLY_LEARNED_SECTION')}
 						</Typography>
 					</Box>
 				)}
 
 				<Stack spacing={2} direction="row" justifyContent="space-between">
-					<Button component={RouterLink} to={`${Path.SPRINT}?group=${group}&page=${page}`} disabled={isPageCompleted || status === 'loading' || isDifficultWordsEmpty}>
+					<GameButton
+						component={RouterLink}
+						to={`${Path.SPRINT}?group=${group}&page=${page}`}
+						disabled={isPageCompleted || status === 'loading' || isDifficultWordsEmpty}
+						customcolor={activeColor}
+					>
 						{t('TEXTBOOK.OPEN_SPRTING_GAME')}
-					</Button>
-					<Button
+					</GameButton>
+					<GameButton
 						component={RouterLink}
 						to={`${Path.AUDIOCALL}/${group}/${page}`}
 						state={{ fromTextbook: true }}
 						disabled={isPageCompleted || status === 'loading' || isDifficultWordsEmpty}
+						customcolor={activeColor}
 					>
 						{t('TEXTBOOK.OPEN_AUDIO_CALL_GAME')}
-					</Button>
+					</GameButton>
 				</Stack>
 			</Stack>
 

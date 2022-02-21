@@ -1,6 +1,6 @@
 {
 	"HEADER": {
-		"LOGO": "ЛОГО",
+		"LOGO": "RS Lang",
 		"HOME": "Домой",
 		"TEXTBOOK": "Словарь",
 		"STATISTIC": "Статистика",
@@ -17,7 +17,7 @@
 
 	"HOME": {
 		"TITLE": "RS Lang",
-		"DESCRIPTION": "Кто сказал обучение - это скучно?",
+		"DESCRIPTION": "Кто сказал, обучение - это скучно?",
 
 		"ADVANTAGES": {
 			"SPRINT": "Спринт",
@@ -110,7 +110,8 @@
 	"LEVEL_SELECTION": {
 		"SELECT_LEVEL": "Выбрать уровень",
 		"PLAY": "Играть",
-		"GROUP": "Уровень {{count}}"
+		"GROUP": "Уровень {{count}}",
+		"DIFFICULT": "Сложные"
 	},
 
 	"GAME_RESULT_DIALOG": {

@@ -3,7 +3,6 @@ import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { RootState } from '~/app/store'
 import { Word } from '~/types/word'
 import { getAllWords, getDifficultWords, getNotLearnedWord, getUserWords } from '~/utils/api'
-// TODO: uncomment and use this instead of hardcoded temp test value
 import { DOMAIN_URL, SPRINT_BASE_CORRECT_ANSWER_POINTS, WORD_PER_PAGE_AMOUNT } from '~/utils/constants'
 import { shuffleArray } from '~/utils/helpers'
 
@@ -179,7 +178,7 @@ export const sprintSlice = createSlice({
 				state.status = 'loading'
 			})
 			.addCase(loadWords.fulfilled, (state, action) => {
-				const { wordsForGame, answers } = action.payload
+				const { wordsForGame } = action.payload
 				state.status = 'countdown'
 				state.words = wordsForGame
 				shuffleArray(state.words)

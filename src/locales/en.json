@@ -1,6 +1,6 @@
 {
 	"HEADER": {
-		"LOGO": "LOGO",
+		"LOGO": "RS Lang",
 		"HOME": "Home",
 		"TEXTBOOK": "Textbook",
 		"STATISTIC": "Statistic",
@@ -44,7 +44,7 @@
 
 		"ABOUT_US": "About us",
 		"FIRST_DEVELOPER": {
-			"NICKNAME": "Lilia",
+			"NICKNAME": "Lily",
 			"TASKS_DESCRIPTION": "Developed the game “Audiocall”, the page of the textbook and statistics saving functionality, added user authorization, implemented work with API."
 		},
 		"SECOND_DEVELOPER": {
@@ -60,7 +60,7 @@
 		"OPEN_AUDIO_CALL_GAME": "Audiocall",
 		"ADD_TO_LEARNED": "Add to learned",
 		"ADD_TO_DIFFICULT": "Add to difficult",
-		"REMOVED_FROM_DIFFICULT": "Remore from difficult",
+		"REMOVED_FROM_DIFFICULT": "Remove from difficult",
 
 		"CORRECT_ANSWER_COUNT": "Correct answers: {{count}}",
 		"INCORRECT_ANSWER_COUNT": "Incorrect answers: {{count}}",
@@ -110,7 +110,8 @@
 	"LEVEL_SELECTION": {
 		"SELECT_LEVEL": "Select level",
 		"PLAY": "Play",
-		"GROUP": "Group {{count}}"
+		"GROUP": "Group {{count}}",
+		"DIFFICULT": "Difficult"
 	},
 
 	"GAME_RESULT_DIALOG": {

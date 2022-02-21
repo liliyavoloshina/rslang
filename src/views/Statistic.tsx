@@ -10,6 +10,7 @@ import Container from '@mui/material/Container'
 import Modal from '@mui/material/Modal'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { deepPurple, lightBlue, lightGreen, orange, pink, red, yellow } from '@mui/material/colors'
 
 import { useAppDispatch, useAppSelector } from '~/app/hooks'
 import LongStatChart from '~/components/statistics/LongStatChart'
@@ -106,38 +107,44 @@ export default function Statistic() {
 		<Container maxWidth="lg">
 			<Stack gap="20px">
 				<Box>
-					<Typography variant="h4" sx={{ mt: 3, mb: 3 }} align="center">
+					<Typography variant="h3" sx={{ mt: 5, mb: 5 }} align="center">
 						{t('STATISTIC.SHORT_TITLE')} ({curDate.toLocaleDateString()})
 					</Typography>
 					<Stack flexDirection="row" alignItems="center" justifyContent="center" gap="20px">
-						<ShortWordCard value={`${totalNewWordsShort}`} text={t('STATISTIC.TOTAL_NEW_WORDS')} />
-						<ShortWordCard value={`${learnedWords}`} text={t('STATISTIC.TOTAL_LEARNED_WORDS')} />
-						<ShortWordCard value={`${totalCorrectPercentShort}%`} text={t('STATISTIC.TOTAL_CORRECT_WORDS_PERCENT')} />
+						<ShortWordCard value={`${totalNewWordsShort}`} text={t('STATISTIC.TOTAL_NEW_WORDS')} bgColor={lightBlue[100]} />
+						<ShortWordCard value={`${learnedWords}`} text={t('STATISTIC.TOTAL_LEARNED_WORDS')} bgColor={lightGreen[100]} />
+						<ShortWordCard value={`${totalCorrectPercentShort}%`} text={t('STATISTIC.TOTAL_CORRECT_WORDS_PERCENT')} bgColor={pink[100]} />
 					</Stack>
 				</Box>
 
 				<Stack flexDirection="row" alignItems="center" justifyContent="center" gap="20px">
-					<ShortGameCard gameName="audiocall" newWords={newWordsAudiocall} correctPercent={correctWordsPercentAudiocall} longestSeries={longestSeriesAudiocall} />
-					<ShortGameCard gameName="sprint" newWords={newWordsSprint} correctPercent={correctWordsPercentSprint} longestSeries={longestSeriesSprint} />
+					<ShortGameCard
+						gameName="audiocall"
+						newWords={newWordsAudiocall}
+						correctPercent={correctWordsPercentAudiocall}
+						longestSeries={longestSeriesAudiocall}
+						bgColor={deepPurple[100]}
+					/>
+					<ShortGameCard gameName="sprint" newWords={newWordsSprint} correctPercent={correctWordsPercentSprint} longestSeries={longestSeriesSprint} bgColor={orange[100]} />
 				</Stack>
 			</Stack>
 
 			<Box>
-				<Typography variant="h4" sx={{ mt: 5, mb: 5 }} align="center">
+				<Typography variant="h3" sx={{ mt: 5, mb: 5 }} align="center">
 					{t('STATISTIC.LONG_TITLE')}
 				</Typography>
 				<LongStatChart longStat={longStat} />
 			</Box>
 
 			<Box display="flex" justifyContent="center" marginTop="50px">
-				<Button variant="contained" color="error" onClick={handleOpen}>
+				<Button variant="contained" style={{ backgroundColor: red[500] }} onClick={handleOpen}>
 					{t('COMMON.BUTTON.RESET_STATISTICS')}
 				</Button>
 			</Box>
 
 			<Modal open={open} onClose={handleClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
 				<Box sx={modalStyle}>
-					<Typography textAlign="center" id="modal-modal-title" variant="h6" component="h2">
+					<Typography textAlign="center" id="modal-modal-title" variant="h5">
 						{t('STATISTIC.MODAL_TITLE')}
 					</Typography>
 					<Typography textAlign="center" id="modal-modal-description" sx={{ mt: 5 }}>
@@ -147,10 +154,16 @@ export default function Statistic() {
 						* {t('STATISTIC.MODAL_DESCRIPTION_SHORT')}
 					</Typography>
 					<Stack spacing={2} direction="row" justifyContent="space-between" marginTop="40px">
-						<Button variant="contained" color="secondary" onClick={handleClose}>
+						<Button variant="contained" color="secondary" style={{ backgroundColor: red[500] }} onClick={handleClose}>
 							{t('STATISTIC.MODAL_CANCEL')}
 						</Button>
-						<LoadingButton disabled={resetStatus === 'loading'} loading={resetStatus === 'loading'} onClick={resetStatistics} variant="contained">
+						<LoadingButton
+							disabled={resetStatus === 'loading'}
+							loading={resetStatus === 'loading'}
+							style={{ backgroundColor: lightGreen[500] }}
+							onClick={resetStatistics}
+							variant="contained"
+						>
 							{t('STATISTIC.MODAL_AGREE')}
 						</LoadingButton>
 					</Stack>

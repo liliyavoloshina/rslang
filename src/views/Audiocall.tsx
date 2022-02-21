@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useLocation, useMatch, useNavigate } from 'react-router-dom'
 
@@ -15,10 +15,11 @@ import IconButton from '@mui/material/IconButton'
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { yellow } from '@mui/material/colors'
+import { deepPurple, lightGreen, purple, red, yellow } from '@mui/material/colors'
 
 import { useAppDispatch, useAppSelector } from '~/app/hooks'
 import { GameResultDialog } from '~/components/game'
+import CustomButton from '~/components/layout/CustomButton'
 import { Path } from '~/components/router'
 import {
 	checkAnswer,
@@ -33,7 +34,6 @@ import {
 	selectAudiocallIsWithSounds,
 	selectAudiocallLongestSeries,
 	selectAudiocallProgress,
-	selectAudiocallStatus,
 	selectAudiocallWords,
 	showNextWord,
 	toggleAudiocallAudio,
@@ -65,7 +65,6 @@ export default function Audiocall() {
 	const dispatch = useAppDispatch()
 	const navigate = useNavigate()
 
-	const status = useAppSelector(selectAudiocallStatus)
 	const currentWord = useAppSelector(selectAudiocallCurrentWord)
 	const answers = useAppSelector(selectAudiocallAnswers)
 	const isFinished = useAppSelector(selectAudiocallIsFinished)
@@ -189,23 +188,47 @@ export default function Audiocall() {
 		if (isFinished) {
 			finish()
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [isFinished])
 
-	if (status !== 'success') {
-		return <div>{t('COMMON.LOADING')}</div>
-	}
-
 	return (
-		<Box sx={{ height: '100%', background: `linear-gradient(to right bottom, #c5cae9, #fff)` }}>
-			<Box sx={{ width: '100%' }}>
+		<Box sx={{ position: 'relative', height: '100%', background: `linear-gradient(to right top, ${purple[500]}, ${deepPurple[500]})` }}>
+			<Box sx={{ position: 'absolute', width: '100%' }}>
 				<CustomLinearProgress variant="determinate" value={progress} />
 			</Box>
 			<Container maxWidth="lg" sx={{ position: 'relative', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'center', height: '100%' }}>
 				<Box justifyContent="space-between" sx={{ alignSelf: 'flex-start', display: 'flex', width: '100%', marginTop: '20px' }}>
 					<IconButton aria-label="switch sounds" title="switch sounds" size="large" onClick={() => dispatch(toggleSounds())}>
-						{isWithSounds ? <MusicNoteIcon fontSize="large" color="secondary" /> : <MusicOffIcon fontSize="large" color="secondary" />}
+						{isWithSounds ? (
+							<MusicNoteIcon
+								fontSize="large"
+								color="secondary"
+								sx={{
+									color: '#fff',
+								}}
+							/>
+						) : (
+							<MusicOffIcon
+								fontSize="large"
+								color="secondary"
+								sx={{
+									color: '#fff',
+								}}
+							/>
+						)}
 					</IconButton>
-					<IconButton aria-label="exit game" title="exit game" size="large" color="secondary" component={Link} to={Path.HOME} onClick={() => dispatch(resetGame())}>
+					<IconButton
+						aria-label="exit game"
+						title="exit game"
+						size="large"
+						color="secondary"
+						component={Link}
+						to={Path.HOME}
+						onClick={() => dispatch(resetGame())}
+						sx={{
+							color: '#fff',
+						}}
+					>
 						<CloseIcon fontSize="large" />
 					</IconButton>
 				</Box>
@@ -217,10 +240,17 @@ export default function Audiocall() {
 							visibility: answeredWord ? 'visible' : 'hidden',
 						}}
 					>
-						<IconButton aria-label="play audio" size="small" onClick={() => dispatch(toggleAudiocallAudio())}>
+						<IconButton
+							aria-label="play audio"
+							size="small"
+							onClick={() => dispatch(toggleAudiocallAudio())}
+							sx={{
+								color: '#fff',
+							}}
+						>
 							<VolumeUp fontSize="inherit" />
 						</IconButton>
-						<Typography variant="subtitle1" sx={{ fontWeight: '700' }}>
+						<Typography variant="subtitle1" sx={{ fontWeight: '700', color: '#fff' }}>
 							{currentWord?.word ?? ''}
 						</Typography>
 					</Stack>
@@ -234,6 +264,8 @@ export default function Audiocall() {
 									width: 150,
 									height: 150,
 									borderRadius: '100%',
+									color: '#fff',
+									borderColor: '#fff',
 								}}
 							>
 								<VolumeUp sx={{ fontSize: 80 }} />
@@ -266,30 +298,31 @@ export default function Audiocall() {
 						{answers.map(answer => {
 							return (
 								<Grid key={answer} item>
-									<Button
+									<CustomButton
 										onClick={() => dispatch(checkAnswer({ answer, isKeyboard: false }))}
 										variant="contained"
 										sx={{ pointerEvents: answeredWord ? 'none' : 'all', color: '#fff' }}
-										color={
+										customcolor={
 											answer === currentWord!.wordTranslate && answeredWord
-												? 'correct'
+												? lightGreen
 												: answeredWord === answer
 												? answer === currentWord!.wordTranslate
-													? 'correct'
-													: 'incorrect'
-												: 'primary'
+													? lightGreen
+													: red
+												: purple
 										}
+										isbright
 									>
 										{answer}
-									</Button>
+									</CustomButton>
 								</Grid>
 							)
 						})}
 					</Grid>
 
-					<Button onClick={() => nextWord()} tabIndex={0} variant="contained" color="secondary" fullWidth>
+					<CustomButton onClick={() => nextWord()} tabIndex={0} variant="contained" color="secondary" fullWidth customcolor={purple}>
 						{t(answeredWord ? 'AUDIOCALL.NEXT' : 'AUDIOCALL.SKIP')}
-					</Button>
+					</CustomButton>
 				</Stack>
 
 				<GameResultDialog isOpen={isFinished} correctWords={correctWords} incorrectWords={incorrectWords} />

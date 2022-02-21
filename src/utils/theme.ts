@@ -1,9 +1,27 @@
-import { green, grey, indigo, lightGreen, red } from '@mui/material/colors'
+import { green, grey, indigo, lightBlue, lightGreen, red } from '@mui/material/colors'
 import { createTheme } from '@mui/material/styles'
 
 const { palette } = createTheme()
 
 const theme = createTheme({
+	typography: {
+		fontFamily: `'Open Sans', sans-serif`,
+		h1: {
+			fontFamily: `'Oswald', sans-serif`,
+		},
+		h2: {
+			fontFamily: `'Oswald', sans-serif`,
+		},
+		h3: {
+			fontFamily: `'Oswald', sans-serif`,
+		},
+		h4: {
+			fontFamily: `'Oswald', sans-serif`,
+		},
+		h5: {
+			fontFamily: `'Oswald', sans-serif`,
+		},
+	},
 	text: {
 		secondary: grey[500],
 		success: green[600],
@@ -11,7 +29,7 @@ const theme = createTheme({
 	},
 	palette: {
 		primary: {
-			main: indigo[800],
+			main: lightBlue[600],
 		},
 		secondary: {
 			main: indigo[300],

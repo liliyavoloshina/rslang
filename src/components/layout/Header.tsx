@@ -101,12 +101,12 @@ export default function Header() {
 	}
 
 	return (
-		<AppBar position="static" color="primary" className="header">
+		<AppBar position="static" color="primary" className="header" sx={{ boxShadow: 2 }}>
 			<Container maxWidth="xl">
 				<Toolbar disableGutters>
-					<Typography variant="h6" noWrap component="div" sx={{ mr: 2, display: { xs: 'none', md: 'flex' } }}>
-						{t('HEADER.LOGO')}
-					</Typography>
+					<Box sx={{ height: '100px', width: '200px' }}>
+						<img src="/assets/images/logo.png" alt="logo" className="logo" />
+					</Box>
 
 					<Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
 						<IconButton size="large" aria-label="account of current user" aria-controls="menu-appbar" aria-haspopup="true" onClick={handleOpenNavMenu} color="inherit">
@@ -183,7 +183,11 @@ export default function Header() {
 					<LanguageMenu />
 
 					<Stack flexDirection="row" alignItems="center" sx={{ flexGrow: 0 }}>
-						{userInfo?.token && <Typography variant="h6">{t('HEADER.WELCOME', { name: userInfo.name })}</Typography>}
+						{userInfo?.token && (
+							<Typography variant="h6" color="white">
+								{t('HEADER.WELCOME', { name: userInfo.name })}
+							</Typography>
+						)}
 						<Tooltip title={t('HEADER.OPEN_ACCOUNT')}>
 							<IconButton onClick={handleOpenUserMenu} sx={{ color: 'white' }}>
 								<PersonIcon />
