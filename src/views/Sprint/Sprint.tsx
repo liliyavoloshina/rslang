@@ -72,6 +72,7 @@ const Sprint = () => {
 			// eslint-disable-next-line consistent-return
 			return () => clearAnimationTimeout()
 		},
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[theme]
 	)
 
