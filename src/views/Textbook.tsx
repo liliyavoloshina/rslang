@@ -38,7 +38,6 @@ interface GameButtonProps {
 const GameButton = styled(Button)<GameButtonProps & ButtonProps>(({ theme, customcolor }) => ({
 	color: theme.palette.getContrastText(customcolor[100]),
 	backgroundColor: customcolor[100],
-	border: `1px solid ${customcolor[300]}`,
 	'&:hover': {
 		backgroundColor: customcolor[300],
 	},
