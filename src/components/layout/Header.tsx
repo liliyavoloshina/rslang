@@ -104,9 +104,9 @@ export default function Header() {
 		<AppBar position="static" color="primary" className="header" sx={{ boxShadow: 2 }}>
 			<Container maxWidth="xl">
 				<Toolbar disableGutters>
-					<Typography variant="h6" noWrap component="div" sx={{ mr: 2, display: { xs: 'none', md: 'flex' } }}>
-						{t('HEADER.LOGO')}
-					</Typography>
+					<Box sx={{ height: '100px', width: '200px' }}>
+						<img src="/assets/images/logo.png" alt="logo" className="logo" />
+					</Box>
 
 					<Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
 						<IconButton size="large" aria-label="account of current user" aria-controls="menu-appbar" aria-haspopup="true" onClick={handleOpenNavMenu} color="inherit">
