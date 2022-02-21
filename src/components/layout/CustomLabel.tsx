@@ -6,7 +6,7 @@ interface CustomLabelProps {
 	customcolor: Color
 }
 
-const CustomLabel = styled(InputLabel)<CustomLabelProps & InputLabelProps>(({ customcolor }) => ({
+const CustomLabel = styled(InputLabel)<CustomLabelProps & InputLabelProps>(() => ({
 	color: '#fff',
 	'&.Mui-focused': {
 		color: '#fff',
