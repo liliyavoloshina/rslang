@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useLocation, useMatch, useNavigate } from 'react-router-dom'
 
@@ -9,14 +9,13 @@ import VolumeUp from '@mui/icons-material/VolumeUp'
 import { styled, useTheme } from '@mui/material'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import CircularProgress from '@mui/material/CircularProgress'
 import Container from '@mui/material/Container'
 import Grid from '@mui/material/Grid'
 import IconButton from '@mui/material/IconButton'
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { deepPurple, green, grey, indigo, lightGreen, purple, red, yellow } from '@mui/material/colors'
+import { deepPurple, lightGreen, purple, red, yellow } from '@mui/material/colors'
 
 import { useAppDispatch, useAppSelector } from '~/app/hooks'
 import { GameResultDialog } from '~/components/game'
@@ -35,7 +34,6 @@ import {
 	selectAudiocallIsWithSounds,
 	selectAudiocallLongestSeries,
 	selectAudiocallProgress,
-	selectAudiocallStatus,
 	selectAudiocallWords,
 	showNextWord,
 	toggleAudiocallAudio,
@@ -59,8 +57,6 @@ const CustomLinearProgress = styled(LinearProgress)(() => ({
 	},
 }))
 
-// purple[500]}, ${deepPurple[500]
-
 export default function Audiocall() {
 	const { t } = useTranslation()
 	const theme = useTheme()
@@ -69,7 +65,6 @@ export default function Audiocall() {
 	const dispatch = useAppDispatch()
 	const navigate = useNavigate()
 
-	const status = useAppSelector(selectAudiocallStatus)
 	const currentWord = useAppSelector(selectAudiocallCurrentWord)
 	const answers = useAppSelector(selectAudiocallAnswers)
 	const isFinished = useAppSelector(selectAudiocallIsFinished)
@@ -193,6 +188,7 @@ export default function Audiocall() {
 		if (isFinished) {
 			finish()
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [isFinished])
 
 	return (
