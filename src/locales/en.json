@@ -45,13 +45,11 @@
 		"ABOUT_US": "About us",
 		"FIRST_DEVELOPER": {
 			"NICKNAME": "Lilia",
-			"TASKS": "What's done?",
-			"TASKS_DESCRIPTION": "Game 'Audiocall', textbook, word list, learning progress, learned words, statistic, authorization, API."
+			"TASKS_DESCRIPTION": "Developed the game “Audiocall”, the page of the textbook and statistics saving functionality, added user authorization, implemented work with API."
 		},
 		"SECOND_DEVELOPER": {
 			"NICKNAME": "Lena",
-			"TASKS": "What's done?",
-			"TASKS_DESCRIPTION": "Game 'Sprint', home page, internationalization."
+			"TASKS_DESCRIPTION": "Developed the game “Sprint” and the design of the home page, added the application localization."
 		}
 	},
 
