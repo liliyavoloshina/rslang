@@ -96,9 +96,6 @@ export default function Home() {
 											{/* <img style={{ width: 20, height: 20, objectFit: 'contain' }} src="/assets/svg/github.png" alt="" /> */}
 										</Link>
 									</Typography>
-									<Typography gutterBottom variant="body1" component="div">
-										{t('HOME.FIRST_DEVELOPER.TASKS')}
-									</Typography>
 									<Typography variant="body2" color="text.secondary">
 										{t('HOME.FIRST_DEVELOPER.TASKS_DESCRIPTION')}
 									</Typography>
@@ -121,9 +118,6 @@ export default function Home() {
 										<Link href="https://github.com/ElenaBezro" underline="hover" color="#488df4">
 											{t('HOME.SECOND_DEVELOPER.NICKNAME')}
 										</Link>
-									</Typography>
-									<Typography gutterBottom variant="body1" component="div">
-										{t('HOME.SECOND_DEVELOPER.TASKS')}
 									</Typography>
 									<Typography variant="body2" color="text.secondary">
 										{t('HOME.SECOND_DEVELOPER.TASKS_DESCRIPTION')}
