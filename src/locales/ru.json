@@ -110,7 +110,8 @@
 	"LEVEL_SELECTION": {
 		"SELECT_LEVEL": "Выбрать уровень",
 		"PLAY": "Играть",
-		"GROUP": "Уровень {{count}}"
+		"GROUP": "Уровень {{count}}",
+		"DIFFICULT": "Сложные"
 	},
 
 	"GAME_RESULT_DIALOG": {

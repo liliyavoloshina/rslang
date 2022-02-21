@@ -30,7 +30,7 @@ const theme = createTheme({
 	palette: {
 		primary: {
 			// or pink???
-			main: orange[400],
+			main: orange[800],
 		},
 		secondary: {
 			main: indigo[300],
