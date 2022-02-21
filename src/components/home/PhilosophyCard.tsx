@@ -1,6 +1,5 @@
-import { ReactNode } from 'react'
-
 import { Card, CardContent, Typography } from '@mui/material'
+import { amber, blue, pink, teal } from '@mui/material/colors'
 
 interface PhilosophyCardProps {
 	title: string
@@ -9,10 +8,10 @@ interface PhilosophyCardProps {
 }
 
 const PHILOSOPHY_COLORS: Record<string, string> = {
-	textbook: '#feca02',
-	dictionary: '#fe7ec9',
-	statistic: '#38c4c1',
-	games: '#488df4',
+	textbook: amber[500],
+	dictionary: pink[300],
+	statistic: teal[300],
+	games: blue[300],
 }
 
 export default function PhilosophyCard({ title, desc, textColor }: PhilosophyCardProps) {

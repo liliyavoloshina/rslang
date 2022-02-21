@@ -5,6 +5,7 @@ import AutoGraph from '@mui/icons-material/AutoGraph'
 import MenuBook from '@mui/icons-material/MenuBook'
 import SportsEsports from '@mui/icons-material/SportsEsports'
 import { Card, CardActionArea, CardContent, Typography } from '@mui/material'
+import { amber, lightBlue, pink, teal } from '@mui/material/colors'
 
 interface AdvantageCardProps {
 	title: string
@@ -21,16 +22,16 @@ const ADVANTAGE_ICONS: Record<string, ReactNode | undefined> = {
 }
 
 const ADVANTAGE_BG_COLORS: Record<string, string> = {
-	book: '#38c4c1',
-	rocket: '#feca02',
-	game: '#fe7ec9',
-	progress: '#488df4',
+	book: teal[300],
+	rocket: amber[500],
+	game: pink[200],
+	progress: lightBlue[400],
 }
 
 export default function AdvantageCard({ icon, title, desc, cardColor }: AdvantageCardProps) {
 	return (
-		<Card sx={{ maxWidth: 215, height: 215, textAlign: 'center', bgcolor: `${ADVANTAGE_BG_COLORS[cardColor]}`, paddingTop: 1 }}>
-			<CardActionArea>
+		<Card sx={{ maxWidth: 215, height: 215, textAlign: 'center', bgcolor: `${ADVANTAGE_BG_COLORS[cardColor]}` }}>
+			<CardActionArea sx={{ height: '100%' }}>
 				{ADVANTAGE_ICONS[icon]}
 				<CardContent>
 					<Typography gutterBottom variant="h5" component="div" color="white">
