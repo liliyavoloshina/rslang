@@ -9,6 +9,7 @@ import VolumeUp from '@mui/icons-material/VolumeUp'
 import { styled, useTheme } from '@mui/material'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import CircularProgress from '@mui/material/CircularProgress'
 import Container from '@mui/material/Container'
 import Grid from '@mui/material/Grid'
 import IconButton from '@mui/material/IconButton'
@@ -194,13 +195,9 @@ export default function Audiocall() {
 		}
 	}, [isFinished])
 
-	if (status !== 'success') {
-		return <div>{t('COMMON.LOADING')}</div>
-	}
-
 	return (
-		<Box sx={{ height: '100%', background: `linear-gradient(to right top, ${purple[500]}, ${deepPurple[500]})` }}>
-			<Box sx={{ width: '100%' }}>
+		<Box sx={{ position: 'relative', height: '100%', background: `linear-gradient(to right top, ${purple[500]}, ${deepPurple[500]})` }}>
+			<Box sx={{ position: 'absolute', width: '100%' }}>
 				<CustomLinearProgress variant="determinate" value={progress} />
 			</Box>
 			<Container maxWidth="lg" sx={{ position: 'relative', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'center', height: '100%' }}>

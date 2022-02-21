@@ -110,7 +110,8 @@
 	"LEVEL_SELECTION": {
 		"SELECT_LEVEL": "Select level",
 		"PLAY": "Play",
-		"GROUP": "Group {{count}}"
+		"GROUP": "Group {{count}}",
+		"DIFFICULT": "Difficult"
 	},
 
 	"GAME_RESULT_DIALOG": {
