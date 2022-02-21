@@ -2,7 +2,7 @@ import { TFuncKey, useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
 import { Box, Card, CardContent, CardMedia, Container, Grid, Link, Typography } from '@mui/material'
-import { amber, blue, lightBlue, pink, teal } from '@mui/material/colors'
+import { amber, lightBlue, pink, teal } from '@mui/material/colors'
 
 import AdvantageCard from '~/components/home/AdvantageCard'
 import PhilosophyCard from '~/components/home/PhilosophyCard'
